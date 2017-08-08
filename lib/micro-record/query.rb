@@ -136,7 +136,7 @@ module MicroRecord
       if native_types
         # While result.column_types works for some db drivers, others don't provide any type info (i.e. sqlite)
         column_types = model.columns_hash.values_at(*result.columns).map { |c| c ? c.type : nil }
-        converter = TypeConverter.new(conn.adapter_name, column_types, result.columns)
+        converter = TypeConverter.fetch!(conn.adapter_name).new(column_types, result.columns)
         result.rows.map { |row| converter.to_hash row }
       else
         result.to_hash
