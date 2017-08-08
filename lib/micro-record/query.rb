@@ -23,10 +23,11 @@ module MicroRecord
   #   ]
   #
   # @param query [ActiveRecord::Relation]
+  # @param native_types [Boolean] convert string values to native types (default true)
   # @param connection [ActiveRecord::Connection] defaults to ActiveRecord::Base.connection
   # @return [MicroRecord::Query]
   #
-  def self.query(query, connection: nil)
+  def self.query(query, native_types: true, connection: nil)
     Query.new(query, connection)
   end
 
@@ -35,6 +36,8 @@ module MicroRecord
     attr_reader :model
     # @return [String] SQL string for the main query
     attr_reader :sql
+    # @return [Boolean] convert string values to native types
+    attr_reader :native_types
     # @return [ActiveRecord::Connection]
     attr_reader :conn
     # @return [Array<MicroRecord::EagerLoader>]
@@ -44,9 +47,10 @@ module MicroRecord
     # Initialize a new query.
     #
     # @param query [ActiveRecord::Relation]
+  # @param native_types [Boolean] convert string values to native types (default true)
     # @param connection [ActiveRecord::Connection] defaults to ActiveRecord::Base.connection
     #
-    def initialize(query, connection: nil)
+    def initialize(query, native_types: true, connection: nil)
       @model = query.klass
       @sql = query.to_sql
       @eager_loaders = []
@@ -62,14 +66,12 @@ module MicroRecord
     #
     def eager_load(assoc, &scope)
       ref = model.reflections.fetch assoc.to_s
-      base_scope = scope ? scope.(ref.klass.all) : ref.klass.all
       @eager_loaders << case ref.macro
-                        when :belongs_to, :has_one
-                          EagerLoader::BelongsTo.new(ref.name.to_s, ref.foreign_key, base_scope)
-                        when :has_many
-                          EagerLoader::HasMany.new(ref.name.to_s, ref.foreign_key, base_scope)
+                        when :has_many, :belongs_to, :has_one
+                          EagerLoader.new(ref, scope)
                         when :has_and_belongs_to_many
                           raise 'TODO'
+                          HabtmEagerLoader.new(ref, scope)
                         else
                           raise "Unsupported association type `#{ref.macro}`"
                         end
@@ -79,10 +81,7 @@ module MicroRecord
     #
     # Run the query and return the Hashes.
     #
-    # @param native_types [Boolean] convert string values to native Ruby types (default true)
-    # @return [Array<Hash>]
-    #
-    def run(native_types: true)
+    def run
       # Build a Hash of empty associations to merge into each row.
       empty_associations = eager_loaders.reduce({}) { |a, loader|
         a[loader.name] = loader.many ? [] : nil
@@ -90,34 +89,35 @@ module MicroRecord
       }
 
       # Query rows from the main query and put them in a Hash keyed by ID.
-      rows_by_id = get_rows(sql, native_types).reduce({}) { |a, row|
+      rows_by_id = get_rows(sql).reduce({}) { |a, row|
         id = row.fetch model.primary_key.to_s
         row.merge! empty_associations
         a[id] = row
         a
       }
 
-      # Load all the associations into a Hash keyed by EagerLoader.
-      eager_rows = eager_loaders.reduce({}) { |a, loader|
-        sql = loader.sql(primary_keys)
-        a[loader] = get_rows sql, native_types
-        a
-      }
-
-      # Loop through each record for each eager loaded assoc and assign them to records.
-      # TODO support for HABTM.
-      eager_rows.each { |loader, loaded_rows|
-        loaded_rows.each { |loaded_row|
-          fkey = loaded_row.fetch loader.fkey
-          row = rows_by_id[fkey] || next
-
-          if loader.many
-            row[loader.name] << loaded_row
-          else
-            row[loader.name] = loaded_row
+      # Query belongs_to & has_one associations and stick them into the appropriate records
+      belongs_tos = get_associations_by_id eager_loaders.select(&:single?), rows_by_id.keys
+      rows_by_id.each do |_, row|
+        belongs_tos.each do |loader, assoc_rows_by_id|
+          if (fkey = row[loader.fkey])
+            row[loader.name] = assoc_rows_by_id[fkey]
           end
-        }
-      }
+        end
+      end
+
+      # Query has_many & habtm associations and stick them into the appropriate records
+      eager_loaders.select(&:multi).each do |loader|
+        assoc_rows = get_rows loader.sql rows_by_id.keys
+        assoc_rows.each do |assoc_row|
+          fkey = loader.fetch_fkey! assoc_row
+          if (row = rows_by_id[fkey])
+            row[loader.name] << assoc_row
+          end
+        end
+      end
+
+      rows_by_id.values
     end
 
     private
@@ -126,9 +126,8 @@ module MicroRecord
     # Run the sql and return the rows as Hashes.
     #
     # @param sql [String]
-    # @param native_types [Boolean]
     #
-    def get_rows(sql, native_types = false)
+    def get_rows(sql)
       result = conn.exec_query sql
       if native_types
         converter = TypeConverter.new(result.columns, result.column_types.map(&:type))
@@ -136,6 +135,17 @@ module MicroRecord
       else
         result.to_hash
       end
+    end
+
+    def get_associations_by_id(eager_loaders, primary_keys)
+      eager_loaders.reduce({}) { |a, loader|
+        rows_by_id = get_rows(loader.sql primary_keys).reduce({}) { |rows, row|
+          id = row[loader.pkey]
+          rows[id] = row
+          rows
+        }
+        a[loader] = rows_by_id
+      }
     end
   end
 end
