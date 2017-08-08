@@ -5,6 +5,8 @@ module MicroRecord
   class EagerLoader
     # @return [String] association name
     attr_reader :name
+    # @return [ActiveRecord::Base] the ActiveRecord model
+    attr_reader :model
     # @return [String] name of primary key column
     attr_reader :pkey
     # @return [String] name of foreign key column
@@ -18,6 +20,7 @@ module MicroRecord
     #
     def initialize(ref, scope = nil)
       @name = ref.name.to_s
+      @model = ref.klass
       @pkey = ref.klass.primary_key.to_s
       @fkey = ref.foreign_key.to_s
       @scope = scope ? scope.(ref.klass.all) : ref.klass.all
@@ -55,7 +58,10 @@ module MicroRecord
     end
   end
 
-  # TODO
+  #
+  # Overrides some behaviors of MicroRecord::EagerLoader to load associations
+  # from join tables.
+  #
   class HabtmEagerLoader < EagerLoader
     #
     # Return the SQL to load the association.
@@ -65,6 +71,7 @@ module MicroRecord
     #
     def sql(primary_keys)
       # TODO cache join table results
+      raise 'TODO'
       super
     end
 

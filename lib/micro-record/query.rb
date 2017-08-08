@@ -28,7 +28,7 @@ module MicroRecord
   # @return [MicroRecord::Query]
   #
   def self.query(query, native_types: true, connection: nil)
-    Query.new(query, connection)
+    Query.new(query, native_types: native_types, connection: connection)
   end
 
   class Query
@@ -53,6 +53,7 @@ module MicroRecord
     def initialize(query, native_types: true, connection: nil)
       @model = query.klass
       @sql = query.to_sql
+      @native_types = native_types
       @eager_loaders = []
       @conn = connection || ActiveRecord::Base.connection
     end
@@ -70,7 +71,6 @@ module MicroRecord
                         when :has_many, :belongs_to, :has_one
                           EagerLoader.new(ref, scope)
                         when :has_and_belongs_to_many
-                          raise 'TODO'
                           HabtmEagerLoader.new(ref, scope)
                         else
                           raise "Unsupported association type `#{ref.macro}`"
@@ -81,6 +81,8 @@ module MicroRecord
     #
     # Run the query and return the Hashes.
     #
+    # @return [Array<OpenStruct>]
+    #
     def run
       # Build a Hash of empty associations to merge into each row.
       empty_associations = eager_loaders.reduce({}) { |a, loader|
@@ -89,7 +91,7 @@ module MicroRecord
       }
 
       # Query rows from the main query and put them in a Hash keyed by ID.
-      rows_by_id = get_rows(sql).reduce({}) { |a, row|
+      rows_by_id = get_rows(model, sql).reduce({}) { |a, row|
         id = row.fetch model.primary_key.to_s
         row.merge! empty_associations
         a[id] = row
@@ -108,7 +110,7 @@ module MicroRecord
 
       # Query has_many & habtm associations and stick them into the appropriate records
       eager_loaders.select(&:multi).each do |loader|
-        assoc_rows = get_rows loader.sql rows_by_id.keys
+        assoc_rows = get_rows loader.model, loader.sql(rows_by_id.keys)
         assoc_rows.each do |assoc_row|
           fkey = loader.fetch_fkey! assoc_row
           if (row = rows_by_id[fkey])
@@ -117,7 +119,8 @@ module MicroRecord
         end
       end
 
-      rows_by_id.values
+      # TODO support return_hashes option?
+      rows_by_id.values.map { |hash| OpenStruct.new hash }
     end
 
     private
@@ -125,12 +128,15 @@ module MicroRecord
     #
     # Run the sql and return the rows as Hashes.
     #
+    # @param model [ActiveRecord::Base] the model representing the table we're loading from
     # @param sql [String]
     #
-    def get_rows(sql)
+    def get_rows(model, sql)
       result = conn.exec_query sql
       if native_types
-        converter = TypeConverter.new(conn.adapter_name, result.columns, result.column_types.map(&:type))
+        # While result.column_types works for some db drivers, others don't provide any type info (i.e. sqlite)
+        column_types = model.columns_hash.values_at(*result.columns).map { |c| c ? c.type : nil }
+        converter = TypeConverter.new(conn.adapter_name, column_types, result.columns)
         result.rows.map { |row| converter.to_hash row }
       else
         result.to_hash
@@ -147,7 +153,7 @@ module MicroRecord
     #
     def get_associations_by_id(eager_loaders, primary_keys)
       eager_loaders.reduce({}) { |a, loader|
-        rows_by_id = get_rows(loader.sql primary_keys).reduce({}) { |rows, row|
+        rows_by_id = get_rows(loader.model, loader.sql(primary_keys)).reduce({}) { |rows, row|
           id = row[loader.pkey]
           rows[id] = row
           rows

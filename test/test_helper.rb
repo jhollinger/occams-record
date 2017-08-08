@@ -1,3 +1,4 @@
+require 'json'
 require 'micro-record'
 require 'active_record'
 require 'minitest/autorun'
