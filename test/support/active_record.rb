@@ -1,4 +1,5 @@
 require 'otr-activerecord'
+require 'active_record/fixtures'
 ActiveRecord::Base.logger = nil
 
 OTR::ActiveRecord.configure_from_hash!(adapter: 'sqlite3', database: ':memory:', encoding: 'utf8', pool: 5, timeout: 5000)

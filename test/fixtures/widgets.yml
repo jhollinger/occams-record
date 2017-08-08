@@ -1,0 +1,23 @@
+a:
+  category: foo
+  name: Widget A
+
+b:
+  category: foo
+  name: Widget B
+
+c:
+  category: foo
+  name: Widget C
+
+d:
+  category: bar
+  name: Widget D
+
+e:
+  category: bar
+  name: Widget E
+
+f:
+  category: bar
+  name: Widget F
