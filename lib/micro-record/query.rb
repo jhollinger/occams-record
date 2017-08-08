@@ -63,7 +63,16 @@ module MicroRecord
     def eager_load(assoc, &scope)
       ref = model.reflections.fetch assoc.to_s
       base_scope = scope ? scope.(ref.klass.all) : ref.klass.all
-      @eager_loaders << EagerLoader.new(ref.name.to_s, ref.foreign_key, base_scope)
+      @eager_loaders << case ref.macro
+                        when :belongs_to, :has_one
+                          EagerLoader::BelongsTo.new(ref.name.to_s, ref.foreign_key, base_scope)
+                        when :has_many
+                          EagerLoader::HasMany.new(ref.name.to_s, ref.foreign_key, base_scope)
+                        when :has_and_belongs_to_many
+                          raise 'TODO'
+                        else
+                          raise "Unsupported association type `#{ref.macro}`"
+                        end
       self
     end
 
@@ -76,7 +85,7 @@ module MicroRecord
     def run(native_types: true)
       # Build a Hash of empty associations to merge into each row.
       empty_associations = eager_loaders.reduce({}) { |a, loader|
-        a[loader.name] = []
+        a[loader.name] = loader.many ? [] : nil
         a
       }
 
@@ -96,12 +105,16 @@ module MicroRecord
       }
 
       # Loop through each record for each eager loaded assoc and assign them to records.
-      # TODO this only works for has_* & belongs_to right now. Add support for HABTM.
+      # TODO support for HABTM.
       eager_rows.each { |loader, loaded_rows|
         loaded_rows.each { |loaded_row|
           fkey = loaded_row.fetch loader.fkey
-          if (row = rows_by_id[fkey])
+          row = rows_by_id[fkey] || next
+
+          if loader.many
             row[loader.name] << loaded_row
+          else
+            row[loader.name] = loaded_row
           end
         }
       }
