@@ -130,13 +130,21 @@ module MicroRecord
     def get_rows(sql)
       result = conn.exec_query sql
       if native_types
-        converter = TypeConverter.new(result.columns, result.column_types.map(&:type))
+        converter = TypeConverter.new(conn.adapter_name, result.columns, result.column_types.map(&:type))
         result.rows.map { |row| converter.to_hash row }
       else
         result.to_hash
       end
     end
 
+    #
+    # Load the given associations into a Hash, keyed by EagerLoader. The records will also be in a Hash,
+    # keyed by id.
+    #
+    # @param eager_loaders [Array<MicroRecord::EagerLoader>] associations to load
+    # @param primary_keys [Array<String>] ids of the records to loader
+    # @return [Hash]
+    #
     def get_associations_by_id(eager_loaders, primary_keys)
       eager_loaders.reduce({}) { |a, loader|
         rows_by_id = get_rows(loader.sql primary_keys).reduce({}) { |rows, row|
