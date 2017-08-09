@@ -57,7 +57,7 @@ In addition to custom eager loading queries, we're also adding nested eager load
       query(Widget.order("name")).
       eager_load(:category).
 
-      # load order_items, but only the fields we need identify which orders go with which widget
+      # load order_items, but only the fields needed to identify which orders go with which widgets
       eager_load(:order_items, ->(q) { q.select("widget_id, order_id") }) {
 
         # load the orders
