@@ -6,52 +6,54 @@ When pulling back very large sets of data, ActiveRecord can only take you so far
 * ActiveRecord objects are big. Really big. You just won't believe how vastly, hugely, mind-bogglingly big they are.
 * When you're eager loading lots of associations, you're likely pulling back far more columns than you actually need.
 
-`MicroRecord` tries to solve those two problems. Your records come back as (relatively) tiny `OpenStruct` objects, and you can easily customize your eager loading queries (limit the `SELECT` fields, add a `WHERE` clause, etc.). The best part is that you can still use ActiveRecord's query build and all the scopes you've defined on your models.
+`MicroRecord` tries to solve those two problems. Your records come back as (relatively) small `OpenStruct` objects, and you can easily customize your eager loading queries (limit the `SELECT` fields, add a `WHERE` clause, etc.). The best part is that you can still use ActiveRecord and your existing scopes to build the queries!
+
+Notes:
+* Your average Rails app probably doesn't need this.
+* Since the returned records are just `OpenStruct` objects, they're read-only. Also, they won't have any instance methods from your models.
 
 **Simple example**
 
-Here's a very simple example. So simple that there's really no reason to use `MicroRecord` with it.
+Here's a very simple example. So simple that there's no reason to use `MicroRecord` with it.
 
-    results = MicroRecord.
+    widgets = MicroRecord.
       query(Widget.order("name")).
       eager_load(:category).
       run
 
-    results[0].class.name
+    widgets[0].class.name
     => "OpenStruct"
 
-    results[0].id
+    widgets[0].id
     => 1000
 
-    results[0].name
-    => Widget 1000
+    widgets[0].name
+    => "Widget 1000"
 
-    results[0].category.name
+    widgets[0].category.name
     => "Category 1"
 
 **More complicated example**
 
-Notice that we're eager loading splines, but *only the fields that we need*.
+Notice that we're eager loading splines, but *only the fields that we need*. If that's a wide table, your DBA **and** your sysadmin will thank you. (Or you can thank yourself, if DevOps is your thing.)
 
-    results = MicroRecord.
+    widgets = MicroRecord.
       query(Widget.order("name")).
       eager_load(:category).
       eager_load(:splines, ->(q) { q.select("widget_id, description") }).
       run
 
-    results[0].splines.map { |s| s.description }
+    widgets[0].splines.map { |s| s.description }
     => ["Spline 1", "Spline 2", "Spline 3"]
 
-    results[1].splines.map { |s| s.description }
+    widgets[1].splines.map { |s| s.description }
     => ["Spline 4", "Spline 5"]
-
-    [#<Date: 2017-01-01>, #<Date: 2017-01-02>, #<Date: 2017-01-03>, ...]
 
 **An insane example, but only half as insane as the one that prompted the creation of this library**
 
 In addition to custom eager loading queries, we're also adding nested eager loading (and customizing those queries!).
 
-    results = MicroRecord.
+    widgets = MicroRecord.
       query(Widget.order("name")).
       eager_load(:category).
 
