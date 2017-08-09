@@ -3,32 +3,23 @@ module MicroRecord
   # Starts building a MicroRecord::Query. Pass it a scope from any of ActiveRecord's query builder
   # methods or associations. If you want to eager loaded associations, do NOT us ActiveRecord for it.
   # Instead, use MicroRecord::Query#eager_load. Finally, call `run` to run the query and get back an
-  # array of Hashes.
+  # array of OpenStructs.
   #
-  #   results = MicroRecord.
-  #     query(Widget.where(category_id: 42)).
-  #     eager_load(:category).
-  #     eager_load(:orders) { |q| q.where("date >= ?", 5.days.ago").select("id, date") }.
-  #     run
-  #
-  #   puts results
-  #   => [
-  #     {"id" => 1, "name" => "Widget 1", "category_id" => 5, "category" => {"id" => 5, "name" => "Foo"}, "orders" => [
-  #       {"id" => 1000, "date" => #<Date: 2017-01-01>}, {"id" => 1001, "date" => #<Date: 2017-01-02>}
-  #     ]},
-  #     {"id" => 2, "name" => "Widget 2", "category_id" => 6, "category" => {"id" => 6, "name" => "Bar"}, "orders" => [
-  #       ...
-  #     ]},
-  #     ...
-  #   ]
+  #  results = MicroRecord.
+  #    query(Widget.order("name")).
+  #    eager_load(:category).
+  #    eager_load(:order_items, ->(q) { q.select("widget_id, order_id") }) {
+  #      eager_load(:orders) {
+  #        eager_load(:customer, ->(q) { q.select("name") })
+  #      }
+  #    }.
+  #    run
   #
   # @param query [ActiveRecord::Relation]
-  # @param native_types [Boolean] convert string values to native types (default true)
-  # @param connection [ActiveRecord::Connection] defaults to ActiveRecord::Base.connection
   # @return [MicroRecord::Query]
   #
-  def self.query(query, native_types: true, connection: nil)
-    Query.new(query, native_types: native_types, connection: connection)
+  def self.query(query)
+    Query.new(query)
   end
 
   class Query
@@ -36,26 +27,23 @@ module MicroRecord
     attr_reader :model
     # @return [String] SQL string for the main query
     attr_reader :sql
-    # @return [Boolean] convert string values to native types
-    attr_reader :native_types
     # @return [ActiveRecord::Connection]
     attr_reader :conn
-    # @return [Array<MicroRecord::EagerLoader>]
+    # @return [Array<MicroRecord::EagerLoaders::Base>]
     attr_reader :eager_loaders
 
     #
     # Initialize a new query.
     #
     # @param query [ActiveRecord::Relation]
-  # @param native_types [Boolean] convert string values to native types (default true)
-    # @param connection [ActiveRecord::Connection] defaults to ActiveRecord::Base.connection
+    # @param eval_block [Proc] block that will be eval'd on this instance. Can be used for eager loading. (optional)
     #
-    def initialize(query, native_types: true, connection: nil)
+    def initialize(query, &eval_block)
       @model = query.klass
       @sql = query.to_sql
-      @native_types = native_types
       @eager_loaders = []
-      @conn = connection || ActiveRecord::Base.connection
+      @conn = model.connection
+      instance_eval(&eval_block) if eval_block
     end
 
     #
@@ -64,63 +52,34 @@ module MicroRecord
     # the colums you actually need.
     #
     # @param assoc [Symbol] name of association
+    # @param scope [Proc] a scope to apply to the query (optional)
+    # @param eval_block [Proc] a block where you may perform eager loading on *this* association (optional)
     #
-    def eager_load(assoc, &scope)
-      ref = model.reflections.fetch assoc.to_s
-      @eager_loaders << case ref.macro
-                        when :has_many, :belongs_to, :has_one
-                          EagerLoader.new(ref, scope)
-                        when :has_and_belongs_to_many
-                          HabtmEagerLoader.new(ref, scope)
-                        else
-                          raise "Unsupported association type `#{ref.macro}`"
-                        end
+    def eager_load(assoc, scope = nil, &eval_block)
+      ref = model.reflections[assoc.to_s]
+      raise "MicroRecord: No assocation `:#{assoc}` on `#{model.name}`" if ref.nil?
+      @eager_loaders << EagerLoaders.fetch!(ref.macro).new(ref, scope, &eval_block)
       self
     end
 
     #
-    # Run the query and return the Hashes.
+    # Run the query and return the structs.
     #
+    # @param native_types [Boolean] if true parse the raw results into native Ruby types
     # @return [Array<OpenStruct>]
     #
-    def run
-      # Build a Hash of empty associations to merge into each row.
-      empty_associations = eager_loaders.reduce({}) { |a, loader|
-        a[loader.name] = loader.many ? [] : nil
-        a
+    def run(native_types: true)
+      rows = get_rows(sql, native_types).map { |hash|
+        OpenStruct.new hash
       }
 
-      # Query rows from the main query and put them in a Hash keyed by ID.
-      rows_by_id = get_rows(model, sql).reduce({}) { |a, row|
-        id = row.fetch model.primary_key.to_s
-        row.merge! empty_associations
-        a[id] = row
-        a
+      eager_loaders.each { |loader|
+        assoc_rows = Query.new(loader.query(rows), &loader.eval_block).
+          run(native_types: native_types)
+        loader.merge! assoc_rows, rows
       }
 
-      # Query belongs_to & has_one associations and stick them into the appropriate records
-      belongs_tos = get_associations_by_id eager_loaders.select(&:single?), rows_by_id.keys
-      rows_by_id.each do |_, row|
-        belongs_tos.each do |loader, assoc_rows_by_id|
-          if (fkey = row[loader.fkey])
-            row[loader.name] = assoc_rows_by_id[fkey]
-          end
-        end
-      end
-
-      # Query has_many & habtm associations and stick them into the appropriate records
-      eager_loaders.select(&:multi).each do |loader|
-        assoc_rows = get_rows loader.model, loader.sql(rows_by_id.keys)
-        assoc_rows.each do |assoc_row|
-          fkey = loader.fetch_fkey! assoc_row
-          if (row = rows_by_id[fkey])
-            row[loader.name] << assoc_row
-          end
-        end
-      end
-
-      # TODO support return_hashes option?
-      rows_by_id.values.map { |hash| OpenStruct.new hash }
+      rows
     end
 
     private
@@ -128,10 +87,11 @@ module MicroRecord
     #
     # Run the sql and return the rows as Hashes.
     #
-    # @param model [ActiveRecord::Base] the model representing the table we're loading from
     # @param sql [String]
+    # @param native_types [Boolean] if true parse the raw results into native Ruby types
+    # @return [Array<Hash>]
     #
-    def get_rows(model, sql)
+    def get_rows(sql, native_types = false)
       result = conn.exec_query sql
       if native_types
         # While result.column_types works for some db drivers, others don't provide any type info (i.e. sqlite)
@@ -141,25 +101,6 @@ module MicroRecord
       else
         result.to_hash
       end
-    end
-
-    #
-    # Load the given associations into a Hash, keyed by EagerLoader. The records will also be in a Hash,
-    # keyed by id.
-    #
-    # @param eager_loaders [Array<MicroRecord::EagerLoader>] associations to load
-    # @param primary_keys [Array<String>] ids of the records to loader
-    # @return [Hash]
-    #
-    def get_associations_by_id(eager_loaders, primary_keys)
-      eager_loaders.reduce({}) { |a, loader|
-        rows_by_id = get_rows(loader.model, loader.sql(primary_keys)).reduce({}) { |rows, row|
-          id = row[loader.pkey]
-          rows[id] = row
-          rows
-        }
-        a[loader] = rows_by_id
-      }
     end
   end
 end

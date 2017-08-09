@@ -1,0 +1,23 @@
+a:
+  widget: a
+  text: All about Widget A
+
+b:
+  widget: b
+  text: All about Widget B
+
+c:
+  widget: c
+  text: All about Widget C
+
+d:
+  widget: d
+  text: All about Widget D
+
+e:
+  widget: e
+  text: All about Widget E
+
+f:
+  widget: f
+  text: All about Widget F

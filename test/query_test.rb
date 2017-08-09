@@ -15,7 +15,6 @@ class QueryTest < Minitest::Test
     q = MicroRecord::Query.new(Category.all)
     assert_equal Category, q.model
     assert_match %r{SELECT}, q.sql
-    assert q.native_types
     assert_equal 0, q.eager_loaders.size
     refute_nil q.conn
   end
@@ -36,5 +35,31 @@ class QueryTest < Minitest::Test
       date: Date.new(2017, 2, 28),
       customer_id: 42
     ), results[0]
+  end
+
+  def test_belongs_to
+    results = MicroRecord.
+      query(Widget.all).
+      eager_load(:category).
+      run
+
+    assert_equal Widget.all.map { |w|
+      "#{w.name}: #{w.category.name}"
+    }.sort, results.map { |w|
+      "#{w.name}: #{w.category.name}"
+    }.sort
+  end
+
+  def test_has_one
+    results = MicroRecord.
+      query(Widget.all).
+      eager_load(:detail).
+      run
+
+    assert_equal Widget.all.map { |w|
+      "#{w.name}: #{w.detail.text}"
+    }.sort, results.map { |w|
+      "#{w.name}: #{w.detail.text}"
+    }.sort
   end
 end

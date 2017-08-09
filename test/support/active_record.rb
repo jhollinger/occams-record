@@ -14,6 +14,11 @@ ActiveRecord::Base.connection.instance_eval do
     t.integer :category_id
   end
 
+  create_table :widget_details do |t|
+    t.integer :widget_id
+    t.text :text
+  end
+
   create_table :customer do |t|
     t.string :name
   end
@@ -36,6 +41,11 @@ end
 
 class Widget < ActiveRecord::Base
   belongs_to :category
+  has_one :detail, class_name: 'WidgetDetail'
+end
+
+class WidgetDetail < ActiveRecord::Base
+  belongs_to :widget
 end
 
 class Customer < ActiveRecord::Base
