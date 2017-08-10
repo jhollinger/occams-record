@@ -29,12 +29,12 @@ class QueryTest < Minitest::Test
 
     results = MicroRecord.query(Order.select('amount, id, date, customer_id')).run
     assert_equal 1, results.size
-    assert_equal OpenStruct.new(
+    assert_equal({
       amount: 56.72,
       id: order.id,
       date: Date.new(2017, 2, 28),
       customer_id: 42
-    ), results[0]
+    }, results[0].to_hash)
   end
 
   def test_belongs_to

@@ -63,44 +63,21 @@ module MicroRecord
     end
 
     #
-    # Run the query and return the structs.
+    # Run the query and return the results.
     #
-    # @param native_types [Boolean] if true parse the raw results into native Ruby types
-    # @return [Array<OpenStruct>]
+    # @return [Array<MicroRecord::ResultRow>]
     #
-    def run(native_types: true)
-      rows = get_rows(sql, native_types).map { |hash|
-        OpenStruct.new hash
-      }
+    def run
+      result = conn.exec_query sql
+      row_class = MicroRecord.build_result_row_class(model, result.columns, eager_loaders.map(&:name))
+      rows = result.rows.map { |row| row_class.new row }
 
       eager_loaders.each { |loader|
-        assoc_rows = Query.new(loader.query(rows), &loader.eval_block).
-          run(native_types: native_types)
+        assoc_rows = Query.new(loader.query(rows), &loader.eval_block).run
         loader.merge! assoc_rows, rows
       }
 
       rows
-    end
-
-    private
-
-    #
-    # Run the sql and return the rows as Hashes.
-    #
-    # @param sql [String]
-    # @param native_types [Boolean] if true parse the raw results into native Ruby types
-    # @return [Array<Hash>]
-    #
-    def get_rows(sql, native_types = false)
-      result = conn.exec_query sql
-      if native_types
-        # While result.column_types works for some db drivers, others don't provide any type info (i.e. sqlite)
-        column_types = model.columns_hash.values_at(*result.columns).map { |c| c ? c.type : nil }
-        converter = TypeConverter.fetch!(conn.adapter_name).new(column_types, result.columns)
-        result.rows.map { |row| converter.to_hash row }
-      else
-        result.to_hash
-      end
     end
   end
 end

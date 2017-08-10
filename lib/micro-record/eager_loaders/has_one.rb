@@ -9,7 +9,7 @@ module MicroRecord
       # @return [ActiveRecord::Relation]
       #
       def query(rows)
-        ids = rows.map { |r| r[@ref.active_record_primary_key] }.compact.uniq
+        ids = rows.map { |r| r.send @ref.active_record_primary_key }.compact.uniq
         scope.where(@ref.foreign_key => ids)
       end
 
@@ -22,14 +22,15 @@ module MicroRecord
       def merge!(assoc_rows, rows)
         fkey_col = @ref.foreign_key.to_s
         assoc_rows_by_fkey = assoc_rows.reduce({}) { |a, assoc_row|
-          a[assoc_row[fkey_col]] = assoc_row
+          fid = assoc_row.send fkey_col
+          a[fid] = assoc_row
           a
         }
 
         pkey_col = @ref.active_record_primary_key.to_s
         rows.each do |row|
-          pkey = row[pkey_col]
-          row[name] = pkey ? assoc_rows_by_fkey[pkey] : nil
+          pkey = row.send pkey_col
+          row.send @assign, pkey ? assoc_rows_by_fkey[pkey] : nil
         end
       end
     end

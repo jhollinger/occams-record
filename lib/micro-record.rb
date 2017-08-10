@@ -1,10 +1,5 @@
-begin
-  require 'multi_json'
-rescue LoadError
-  require 'json'
-end
-
+require 'active_record'
 require 'micro-record/version'
 require 'micro-record/eager_loaders'
-require 'micro-record/type_converter'
+require 'micro-record/result_row'
 require 'micro-record/query'
