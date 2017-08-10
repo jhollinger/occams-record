@@ -1,0 +1,24 @@
+a_one:
+  order: a
+  widget: a
+  amount: 30
+
+a_two:
+  order: a
+  widget: b
+  amount: 70
+
+b_one:
+  order: b
+  widget: c
+  amount: 200
+
+b_two:
+  order: b
+  widget: d
+  amount: 300
+
+b_three:
+  order: b
+  widget: e
+  amount: 20

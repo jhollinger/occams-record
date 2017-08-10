@@ -3,7 +3,7 @@ module MicroRecord
   # Starts building a MicroRecord::Query. Pass it a scope from any of ActiveRecord's query builder
   # methods or associations. If you want to eager loaded associations, do NOT us ActiveRecord for it.
   # Instead, use MicroRecord::Query#eager_load. Finally, call `run` to run the query and get back an
-  # array of OpenStructs.
+  # array of objects.
   #
   #  results = MicroRecord.
   #    query(Widget.order("name")).

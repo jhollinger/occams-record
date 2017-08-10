@@ -1,0 +1,9 @@
+a:
+  date: 2017-01-01
+  amount: 100
+  customer:
+
+b:
+  date: 2018-01-01
+  amount: 520
+  customer:

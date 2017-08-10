@@ -5,7 +5,7 @@ module MicroRecord
       #
       # Return the SQL to load the association.
       #
-      # @param rows [Array<OpenStruct>] Array of rows used to calculate the query.
+      # @param rows [Array<MicroRecord::ResultRow>] Array of rows used to calculate the query.
       # @return [ActiveRecord::Relation]
       #
       def query(rows)
@@ -16,8 +16,8 @@ module MicroRecord
       #
       # Merge the association rows into the given rows.
       #
-      # @param assoc_rows [Array<OpenStruct>] rows loaded from the association
-      # @param rows [Array<OpenStruct>] rows loaded from the main model
+      # @param assoc_rows [Array<MicroRecord::ResultRow>] rows loaded from the association
+      # @param rows [Array<MicroRecord::ResultRow>] rows loaded from the main model
       #
       def merge!(assoc_rows, rows)
         pkey_col = model.primary_key.to_s

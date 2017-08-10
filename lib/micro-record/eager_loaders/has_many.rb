@@ -5,8 +5,8 @@ module MicroRecord
       #
       # Merge the association rows into the given rows.
       #
-      # @param assoc_rows [Array<OpenStruct>] rows loaded from the association
-      # @param rows [Array<OpenStruct>] rows loaded from the main model
+      # @param assoc_rows [Array<MicroRecord::ResultRow>] rows loaded from the association
+      # @param rows [Array<MicroRecord::ResultRow>] rows loaded from the main model
       #
       def merge!(assoc_rows, rows)
         assoc_rows_by_fkey = assoc_rows.group_by(&@ref.foreign_key.to_sym)

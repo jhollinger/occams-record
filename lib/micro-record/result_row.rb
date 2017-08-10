@@ -13,7 +13,8 @@ module MicroRecord
   # @param association_names [Array<String>] names of associations that will be eager loaded into the results.
   def self.build_result_row_class(model, column_names, association_names)
     Class.new(ResultRow) do
-      self.columns = column_names.map(&:to_sym)
+      self.columns = column_names.map(&:to_s)
+      self.associations = association_names.map(&:to_s)
 
       # Build getters & setters for associations. (We need setters b/c they're set AFTER the row is initialized
       attr_accessor *association_names
@@ -33,10 +34,13 @@ module MicroRecord
   #
   class ResultRow
     class << self
-      # Array of column names in the row
+      # Array of column names
       attr_accessor :columns
+      # Array of associations names
+      attr_accessor :associations
     end
     self.columns = []
+    self.associations = []
 
     #
     # Initialize a new result row.
@@ -49,12 +53,26 @@ module MicroRecord
     end
 
     #
-    # Return row as a Hash.
+    # Return row as a Hash (recursive).
     #
-    # @return [Hash] a Hash with Symbol keys
-    def to_h
-      self.class.columns.reduce({}) { |a, col_name|
-        a[col_name] = send col_name
+    # @param symbolize_names [Boolean] if true, make Hash keys Symbols instead of Strings
+    # @demo2.consoloservices.com/releasereturn [Hash] a Hash with String or Symbol keys
+    #
+    def to_h(symbolize_names: false)
+      hash = self.class.columns.reduce({}) { |a, col_name|
+        key = symbolize_names ? col_name.to_sym : col_name
+        a[key] = send col_name
+        a
+      }
+
+      self.class.associations.reduce(hash) { |a, assoc_name|
+        key = symbolize_names ? assoc_name.to_sym : assoc_name
+        assoc = send assoc_name
+        a[key] = if assoc.respond_to? :map
+                   assoc.map { |x| x.to_h(symbolize_names: symbolize_names) }
+                 elsif assoc
+                   assoc.to_h(symbolize_names: symbolize_names)
+                 end
         a
       }
     end
