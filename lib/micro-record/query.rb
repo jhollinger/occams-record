@@ -16,10 +16,11 @@ module MicroRecord
   #    run
   #
   # @param query [ActiveRecord::Relation]
+  # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
   # @return [MicroRecord::Query]
   #
-  def self.query(query)
-    Query.new(query)
+  def self.query(query, query_logger = nil)
+    Query.new(query, query_logger)
   end
 
   class Query
@@ -36,13 +37,15 @@ module MicroRecord
     # Initialize a new query.
     #
     # @param query [ActiveRecord::Relation]
+    # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
     # @param eval_block [Proc] block that will be eval'd on this instance. Can be used for eager loading. (optional)
     #
-    def initialize(query, &eval_block)
+    def initialize(query, query_logger = nil, &eval_block)
       @model = query.klass
       @sql = query.to_sql
       @eager_loaders = []
       @conn = model.connection
+      @query_logger = query_logger
       instance_eval(&eval_block) if eval_block
     end
 
@@ -68,12 +71,13 @@ module MicroRecord
     # @return [Array<MicroRecord::ResultRow>]
     #
     def run
+      @query_logger << sql if @query_logger
       result = conn.exec_query sql
       row_class = MicroRecord.build_result_row_class(model, result.columns, eager_loaders.map(&:name))
       rows = result.rows.map { |row| row_class.new row }
 
       eager_loaders.each { |loader|
-        assoc_rows = Query.new(loader.query(rows), &loader.eval_block).run
+        assoc_rows = Query.new(loader.query(rows), @query_logger, &loader.eval_block).run
         loader.merge! assoc_rows, rows
       }
 

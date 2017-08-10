@@ -87,4 +87,48 @@ class QueryTest < Minitest::Test
       }
     }, results.map { |r| r.to_hash(symbolize_names: true) }
   end
+
+  def test_nested
+    log = []
+    results = MicroRecord.
+      query(Order.all, log).
+      eager_load(:customer).
+      eager_load(:items) {
+        eager_load(:widget)
+      }.
+      run
+
+    assert_equal [
+      %q(SELECT "orders".* FROM "orders"),
+      %q(SELECT "customers".* FROM "customers" WHERE "customers"."id" IN (846114006, 980204181)),
+      %q(SELECT "order_items".* FROM "order_items" WHERE "order_items"."order_id" IN (683130438, 834596858)),
+      %q(SELECT "widgets".* FROM "widgets" WHERE "widgets"."id" IN (417155790, 834596858, 112844655, 683130438, 802847325)),
+    ], log
+
+    assert_equal Order.all.map { |o|
+      {
+        id: o.id,
+        date: o.date,
+        amount: o.amount,
+        customer_id: o.customer_id,
+        customer: {
+          id: o.customer.id,
+          name: o.customer.name
+        },
+        items: o.items.map { |i|
+          {
+            id: i.id,
+            order_id: i.order_id,
+            widget_id: i.widget_id,
+            amount: i.amount,
+            widget: {
+              id: i.widget.id,
+              name: i.widget.name,
+              category_id: i.widget.category_id
+            }
+          }
+        }
+      }
+    }, results.map { |r| r.to_hash(symbolize_names: true) }
+  end
 end

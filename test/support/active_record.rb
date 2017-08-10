@@ -19,7 +19,7 @@ ActiveRecord::Base.connection.instance_eval do
     t.text :text
   end
 
-  create_table :customer do |t|
+  create_table :customers do |t|
     t.string :name
   end
 
