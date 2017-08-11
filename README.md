@@ -67,3 +67,4 @@ In addition to custom eager loading queries, we're also adding nested eager load
 ## TODO
 
 * Support `has_and_belongs_to_many` associations
+* Support something like `find_each`/`find_in_batches`
