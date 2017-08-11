@@ -1,10 +1,10 @@
-# micro-record (teeny-record?)
+# micro-record
 
 EXPERIMENTAL. A low-memory interface for running large ActiveRecord queries.
 
-When pulling back very large sets of data in ActiveRecord, `preload` and `find_each` are the go-to tools. But when you need to eager load more than a few associations (especially a few `has_many`'s), these tools start to break down. (More associaionts = more memory usage per batch = smaller batches = more batches = more time.) MicroRecord seeks to solve these issues by making some very specific trade-offs:
-* MicroRecord results are rougly 66% smaller than ActiveRecord results.
-* MicroRecord queries are rougly 5x-10x faster than ActiveRecord.
+When pulling back very large sets of data in ActiveRecord, `preload` and `find_each` are the go-to tools. But when you need to eager load more than a few associations (especially a few `has_many`'s), these tools start to break down. (More associations = more memory usage per batch = smaller batches = more batches = more time.) MicroRecord seeks to solve these issues by making some very specific trade-offs:
+* MicroRecord results are roughly 66% smaller than ActiveRecord results.
+* MicroRecord queries are roughly 5x-10x faster than ActiveRecord.
 * MicroRecord results are read-only.
 * MicroRecord objects do not have any instance methods from your Rails models; they're purely database rows.
 * You can still write your queries using ActiveRecord's query builder, as well as your existing models' scopes.
@@ -30,7 +30,7 @@ Here's a very simple example. So simple that there's no reason to use `MicroReco
 
 **More complicated example**
 
-Notice that we're eager loading splines, but *only the fields that we need*. If that's a wide table, your DBA **and** your sysadmin will thank you. (Or you can thank yourself, if DevOps is your thing.)
+Notice that we're eager loading splines, but *only the fields that we need*. If that's a wide table, your DBA will thank you.
 
     widgets = MicroRecord.
       query(Widget.order("name")).
@@ -58,7 +58,7 @@ In addition to custom eager loading queries, we're also adding nested eager load
         # load the orders
         eager_load(:orders) {
 
-          # load the customer who made the order, but only their name
+          # load the customers who made the orders, but only their names
           eager_load(:customer, ->(q) { q.select("name") })
         }
       }.
