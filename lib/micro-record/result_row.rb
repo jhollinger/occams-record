@@ -76,7 +76,7 @@ module MicroRecord
       self.class.associations.reduce(hash) { |a, assoc_name|
         key = symbolize_names ? assoc_name.to_sym : assoc_name
         assoc = send assoc_name
-        a[key] = if assoc.respond_to? :map
+        a[key] = if assoc.is_a? Array
                    assoc.map { |x| x.to_h(symbolize_names: symbolize_names) }
                  elsif assoc
                    assoc.to_h(symbolize_names: symbolize_names)
