@@ -24,7 +24,7 @@ module MicroRecord
           model = type.constantize
           ids = rows_of_type.map(&@foreign_key).uniq
           q = model.where(model.primary_key => ids)
-          yield @scope ? @q.instance_exec(&@scope) : q
+          yield @scope ? q.instance_exec(&@scope) : q
         end
       end
 
