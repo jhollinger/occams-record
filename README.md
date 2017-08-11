@@ -2,15 +2,13 @@
 
 EXPERIMENTAL. A low-memory interface for running large ActiveRecord queries.
 
-When pulling back very large sets of data, ActiveRecord can only take you so far, even when using `eager_load`, `find_each`, `find_in_batches`, and friends. Those tools make ActiveRecord almsot fast enough to be tolerable, but at the cost of speed and memory.
-* ActiveRecord objects are big. Really big. You just won't believe how vastly, hugely, mind-bogglingly big they are.
-* When you're eager loading lots of associations, you're likely pulling back far more columns than you actually need.
-
-`MicroRecord` tries to solve those two problems. Your records come back as (relatively) small objects objects, and you can easily customize your eager loading queries (limit the `SELECT` fields, add a `WHERE` clause, etc.). The best part is that you can still use ActiveRecord and your existing scopes to build the queries!
-
-Notes:
-* Your average Rails app probably doesn't need this.
-* The returned objects are read-only, and they won't have any of the instance methods from your models.
+When pulling back very large sets of data in ActiveRecord, `preload` and `find_each` are the go-to tools. But when you need to eager load more than a few associations (especially a few `has_many`'s), these tools start to break down. (More associaionts = more memory usage per batch = smaller batches = more batches = more time.) MicroRecord seeks to solve these issues by making some very specific trade-offs:
+* MicroRecord results are rougly 66% smaller than ActiveRecord results.
+* MicroRecord queries are rougly 5x-10x faster than ActiveRecord.
+* MicroRecord results are read-only.
+* MicroRecord objects do not have any instance methods from your Rails models; they're purely database rows.
+* You can still write your queries using ActiveRecord's query builder, as well as your existing models' scopes.
+* When you're eager loading associations you may specify which columns to `SELECT`. (This can be a significant performance boost to both your database and Rails app.)
 
 **Simple example**
 
