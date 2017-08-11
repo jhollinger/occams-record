@@ -16,7 +16,7 @@ module MicroRecord
       #
       def initialize(ref, scope = nil, &eval_block)
         @ref, @name, @model, @eval_block = ref, ref.name.to_s, ref.klass, eval_block
-        @scope = scope ? scope.(ref.klass.all) : ref.klass.all
+        @scope = scope ? ref.klass.instance_exec(&scope) : ref.klass.all
         @assign = "#{@name}="
       end
 

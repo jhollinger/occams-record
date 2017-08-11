@@ -37,6 +37,15 @@ class QueryTest < Minitest::Test
     }, results[0].to_hash(symbolize_names: true))
   end
 
+  def test_eager_load_custom_select
+    results = MicroRecord.
+      query(Order.all).
+      eager_load(:line_items, -> { where('1 != 2') }).
+      run
+
+    assert_equal LineItem.count, results.map(&:line_items).flatten.size
+  end
+
   def test_belongs_to
     results = MicroRecord.
       query(Widget.all).

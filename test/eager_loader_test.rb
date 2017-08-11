@@ -3,7 +3,7 @@ require 'test_helper'
 class EagerLoaderTest < Minitest::Test
   def test_belongs_to_query
     ref = Widget.reflections.fetch 'category'
-    loader = MicroRecord::EagerLoaders::BelongsTo.new(ref, ->(q) { q.where(name: 'Foo') })
+    loader = MicroRecord::EagerLoaders::BelongsTo.new(ref, -> { where(name: 'Foo') })
     widgets = [
       OpenStruct.new(category_id: 5),
       OpenStruct.new(category_id: 10),
