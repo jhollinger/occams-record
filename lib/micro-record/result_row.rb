@@ -14,7 +14,7 @@ module MicroRecord
   # @return [MicroRecord::ResultRow] a class customized for this result set
   #
   def self.build_result_row_class(model, column_names, association_names)
-    klass = Class.new(ResultRow) do
+    Class.new(ResultRow) do
       self.columns = column_names.map(&:to_s)
       self.associations = association_names.map(&:to_s)
       self.model_name = model.name
@@ -26,13 +26,10 @@ module MicroRecord
       column_names.each_with_index do |col, idx|
         type = model.attributes_builder.types[col.to_s] || raise("MicroRecord: Column `#{col}` does not exist on model `#{model.name}`")
         define_method col do
-          @cast_values_cache[idx] ||= type.send(TYPE_CAST_METHOD, @values[idx])
+          @cast_values_cache[idx] ||= type.send(TYPE_CAST_METHOD, @raw_values[idx])
         end
       end
     end
-    #ResultRow.const_set("#{model.name}", klass)
-    #puts "!!!!!!!!!!!!!!!!!!!!! #{klass.name}"
-    klass
   end
 
   #
@@ -56,7 +53,7 @@ module MicroRecord
     # @param raw_values [Array] array of raw values from db
     #
     def initialize(raw_values)
-      @values = raw_values
+      @raw_values = raw_values
       @cast_values_cache = {}
     end
 
@@ -64,7 +61,7 @@ module MicroRecord
     # Return row as a Hash (recursive).
     #
     # @param symbolize_names [Boolean] if true, make Hash keys Symbols instead of Strings
-    # @demo2.consoloservices.com/releasereturn [Hash] a Hash with String or Symbol keys
+    # @return [Hash] a Hash with String or Symbol keys
     #
     def to_h(symbolize_names: false)
       hash = self.class.columns.reduce({}) { |a, col_name|
