@@ -4,11 +4,11 @@ EXPERIMENTAL. A low-memory interface for running large ActiveRecord queries.
 
 When pulling back very large sets of data in ActiveRecord, `preload` and `find_each` are the go-to tools. But when you need to eager load more than a few associations (especially a few `has_many`'s), these tools start to break down. (More associations = more memory usage per batch = smaller batches = more batches = more time.) MicroRecord seeks to solve these issues by making some very specific trade-offs:
 * MicroRecord results are roughly 66% smaller than ActiveRecord results.
-* MicroRecord queries are roughly 5x-10x faster than ActiveRecord.
+* MicroRecord queries are roughly 66% faster than ActiveRecord.
 * MicroRecord results are read-only.
 * MicroRecord objects do not have any instance methods from your Rails models; they're purely database rows.
 * You can still write your queries using ActiveRecord's query builder, as well as your existing models' scopes.
-* When you're eager loading associations you may specify which columns to `SELECT`. (This can be a significant performance boost to both your database and Rails app.)
+* When you're eager loading associations you may specify which columns to `SELECT`. (This can be a significant performance boost to both your database and Rails app, on top of the above numbers.)
 
 **Simple example**
 
