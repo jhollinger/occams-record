@@ -10,7 +10,7 @@ module MicroRecord
       #
       def query(rows)
         ids = rows.map { |r| r.send @ref.active_record_primary_key }.compact.uniq
-        scope.where(@ref.foreign_key => ids)
+        yield @scope.where(@ref.foreign_key => ids)
       end
 
       #

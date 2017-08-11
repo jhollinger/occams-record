@@ -30,8 +30,6 @@ module MicroRecord
     attr_reader :sql
     # @return [ActiveRecord::Connection]
     attr_reader :conn
-    # @return [Array<MicroRecord::EagerLoaders::Base>]
-    attr_reader :eager_loaders
 
     #
     # Initialize a new query.
@@ -61,7 +59,7 @@ module MicroRecord
     def eager_load(assoc, scope = nil, &eval_block)
       ref = model.reflections[assoc.to_s]
       raise "MicroRecord: No assocation `:#{assoc}` on `#{model.name}`" if ref.nil?
-      @eager_loaders << EagerLoaders.fetch!(ref.macro).new(ref, scope, &eval_block)
+      @eager_loaders << EagerLoaders.fetch!(ref).new(ref, scope, &eval_block)
       self
     end
 
@@ -73,12 +71,14 @@ module MicroRecord
     def run
       @query_logger << sql if @query_logger
       result = conn.exec_query sql
-      row_class = MicroRecord.build_result_row_class(model, result.columns, eager_loaders.map(&:name))
+      row_class = MicroRecord.build_result_row_class(model, result.columns, @eager_loaders.map(&:name))
       rows = result.rows.map { |row| row_class.new row }
 
-      eager_loaders.each { |loader|
-        assoc_rows = Query.new(loader.query(rows), @query_logger, &loader.eval_block).run
-        loader.merge! assoc_rows, rows
+      @eager_loaders.each { |loader|
+        loader.query(rows) { |scope|
+          assoc_rows = Query.new(scope, @query_logger, &loader.eval_block).run
+          loader.merge! assoc_rows, rows
+        }
       }
 
       rows

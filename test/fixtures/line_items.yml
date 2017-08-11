@@ -1,24 +1,24 @@
 a_one:
   order: a
-  widget: a
+  item: a (Widget)
   amount: 30
 
 a_two:
   order: a
-  widget: b
+  item: a (Spline)
   amount: 70
 
 b_one:
   order: b
-  widget: c
+  item: c (Widget)
   amount: 200
 
 b_two:
   order: b
-  widget: d
+  item: d (Widget)
   amount: 300
 
 b_three:
   order: b
-  widget: e
+  item: c (Spline)
   amount: 20

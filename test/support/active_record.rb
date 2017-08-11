@@ -19,6 +19,11 @@ ActiveRecord::Base.connection.instance_eval do
     t.text :text
   end
 
+  create_table :splines do |t|
+    t.string :name, null: false
+    t.integer :category_id
+  end
+
   create_table :customers do |t|
     t.string :name
   end
@@ -29,9 +34,10 @@ ActiveRecord::Base.connection.instance_eval do
     t.integer :customer_id
   end
 
-  create_table :order_items do |t|
+  create_table :line_items do |t|
     t.integer :order_id, null: false
-    t.integer :widget_id
+    t.integer :item_id
+    t.string :item_type
     t.decimal :amount, precision: 10, scale: 2
   end
 end
@@ -48,15 +54,19 @@ class WidgetDetail < ActiveRecord::Base
   belongs_to :widget
 end
 
+class Spline < ActiveRecord::Base
+  belongs_to :category
+end
+
 class Customer < ActiveRecord::Base
 end
 
 class Order < ActiveRecord::Base
   belongs_to :customer
-  has_many :items, class_name: 'OrderItem'
+  has_many :line_items
 end
 
-class OrderItem < ActiveRecord::Base
+class LineItem < ActiveRecord::Base
   belongs_to :order
-  belongs_to :widget
+  belongs_to :item, polymorphic: true
 end

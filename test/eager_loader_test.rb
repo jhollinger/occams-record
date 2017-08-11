@@ -8,8 +8,9 @@ class EagerLoaderTest < Minitest::Test
       OpenStruct.new(category_id: 5),
       OpenStruct.new(category_id: 10),
     ]
-    sql = loader.query(widgets).to_sql
-    assert_equal %q(SELECT "categories".* FROM "categories" WHERE "categories"."name" = 'Foo' AND "categories"."id" IN (5, 10)), sql
+    loader.query(widgets) { |scope|
+      assert_equal %q(SELECT "categories".* FROM "categories" WHERE "categories"."name" = 'Foo' AND "categories"."id" IN (5, 10)), scope.to_sql
+    }
   end
 
   def test_belongs_to_merge
@@ -38,8 +39,9 @@ class EagerLoaderTest < Minitest::Test
       OpenStruct.new(id: 1),
       OpenStruct.new(id: 52),
     ]
-    sql = loader.query(widgets).to_sql
-    assert_equal %q(SELECT "widget_details".* FROM "widget_details" WHERE "widget_details"."widget_id" IN (1, 52)), sql
+    loader.query(widgets) { |scope|
+      assert_equal %q(SELECT "widget_details".* FROM "widget_details" WHERE "widget_details"."widget_id" IN (1, 52)), scope.to_sql
+    }
   end
 
   def test_has_one_merge
@@ -62,18 +64,19 @@ class EagerLoaderTest < Minitest::Test
   end
 
   def test_has_many_query
-    ref = Order.reflections.fetch 'items'
+    ref = Order.reflections.fetch 'line_items'
     loader = MicroRecord::EagerLoaders::HasMany.new(ref)
     orders = [
       OpenStruct.new(id: 1000),
       OpenStruct.new(id: 1001),
     ]
-    sql = loader.query(orders).to_sql
-    assert_equal %q(SELECT "order_items".* FROM "order_items" WHERE "order_items"."order_id" IN (1000, 1001)), sql
+    loader.query(orders) { |scope|
+      assert_equal %q(SELECT "line_items".* FROM "line_items" WHERE "line_items"."order_id" IN (1000, 1001)), scope.to_sql
+    }
   end
 
   def test_has_many_merge
-    ref = Order.reflections.fetch 'items'
+    ref = Order.reflections.fetch 'line_items'
     loader = MicroRecord::EagerLoaders::HasMany.new(ref)
     orders = [
       OpenStruct.new(id: 1000),
@@ -91,16 +94,16 @@ class EagerLoaderTest < Minitest::Test
     ], orders)
 
     assert_equal [
-      OpenStruct.new(id: 1000, items: [
+      OpenStruct.new(id: 1000, line_items: [
         OpenStruct.new(id: 5000, order_id: 1000),
         OpenStruct.new(id: 5001, order_id: 1000),
         OpenStruct.new(id: 5003, order_id: 1000),
       ]),
-      OpenStruct.new(id: 1001, items: [
+      OpenStruct.new(id: 1001, line_items: [
         OpenStruct.new(id: 6000, order_id: 1001),
         OpenStruct.new(id: 6001, order_id: 1001),
       ]),
-      OpenStruct.new(id: 1002, items: []),
+      OpenStruct.new(id: 1002, line_items: []),
     ], orders
   end
 end

@@ -6,10 +6,6 @@ module MicroRecord
     class Base
       # @return [String] association name
       attr_reader :name
-      # @return [ActiveRecord::Base] the ActiveRecord model
-      attr_reader :model
-      # @return [ActiveRecord::Relation] scope of the association
-      attr_reader :scope
       # @return [Proc] optional Proc for eager loading things on this association
       attr_reader :eval_block
 
@@ -27,10 +23,9 @@ module MicroRecord
       #
       # Return the SQL to load the association.
       #
-      # @param ids [Array] Array of primary keys to search for.
-      # @return [ActiveRecord::Relation]
+      # @param rows [Array] Array of rows
       #
-      def query(ids)
+      def query(rows)
         raise 'Not Implemented'
       end
 

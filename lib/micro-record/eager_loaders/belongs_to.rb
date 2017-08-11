@@ -10,7 +10,7 @@ module MicroRecord
       #
       def query(rows)
         ids = rows.map { |r| r.send @ref.foreign_key }.compact.uniq
-        scope.where(@ref.active_record_primary_key => ids)
+        yield @scope.where(@ref.active_record_primary_key => ids)
       end
 
       #
@@ -20,7 +20,7 @@ module MicroRecord
       # @param rows [Array<MicroRecord::ResultRow>] rows loaded from the main model
       #
       def merge!(assoc_rows, rows)
-        pkey_col = model.primary_key.to_s
+        pkey_col = @model.primary_key.to_s
         assoc_rows_by_id = assoc_rows.reduce({}) { |a, assoc_row|
           id = assoc_row.send pkey_col
           a[id] = assoc_row

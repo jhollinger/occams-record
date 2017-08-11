@@ -1,0 +1,11 @@
+a:
+  category: foo
+  name: Spline A
+
+b:
+  category: foo
+  name: Spline B
+
+c:
+  category: bar
+  name: Spline C

@@ -15,7 +15,6 @@ class QueryTest < Minitest::Test
     q = MicroRecord::Query.new(Category.all)
     assert_equal Category, q.model
     assert_match %r{SELECT}, q.sql
-    assert_equal 0, q.eager_loaders.size
     refute_nil q.conn
   end
 
@@ -67,7 +66,7 @@ class QueryTest < Minitest::Test
   def test_has_many
     results = MicroRecord.
       query(Order.all).
-      eager_load(:items).
+      eager_load(:line_items).
       run
 
     assert_equal Order.all.map { |o|
@@ -76,11 +75,12 @@ class QueryTest < Minitest::Test
         date: o.date,
         amount: o.amount,
         customer_id: o.customer_id,
-        items: o.items.map { |i|
+        line_items: o.line_items.map { |i|
           {
             id: i.id,
             order_id: i.order_id,
-            widget_id: i.widget_id,
+            item_id: i.item_id,
+            item_type: i.item_type,
             amount: i.amount
           }
         }
@@ -93,16 +93,17 @@ class QueryTest < Minitest::Test
     results = MicroRecord.
       query(Order.all, log).
       eager_load(:customer).
-      eager_load(:items) {
-        eager_load(:widget)
+      eager_load(:line_items) {
+        eager_load(:item)
       }.
       run
 
     assert_equal [
       %q(SELECT "orders".* FROM "orders"),
       %q(SELECT "customers".* FROM "customers" WHERE "customers"."id" IN (846114006, 980204181)),
-      %q(SELECT "order_items".* FROM "order_items" WHERE "order_items"."order_id" IN (683130438, 834596858)),
-      %q(SELECT "widgets".* FROM "widgets" WHERE "widgets"."id" IN (417155790, 834596858, 112844655, 683130438, 802847325)),
+      %q(SELECT "line_items".* FROM "line_items" WHERE "line_items"."order_id" IN (683130438, 834596858)),
+      %q(SELECT "widgets".* FROM "widgets" WHERE "widgets"."id" IN (417155790, 112844655, 683130438)),
+      %q(SELECT "splines".* FROM "splines" WHERE "splines"."id" IN (683130438, 112844655)),
     ], log
 
     assert_equal Order.all.map { |o|
@@ -115,16 +116,17 @@ class QueryTest < Minitest::Test
           id: o.customer.id,
           name: o.customer.name
         },
-        items: o.items.map { |i|
+        line_items: o.line_items.map { |i|
           {
             id: i.id,
             order_id: i.order_id,
-            widget_id: i.widget_id,
+            item_id: i.item_id,
+            item_type: i.item_type,
             amount: i.amount,
-            widget: {
-              id: i.widget.id,
-              name: i.widget.name,
-              category_id: i.widget.category_id
+            item: {
+              id: i.item.id,
+              name: i.item.name,
+              category_id: i.item.category_id
             }
           }
         }

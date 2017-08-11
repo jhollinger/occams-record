@@ -11,22 +11,28 @@ module MicroRecord
   # @param model [ActiveRecord::Base] the AR model representing the table (it holds column & type info).
   # @param column_names [Array<String>] the column names in the result set. The order MUST match the order returned by the query.
   # @param association_names [Array<String>] names of associations that will be eager loaded into the results.
+  # @return [MicroRecord::ResultRow] a class customized for this result set
+  #
   def self.build_result_row_class(model, column_names, association_names)
-    Class.new(ResultRow) do
+    klass = Class.new(ResultRow) do
       self.columns = column_names.map(&:to_s)
       self.associations = association_names.map(&:to_s)
+      self.model_name = model.name
 
       # Build getters & setters for associations. (We need setters b/c they're set AFTER the row is initialized
-      attr_accessor *association_names
+      attr_accessor(*association_names)
 
       # Build a getter for each attribute returned by the query. The values will be type converted on demand.
-      column_names.each_with_index do |col_name, idx|
-        type = model.attributes_builder.types[col_name.to_s] || raise("MicroRecord: Column `#{col_name}` does not exist on model `#{model.name}`")
-        define_method col_name do
+      column_names.each_with_index do |col, idx|
+        type = model.attributes_builder.types[col.to_s] || raise("MicroRecord: Column `#{col}` does not exist on model `#{model.name}`")
+        define_method col do
           @cast_values_cache[idx] ||= type.send(TYPE_CAST_METHOD, @values[idx])
         end
       end
     end
+    #ResultRow.const_set("#{model.name}", klass)
+    #puts "!!!!!!!!!!!!!!!!!!!!! #{klass.name}"
+    klass
   end
 
   #
@@ -38,6 +44,8 @@ module MicroRecord
       attr_accessor :columns
       # Array of associations names
       attr_accessor :associations
+      # Name of Rails model
+      attr_accessor :model_name
     end
     self.columns = []
     self.associations = []
