@@ -43,11 +43,14 @@ ActiveRecord::Base.connection.instance_eval do
 end
 
 class Category < ActiveRecord::Base
+  has_many :widgets
+  has_many :splines
 end
 
 class Widget < ActiveRecord::Base
   belongs_to :category
   has_one :detail, class_name: 'WidgetDetail'
+  has_many :line_items, as: :item
 end
 
 class WidgetDetail < ActiveRecord::Base
@@ -56,6 +59,7 @@ end
 
 class Spline < ActiveRecord::Base
   belongs_to :category
+  has_many :line_items, as: :item
 end
 
 class Customer < ActiveRecord::Base

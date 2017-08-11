@@ -91,6 +91,41 @@ class QueryTest < Minitest::Test
   def test_nested
     log = []
     results = MicroRecord.
+      query(Category.all, log).
+      eager_load(:widgets) {
+        eager_load(:detail)
+      }.
+      run
+
+    assert_equal [
+      %q(SELECT "categories".* FROM "categories"),
+      %q(SELECT "widgets".* FROM "widgets" WHERE "widgets"."category_id" IN (208889123, 922717355)),
+      %q(SELECT "widget_details".* FROM "widget_details" WHERE "widget_details"."widget_id" IN (112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
+    ], log
+
+    assert_equal Category.all.map { |c|
+      {
+        id: c.id,
+        name: c.name,
+        widgets: c.widgets.map { |w|
+          {
+            id: w.id,
+            name: w.name,
+            category_id: w.category_id,
+            detail: {
+              id: w.detail.id,
+              widget_id: w.detail.widget_id,
+              text: w.detail.text
+            }
+          }
+        }
+      }
+    }, results.map { |r| r.to_hash(symbolize_names: true) }
+  end
+
+  def test_nested_with_poly_belongs_to
+    log = []
+    results = MicroRecord.
       query(Order.all, log).
       eager_load(:customer).
       eager_load(:line_items) {
@@ -132,5 +167,18 @@ class QueryTest < Minitest::Test
         }
       }
     }, results.map { |r| r.to_hash(symbolize_names: true) }
+  end
+
+  def test_poly_has_many
+    log = []
+    results = MicroRecord.
+      query(Widget.all, log).
+      eager_load(:line_items).
+      run
+
+    assert_equal Widget.count, results.size
+    results.each do |widget|
+      assert_equal LineItem.where(item_id: widget.id, item_type: 'Widget').count, widget.line_items.size
+    end
   end
 end
