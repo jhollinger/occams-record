@@ -1,4 +1,4 @@
-# micro-record
+# Ockham's Record
 
 EXPERIMENTAL. A low-memory interface for running large ActiveRecord queries.
 
