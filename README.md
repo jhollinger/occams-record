@@ -22,8 +22,6 @@ What **don't** you give up?
 
 **Simple example**
 
-Here's a very simple example. So simple that there's no reason to use `OccamsRecord` with it.
-
     widgets = OccamsRecord.
       query(Widget.order("name")).
       eager_load(:category).
