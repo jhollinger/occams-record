@@ -81,7 +81,7 @@ In addition to custom eager loading queries, we're also adding nested eager load
 
 ## Injecting instance methods
 
-By default your results will only have getters for db columns and eager-loaded associations. If you must, you *can* "inject" extra methods into your results by putting those methods into a Module.
+By default your results will only have getters for db columns and eager-loaded associations. If you must, you *can* "inject" extra methods into your results by putting those methods into a Module. NOTE this is discouraged, as you should try to maintain a clear separation between your persistence layer and your domain.
 
     module MyWidgetMethods
       def to_s
