@@ -191,20 +191,20 @@ class QueryTest < Minitest::Test
     end
   end
 
-  def test_custom_base_class
-    class_a, class_b, class_c = Class.new, Class.new, Class.new
+  def test_including_module
+    mod_a, mod_b, mod_c = Module.new, Module.new, Module.new
     orders = OccamsRecord.
-      query(Order.all, base_class: class_a).
-      eager_load(:line_items, base_class: class_b) {
-        eager_load(:item, base_class: class_c)
+      query(Order.all, use: mod_a).
+      eager_load(:line_items, use: mod_b) {
+        eager_load(:item, use: mod_c)
       }.
       run
 
     assert_equal Order.count, orders.size
     orders.each do |order|
-      assert order.is_a?(class_a)
-      assert order.line_items.all? { |line_item| line_item.is_a? class_b }
-      assert order.line_items.all? { |line_item| line_item.item.is_a? class_c }
+      assert order.is_a?(mod_a)
+      assert order.line_items.all? { |line_item| line_item.is_a? mod_b }
+      assert order.line_items.all? { |line_item| line_item.item.is_a? mod_c }
     end
   end
 end
