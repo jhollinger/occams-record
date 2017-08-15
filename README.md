@@ -93,7 +93,7 @@ By default your results will only have getters for db columns and eager-loaded a
       end
     end
 
-    class MyOrderMethods
+    module MyOrderMethods
       def description
         "#{order_number} - #{date}"
       end
