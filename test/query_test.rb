@@ -100,7 +100,7 @@ class QueryTest < Minitest::Test
   def test_nested
     log = []
     results = OccamsRecord.
-      query(Category.all, log).
+      query(Category.all, query_logger: log).
       eager_load(:widgets) {
         eager_load(:detail)
       }.
@@ -135,7 +135,7 @@ class QueryTest < Minitest::Test
   def test_nested_with_poly_belongs_to
     log = []
     results = OccamsRecord.
-      query(Order.all, log).
+      query(Order.all, query_logger: log).
       eager_load(:customer).
       eager_load(:line_items) {
         eager_load(:item)
@@ -181,13 +181,30 @@ class QueryTest < Minitest::Test
   def test_poly_has_many
     log = []
     results = OccamsRecord.
-      query(Widget.all, log).
+      query(Widget.all, query_logger: log).
       eager_load(:line_items).
       run
 
     assert_equal Widget.count, results.size
     results.each do |widget|
       assert_equal LineItem.where(item_id: widget.id, item_type: 'Widget').count, widget.line_items.size
+    end
+  end
+
+  def test_custom_base_class
+    class_a, class_b, class_c = Class.new, Class.new, Class.new
+    orders = OccamsRecord.
+      query(Order.all, base_class: class_a).
+      eager_load(:line_items, base_class: class_b) {
+        eager_load(:item, base_class: class_c)
+      }.
+      run
+
+    assert_equal Order.count, orders.size
+    orders.each do |order|
+      assert order.is_a?(class_a)
+      assert order.line_items.all? { |line_item| line_item.is_a? class_b }
+      assert order.line_items.all? { |line_item| line_item.item.is_a? class_c }
     end
   end
 end

@@ -1,6 +1,23 @@
 require 'test_helper'
 
 class EagerLoaderTest < Minitest::Test
+  def test_polymorphic_belongs_to
+    ref = LineItem.reflections.fetch 'item'
+    loader = OccamsRecord::EagerLoaders::PolymorphicBelongsTo.new(ref)
+    line_items = [
+      OpenStruct.new(item_id: 5, item_type: 'Widget'),
+      OpenStruct.new(item_id: 6, item_type: 'Widget'),
+      OpenStruct.new(item_id: 10, item_type: 'Spline'),
+      OpenStruct.new(item_id: 11, item_type: 'Spline'),
+    ]
+    sqlz = []
+    loader.query(line_items) { |scope| sqlz << scope.to_sql }
+    assert_equal [
+      %q(SELECT "splines".* FROM "splines" WHERE "splines"."id" IN (10, 11)),
+      %q(SELECT "widgets".* FROM "widgets" WHERE "widgets"."id" IN (5, 6)),
+    ].sort, sqlz.sort
+  end
+
   def test_belongs_to_query
     ref = Widget.reflections.fetch 'category'
     loader = OccamsRecord::EagerLoaders::BelongsTo.new(ref, -> { where(name: 'Foo') })

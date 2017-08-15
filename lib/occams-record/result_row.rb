@@ -6,15 +6,18 @@ module OccamsRecord
                      end
 
   #
-  # Dynamically build a class for a specific set of result rows. It will inherit from OccamsRecord::ResultRow.
+  # Dynamically build a class for a specific set of result rows. It include from OccamsRecord::ResultRow.
   #
   # @param model [ActiveRecord::Base] the AR model representing the table (it holds column & type info).
   # @param column_names [Array<String>] the column names in the result set. The order MUST match the order returned by the query.
   # @param association_names [Array<String>] names of associations that will be eager loaded into the results.
+  # @param base_class [Class] (optional)
   # @return [OccamsRecord::ResultRow] a class customized for this result set
   #
-  def self.build_result_row_class(model, column_names, association_names)
-    Class.new(ResultRow) do
+  def self.build_result_row_class(model, column_names, association_names, base_class = Object)
+    Class.new(base_class || Object) do
+      include ResultRow
+
       self.columns = column_names.map(&:to_s)
       self.associations = association_names.map(&:to_s)
       self.model_name = model.name
@@ -35,17 +38,21 @@ module OccamsRecord
   #
   # Abstract class for result rows.
   #
-  class ResultRow
-    class << self
-      # Array of column names
-      attr_accessor :columns
-      # Array of associations names
-      attr_accessor :associations
-      # Name of Rails model
-      attr_accessor :model_name
+  module ResultRow
+    def self.included(klass)
+      klass.class_eval do
+        class << self
+          # Array of column names
+          attr_accessor :columns
+          # Array of associations names
+          attr_accessor :associations
+          # Name of Rails model
+          attr_accessor :model_name
+        end
+        self.columns = []
+        self.associations = []
+      end
     end
-    self.columns = []
-    self.associations = []
 
     #
     # Initialize a new result row.

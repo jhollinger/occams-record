@@ -4,13 +4,16 @@ module OccamsRecord
     class PolymorphicBelongsTo
       # @return [String] association name
       attr_reader :name
+      # @return [Class] optional base class for results
+      attr_reader :base_class
       # @return [Proc] optional Proc for eager loading things on this association
       attr_reader :eval_block
 
-      def initialize(ref, scope = nil, &eval_block)
+      def initialize(ref, scope = nil, base_class = nil, &eval_block)
         @ref, @name, @scope, @eval_block = ref, ref.name.to_s, scope, eval_block
         @foreign_type = @ref.foreign_type.to_sym
         @foreign_key = @ref.foreign_key.to_sym
+        @base_class = base_class
         @assign = "#{@name}="
       end
 

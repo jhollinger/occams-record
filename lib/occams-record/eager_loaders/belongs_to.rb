@@ -6,7 +6,7 @@ module OccamsRecord
       # Return the SQL to load the association.
       #
       # @param rows [Array<OccamsRecord::ResultRow>] Array of rows used to calculate the query.
-      # @return [ActiveRecord::Relation]
+      # @param rows [OccamsRecord::Query]
       #
       def query(rows)
         ids = rows.map { |r| r.send @ref.foreign_key }.compact.uniq
