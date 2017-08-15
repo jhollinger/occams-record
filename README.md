@@ -20,6 +20,10 @@ What **don't** you give up?
 * You can still write your queries using ActiveRecord's query builder, as well as your existing models' associations & scopes.
 * You can still use ActiveRecord for everything else - small queries, creating, updating, and deleting records.
 
+Is there evidence to back any of this up?
+
+Glad you asked. [Look over the results yourself.](https://github.com/jhollinger/occams-record/wiki/Measurements)
+
 **Simple example**
 
     widgets = OccamsRecord.
