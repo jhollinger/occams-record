@@ -4,20 +4,21 @@
 
 EXPERIMENTAL. Occam's Record is a high-efficiency API for querying large sets of ActiveRecord queries. When loading thousands of records, ActiveRecord wastes a lot of RAM and CPU cycles on *things you'll never use.* Additionally, eagerly-loaded associations are forced to load each and every column, even if you only need a few.
 
-OccamsRecord seeks to solve these issues by making some very specific trade-offs:
+For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by making some very specific trade-offs:
 
 * OccamsRecord results are **read-only**.
-* OccamsRecord objects do not have any instance methods from your Rails models; they're **purely database rows**.
+* OccamsRecord objects are **purely database rows** - they don't have any instance methods from your Rails models.
 
 What does this buy you?
 
-* OccamsRecord results are **one-thid the size** of ActiveRecord results, or less.
-* OccamsRecord queries run **three times faster** then ActiveRecord queries, or more.
+* OccamsRecord results are **one-thid the size** of ActiveRecord results.
+* OccamsRecord queries run **three times faster** than ActiveRecord queries, or more.
 * When you're eager loading associations you may specify which columns to `SELECT`. (This can be a significant performance boost to both your database and Rails app, on top of the above numbers.)
 
 What **don't** you give up?
 
 * You can still write your queries using ActiveRecord's query builder, as well as your existing models' associations & scopes.
+* You can still use ActiveRecord for everything else - small queries, creating, updating, and deleting records.
 
 **Simple example**
 
