@@ -2,7 +2,7 @@
 
 > Do not multiply entities beyond necessity. -- Occam's Razor
 
-EXPERIMENTAL. Occam's Record is a high-efficiency API for querying large sets of ActiveRecord queries. When loading thousands of records, ActiveRecord wastes a lot of RAM and CPU cycles on *things you'll never use.* Additionally, eagerly-loaded associations are forced to load each and every column, even if you only need a few.
+EXPERIMENTAL. Occam's Record is a high-efficiency API for querying large sets with ActiveRecord. When loading thousands of records, ActiveRecord wastes a lot of RAM and CPU cycles on *things you'll never use.* Additionally, eagerly-loaded associations are forced to load each and every column, even if you only need a few.
 
 For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by making some very specific trade-offs:
 
