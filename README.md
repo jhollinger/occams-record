@@ -1,20 +1,20 @@
-# Ockham's Record
+# Occam's Record
 
 EXPERIMENTAL. A low-memory interface for running large ActiveRecord queries.
 
-When pulling back very large sets of data in ActiveRecord, `preload` and `find_each` are the go-to tools. But when you need to eager load more than a few associations (especially a few `has_many`'s), these tools start to break down. (More associations = more memory usage per batch = smaller batches = more batches = more time.) MicroRecord seeks to solve these issues by making some very specific trade-offs:
-* MicroRecord results are one-thid the size of ActiveRecord results, or less.
-* MicroRecord queries take one-third the time of ActiveRecord queries, or less.
-* MicroRecord results are read-only.
-* MicroRecord objects do not have any instance methods from your Rails models; they're purely database rows.
+When pulling back very large sets of data in ActiveRecord, `preload` and `find_each` are the go-to tools. But when you need to eager load more than a few associations (especially a few `has_many`'s), these tools start to break down. (More associations = more memory usage per batch = smaller batches = more batches = more time.) OccamsRecord seeks to solve these issues by making some very specific trade-offs:
+* OccamsRecord results are one-thid the size of ActiveRecord results, or less.
+* OccamsRecord queries take one-third the time of ActiveRecord queries, or less.
+* OccamsRecord results are read-only.
+* OccamsRecord objects do not have any instance methods from your Rails models; they're purely database rows.
 * You can still write your queries using ActiveRecord's query builder, as well as your existing models' scopes.
 * When you're eager loading associations you may specify which columns to `SELECT`. (This can be a significant performance boost to both your database and Rails app, on top of the above numbers.)
 
 **Simple example**
 
-Here's a very simple example. So simple that there's no reason to use `MicroRecord` with it.
+Here's a very simple example. So simple that there's no reason to use `OccamsRecord` with it.
 
-    widgets = MicroRecord.
+    widgets = OccamsRecord.
       query(Widget.order("name")).
       eager_load(:category).
       run
@@ -32,7 +32,7 @@ Here's a very simple example. So simple that there's no reason to use `MicroReco
 
 Notice that we're eager loading splines, but *only the fields that we need*. If that's a wide table, your DBA will thank you.
 
-    widgets = MicroRecord.
+    widgets = OccamsRecord.
       query(Widget.order("name")).
       eager_load(:category).
       eager_load(:splines, -> { select("widget_id, description") }).
@@ -48,7 +48,7 @@ Notice that we're eager loading splines, but *only the fields that we need*. If 
 
 In addition to custom eager loading queries, we're also adding nested eager loading (and customizing those queries!).
 
-    widgets = MicroRecord.
+    widgets = OccamsRecord.
       query(Widget.order("name")).
       eager_load(:category).
 

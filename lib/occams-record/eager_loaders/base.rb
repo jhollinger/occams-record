@@ -1,4 +1,4 @@
-module MicroRecord
+module OccamsRecord
   module EagerLoaders
     #
     # Base class for eagoer loading an association.

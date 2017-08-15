@@ -1,11 +1,11 @@
-module MicroRecord
+module OccamsRecord
   #
-  # Starts building a MicroRecord::Query. Pass it a scope from any of ActiveRecord's query builder
+  # Starts building a OccamsRecord::Query. Pass it a scope from any of ActiveRecord's query builder
   # methods or associations. If you want to eager loaded associations, do NOT us ActiveRecord for it.
-  # Instead, use MicroRecord::Query#eager_load. Finally, call `run` to run the query and get back an
+  # Instead, use OccamsRecord::Query#eager_load. Finally, call `run` to run the query and get back an
   # array of objects.
   #
-  #  results = MicroRecord.
+  #  results = OccamsRecord.
   #    query(Widget.order("name")).
   #    eager_load(:category).
   #    eager_load(:order_items, ->(q) { q.select("widget_id, order_id") }) {
@@ -17,7 +17,7 @@ module MicroRecord
   #
   # @param query [ActiveRecord::Relation]
   # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
-  # @return [MicroRecord::Query]
+  # @return [OccamsRecord::Query]
   #
   def self.query(query, query_logger = nil)
     Query.new(query, query_logger)
@@ -58,7 +58,7 @@ module MicroRecord
     #
     def eager_load(assoc, scope = nil, &eval_block)
       ref = model.reflections[assoc.to_s]
-      raise "MicroRecord: No assocation `:#{assoc}` on `#{model.name}`" if ref.nil?
+      raise "OccamsRecord: No assocation `:#{assoc}` on `#{model.name}`" if ref.nil?
       @eager_loaders << EagerLoaders.fetch!(ref).new(ref, scope, &eval_block)
       self
     end
@@ -66,12 +66,12 @@ module MicroRecord
     #
     # Run the query and return the results.
     #
-    # @return [Array<MicroRecord::ResultRow>]
+    # @return [Array<OccamsRecord::ResultRow>]
     #
     def run
       @query_logger << sql if @query_logger
       result = conn.exec_query sql
-      row_class = MicroRecord.build_result_row_class(model, result.columns, @eager_loaders.map(&:name))
+      row_class = OccamsRecord.build_result_row_class(model, result.columns, @eager_loaders.map(&:name))
       rows = result.rows.map { |row| row_class.new row }
 
       @eager_loaders.each { |loader|

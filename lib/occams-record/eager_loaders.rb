@@ -1,14 +1,14 @@
-module MicroRecord
+module OccamsRecord
   #
   # Contains eager loaders for various kinds of associations.
   #
   module EagerLoaders
-    autoload :Base, 'micro-record/eager_loaders/base'
-    autoload :BelongsTo, 'micro-record/eager_loaders/belongs_to'
-    autoload :PolymorphicBelongsTo, 'micro-record/eager_loaders/polymorphic_belongs_to'
-    autoload :HasOne, 'micro-record/eager_loaders/has_one'
-    autoload :HasMany, 'micro-record/eager_loaders/has_many'
-    autoload :Habtm, 'micro-record/eager_loaders/habtm'
+    autoload :Base, 'occams-record/eager_loaders/base'
+    autoload :BelongsTo, 'occams-record/eager_loaders/belongs_to'
+    autoload :PolymorphicBelongsTo, 'occams-record/eager_loaders/polymorphic_belongs_to'
+    autoload :HasOne, 'occams-record/eager_loaders/has_one'
+    autoload :HasMany, 'occams-record/eager_loaders/has_many'
+    autoload :Habtm, 'occams-record/eager_loaders/habtm'
 
     # Fetch the appropriate eager loader for the given association type.
     def self.fetch!(ref)

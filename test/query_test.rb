@@ -12,21 +12,21 @@ class QueryTest < Minitest::Test
   end
 
   def test_initializes_correctly
-    q = MicroRecord::Query.new(Category.all)
+    q = OccamsRecord::Query.new(Category.all)
     assert_equal Category, q.model
     assert_match %r{SELECT}, q.sql
     refute_nil q.conn
   end
 
   def test_simple_query
-    results = MicroRecord.query(Category.all.order('name')).run
+    results = OccamsRecord.query(Category.all.order('name')).run
     assert_equal %w(Bar Foo), results.map(&:name)
   end
 
   def test_custom_select
     order = Order.create!(date: Date.new(2017, 2, 28), amount: 56.72, customer_id: 42)
 
-    results = MicroRecord.
+    results = OccamsRecord.
       query(Order.select('amount, id, date, customer_id').where(customer_id: 42)).run
     assert_equal 1, results.size
     assert_equal({
@@ -38,7 +38,7 @@ class QueryTest < Minitest::Test
   end
 
   def test_eager_load_custom_select
-    results = MicroRecord.
+    results = OccamsRecord.
       query(Order.all).
       eager_load(:line_items, -> { where('1 != 2') }).
       run
@@ -47,7 +47,7 @@ class QueryTest < Minitest::Test
   end
 
   def test_belongs_to
-    results = MicroRecord.
+    results = OccamsRecord.
       query(Widget.all).
       eager_load(:category).
       run
@@ -60,7 +60,7 @@ class QueryTest < Minitest::Test
   end
 
   def test_has_one
-    results = MicroRecord.
+    results = OccamsRecord.
       query(Widget.all).
       eager_load(:detail).
       run
@@ -73,7 +73,7 @@ class QueryTest < Minitest::Test
   end
 
   def test_has_many
-    results = MicroRecord.
+    results = OccamsRecord.
       query(Order.all).
       eager_load(:line_items).
       run
@@ -99,7 +99,7 @@ class QueryTest < Minitest::Test
 
   def test_nested
     log = []
-    results = MicroRecord.
+    results = OccamsRecord.
       query(Category.all, log).
       eager_load(:widgets) {
         eager_load(:detail)
@@ -134,7 +134,7 @@ class QueryTest < Minitest::Test
 
   def test_nested_with_poly_belongs_to
     log = []
-    results = MicroRecord.
+    results = OccamsRecord.
       query(Order.all, log).
       eager_load(:customer).
       eager_load(:line_items) {
@@ -180,7 +180,7 @@ class QueryTest < Minitest::Test
 
   def test_poly_has_many
     log = []
-    results = MicroRecord.
+    results = OccamsRecord.
       query(Widget.all, log).
       eager_load(:line_items).
       run

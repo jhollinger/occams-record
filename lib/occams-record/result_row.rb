@@ -1,4 +1,4 @@
-module MicroRecord
+module OccamsRecord
   # ActiveRecord's internal type casting API changes from version to version.
   TYPE_CAST_METHOD = case ActiveRecord::VERSION::MAJOR
                      when 4 then :type_cast_from_database
@@ -6,12 +6,12 @@ module MicroRecord
                      end
 
   #
-  # Dynamically build a class for a specific set of result rows. It will inherit from MicroRecord::ResultRow.
+  # Dynamically build a class for a specific set of result rows. It will inherit from OccamsRecord::ResultRow.
   #
   # @param model [ActiveRecord::Base] the AR model representing the table (it holds column & type info).
   # @param column_names [Array<String>] the column names in the result set. The order MUST match the order returned by the query.
   # @param association_names [Array<String>] names of associations that will be eager loaded into the results.
-  # @return [MicroRecord::ResultRow] a class customized for this result set
+  # @return [OccamsRecord::ResultRow] a class customized for this result set
   #
   def self.build_result_row_class(model, column_names, association_names)
     Class.new(ResultRow) do
@@ -24,7 +24,7 @@ module MicroRecord
 
       # Build a getter for each attribute returned by the query. The values will be type converted on demand.
       column_names.each_with_index do |col, idx|
-        type = model.attributes_builder.types[col.to_s] || raise("MicroRecord: Column `#{col}` does not exist on model `#{model.name}`")
+        type = model.attributes_builder.types[col.to_s] || raise("OccamsRecord: Column `#{col}` does not exist on model `#{model.name}`")
         define_method col do
           @cast_values_cache[idx] ||= type.send(TYPE_CAST_METHOD, @raw_values[idx])
         end

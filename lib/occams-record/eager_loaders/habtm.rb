@@ -1,4 +1,4 @@
-module MicroRecord
+module OccamsRecord
   module EagerLoaders
     # Eager loader for has_and_belongs_to_many associations.
     class Habtm < Base

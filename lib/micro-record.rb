@@ -1,5 +1,0 @@
-require 'active_record'
-require 'micro-record/version'
-require 'micro-record/eager_loaders'
-require 'micro-record/result_row'
-require 'micro-record/query'

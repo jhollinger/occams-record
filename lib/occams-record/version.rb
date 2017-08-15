@@ -1,3 +1,3 @@
-module MicroRecord
+module OccamsRecord
   VERSION = '0.0.1'.freeze
 end

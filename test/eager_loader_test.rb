@@ -3,7 +3,7 @@ require 'test_helper'
 class EagerLoaderTest < Minitest::Test
   def test_belongs_to_query
     ref = Widget.reflections.fetch 'category'
-    loader = MicroRecord::EagerLoaders::BelongsTo.new(ref, -> { where(name: 'Foo') })
+    loader = OccamsRecord::EagerLoaders::BelongsTo.new(ref, -> { where(name: 'Foo') })
     widgets = [
       OpenStruct.new(category_id: 5),
       OpenStruct.new(category_id: 10),
@@ -15,7 +15,7 @@ class EagerLoaderTest < Minitest::Test
 
   def test_belongs_to_merge
     ref = Widget.reflections.fetch 'category'
-    loader = MicroRecord::EagerLoaders::BelongsTo.new(ref)
+    loader = OccamsRecord::EagerLoaders::BelongsTo.new(ref)
     widgets = [
       OpenStruct.new(id: 1, name: "A", category_id: 5),
       OpenStruct.new(id: 2, name: "B", category_id: 10),
@@ -34,7 +34,7 @@ class EagerLoaderTest < Minitest::Test
 
   def test_has_one_query
     ref = Widget.reflections.fetch 'detail'
-    loader = MicroRecord::EagerLoaders::HasOne.new(ref)
+    loader = OccamsRecord::EagerLoaders::HasOne.new(ref)
     widgets = [
       OpenStruct.new(id: 1),
       OpenStruct.new(id: 52),
@@ -46,7 +46,7 @@ class EagerLoaderTest < Minitest::Test
 
   def test_has_one_merge
     ref = Widget.reflections.fetch 'detail'
-    loader = MicroRecord::EagerLoaders::HasOne.new(ref)
+    loader = OccamsRecord::EagerLoaders::HasOne.new(ref)
     widgets = [
       OpenStruct.new(id: 1, name: "A"),
       OpenStruct.new(id: 2, name: "B"),
@@ -65,7 +65,7 @@ class EagerLoaderTest < Minitest::Test
 
   def test_has_many_query
     ref = Order.reflections.fetch 'line_items'
-    loader = MicroRecord::EagerLoaders::HasMany.new(ref)
+    loader = OccamsRecord::EagerLoaders::HasMany.new(ref)
     orders = [
       OpenStruct.new(id: 1000),
       OpenStruct.new(id: 1001),
@@ -77,7 +77,7 @@ class EagerLoaderTest < Minitest::Test
 
   def test_has_many_merge
     ref = Order.reflections.fetch 'line_items'
-    loader = MicroRecord::EagerLoaders::HasMany.new(ref)
+    loader = OccamsRecord::EagerLoaders::HasMany.new(ref)
     orders = [
       OpenStruct.new(id: 1000),
       OpenStruct.new(id: 1001),

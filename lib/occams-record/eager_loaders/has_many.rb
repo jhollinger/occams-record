@@ -1,12 +1,12 @@
-module MicroRecord
+module OccamsRecord
   module EagerLoaders
     # Eager loader for has_many associations.
     class HasMany < HasOne
       #
       # Merge the association rows into the given rows.
       #
-      # @param assoc_rows [Array<MicroRecord::ResultRow>] rows loaded from the association
-      # @param rows [Array<MicroRecord::ResultRow>] rows loaded from the main model
+      # @param assoc_rows [Array<OccamsRecord::ResultRow>] rows loaded from the association
+      # @param rows [Array<OccamsRecord::ResultRow>] rows loaded from the main model
       #
       def merge!(assoc_rows, rows)
         assoc_rows_by_fkey = assoc_rows.group_by(&@ref.foreign_key.to_sym)

@@ -1,4 +1,4 @@
-module MicroRecord
+module OccamsRecord
   module EagerLoaders
     # Eager loader for polymorphic belongs tos
     class PolymorphicBelongsTo
