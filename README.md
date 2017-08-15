@@ -19,10 +19,13 @@ What **don't** you give up?
 
 * You can still write your queries using ActiveRecord's query builder, as well as your existing models' associations & scopes.
 * You can still use ActiveRecord for everything else - small queries, creating, updating, and deleting records.
+* You can still inject some instance methods into your results, if you must. See below.
 
 Is there evidence to back any of this up?
 
 Glad you asked. [Look over the results yourself.](https://github.com/jhollinger/occams-record/wiki/Measurements)
+
+## Examples
 
 **Simple example**
 
@@ -75,6 +78,43 @@ In addition to custom eager loading queries, we're also adding nested eager load
         }
       }.
       run
+
+## Injecting instance methods
+
+By default your results will only have getters for db columns and eager-loaded associations. If you must, you *can* "inject" extra methods into your results by putting those methods into a Module.
+
+    module MyWidgetMethods
+      def to_s
+        name
+      end
+
+      def expensive?
+        price_per_unit > 100
+      end
+    end
+
+    class MyOrderMethods
+      def description
+        "#{order_number} - #{date}"
+      end
+    end
+
+    widgets = OccamsRecord.
+      query(Widget.order("name"), use: MyWidgetMethods).
+      eager_load(:orders, use: MyOrderMethods).
+      run
+
+    widgets[0].to_s
+    => "Widget A"
+
+    widgets[0].price_per_unit
+    => 57.23
+
+    widgets[0].expensive?
+    => false
+
+    widgets[0].orders[0].description
+    => "O839SJZ98B 1/8/2017"
 
 ## TODO
 
