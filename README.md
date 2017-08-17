@@ -9,19 +9,19 @@ For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by m
 * OccamsRecord results are **read-only**.
 * OccamsRecord objects are **purely database rows** - they don't have any instance methods from your Rails models.
 
-### What does this buy you?
+**What does this buy you?**
 
 * OccamsRecord results are **one-thid the size** of ActiveRecord results.
 * OccamsRecord queries run **three times faster** than ActiveRecord queries, or more.
 * When you're eager loading associations you may specify which columns to `SELECT`. (This can be a significant performance boost to both your database and Rails app, on top of the above numbers.)
 
-### What **don't** you give up?
+**What don't you give up?**
 
 * You can still write your queries using ActiveRecord's query builder, as well as your existing models' associations & scopes.
 * You can still use ActiveRecord for everything else - small queries, creating, updating, and deleting records.
 * You can still inject some instance methods into your results, if you must. See below.
 
-### Is there evidence to back any of this up?
+**Is there evidence to back any of this up?**
 
 Glad you asked. [Look over the results yourself.](https://github.com/jhollinger/occams-record/wiki/Measurements)
 
@@ -81,7 +81,7 @@ In addition to custom eager loading queries, we're also adding nested eager load
 
 ## Injecting instance methods
 
-By default your results will only have getters for db columns and eager-loaded associations. If you must, you *can* "inject" extra methods into your results by putting those methods into a Module. NOTE this is discouraged, as you should try to maintain a clear separation between your persistence layer and your domain.
+By default your results will only have getters for selected columns and eager-loaded associations. If you must, you *can* inject extra methods into your results by putting those methods into a Module. NOTE this is discouraged, as you should try to maintain a clear separation between your persistence layer and your domain.
 
     module MyWidgetMethods
       def to_s
