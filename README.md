@@ -74,7 +74,7 @@ In addition to custom eager loading queries, we're also adding nested eager load
         eager_load(:orders) {
 
           # load the customers who made the orders, but only their names
-          eager_load(:customer, -> { select("name") })
+          eager_load(:customer, -> { select("id, name") })
         }
       }.
       run
