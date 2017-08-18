@@ -3,12 +3,11 @@ module OccamsRecord
     # Eager loader for has_and_belongs_to_many associations.
     class Habtm < Base
       #
-      # Return the SQL to load the association.
+      # Yield one or more ActiveRecord::Relation objects to a given block.
       #
-      # @param primary_keys [String] Array of primary keys to search for.
-      # @return [ActiveRecord::Relation]
+      # @param rows [Array<OccamsRecord::ResultRow>] Array of rows used to calculate the query.
       #
-      def query(primary_keys)
+      def query(rows)
         # TODO cache join table results
         raise 'TODO'
       end

@@ -18,16 +18,15 @@ module OccamsRecord
       # @param eval_block [Proc] a block where you may perform eager loading on *this* association (optional)
       #
       def initialize(ref, scope = nil, use = nil, &eval_block)
-        @ref, @name, @model, @eval_block = ref, ref.name.to_s, ref.klass, eval_block
-        @scope = scope ? ref.klass.instance_exec(&scope) : ref.klass.all
-        @use = use
+        @ref, @scope, @use, @eval_block = ref, scope, use, eval_block
+        @name, @model = ref.name.to_s, ref.klass
         @assign = "#{@name}="
       end
 
       #
-      # Return the SQL to load the association.
+      # Yield one or more ActiveRecord::Relation objects to a given block.
       #
-      # @return [ActiveRecord::Relation]
+      # @param rows [Array<OccamsRecord::ResultRow>] Array of rows used to calculate the query.
       #
       def query(rows)
         raise 'Not Implemented'
@@ -35,6 +34,21 @@ module OccamsRecord
 
       def merge!(assoc_rows, rows)
         raise 'Not Implemented'
+      end
+
+      private
+
+      #
+      # Returns the base scope for the relation, including any scope defined on the association itself,
+      # and any optional scope passed into the eager loader.
+      #
+      # @return [ActiveRecord::Relation]
+      #
+      def base_scope
+        q = @ref.klass.all
+        q = q.instance_exec(&@ref.scope) if @ref.scope
+        q = q.instance_exec(&@scope) if @scope
+        q
       end
     end
   end

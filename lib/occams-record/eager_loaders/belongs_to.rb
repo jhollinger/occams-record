@@ -3,14 +3,13 @@ module OccamsRecord
     # Eager loader for belongs_to associations.
     class BelongsTo < Base
       #
-      # Return the SQL to load the association.
+      # Yield one or more ActiveRecord::Relation objects to a given block.
       #
       # @param rows [Array<OccamsRecord::ResultRow>] Array of rows used to calculate the query.
-      # @param rows [OccamsRecord::Query]
       #
       def query(rows)
         ids = rows.map { |r| r.send @ref.foreign_key }.compact.uniq
-        yield @scope.where(@ref.active_record_primary_key => ids)
+        yield base_scope.where(@ref.active_record_primary_key => ids)
       end
 
       #

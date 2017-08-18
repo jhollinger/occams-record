@@ -24,16 +24,17 @@ module OccamsRecord
       end
 
       #
-      # Return an array of ActiveRecord::Relations, one for each "type" found in "rows."
-      # The relation will simply query the model by whatever primary keys for that type are in "rows."
+      # Yield ActiveRecord::Relations to the given block, one for every "type" represented in the given rows.
+      #
+      # @param rows [Array<OccamsRecord::ResultRow>] Array of rows used to calculate the query.
       #
       def query(rows)
         rows_by_type = rows.group_by(&@foreign_type)
         rows_by_type.each do |type, rows_of_type|
           model = type.constantize
           ids = rows_of_type.map(&@foreign_key).uniq
-          q = model.where(model.primary_key => ids)
-          yield @scope ? q.instance_exec(&@scope) : q
+          q = base_scope(model).where(model.primary_key => ids)
+          yield q
         end
       end
 
@@ -47,6 +48,13 @@ module OccamsRecord
       end
 
       private
+
+      def base_scope(model)
+        q = model.all
+        q = q.instance_exec(&@ref.scope) if @ref.scope
+        q = q.instance_exec(&@scope) if @scope
+        q
+      end
 
       def merge_model!(assoc_rows, rows, model)
         pkey_col = model.primary_key.to_s
