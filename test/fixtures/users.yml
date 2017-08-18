@@ -1,0 +1,16 @@
+bob:
+  username: bob
+  offices:
+    - foo
+    - bar
+
+sue:
+  username: sue
+  offices:
+    - bar
+    - zorp
+
+craig:
+  username: craig
+  offices:
+    - foo

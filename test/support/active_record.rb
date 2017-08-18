@@ -40,6 +40,19 @@ ActiveRecord::Base.connection.instance_eval do
     t.string :item_type
     t.decimal :amount, precision: 10, scale: 2
   end
+
+  create_table :users do |t|
+    t.string :username
+  end
+
+  create_table :offices do |t|
+    t.string :name
+  end
+
+  create_table :offices_users, id: false do |t|
+    t.integer :user_id, null: false
+    t.integer :office_id, null: false
+  end
 end
 
 class Category < ActiveRecord::Base
@@ -73,4 +86,12 @@ end
 class LineItem < ActiveRecord::Base
   belongs_to :order
   belongs_to :item, polymorphic: true
+end
+
+class User < ActiveRecord::Base
+  has_and_belongs_to_many :offices
+end
+
+class Office < ActiveRecord::Base
+  has_and_belongs_to_many :users
 end

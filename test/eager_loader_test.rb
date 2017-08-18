@@ -123,4 +123,17 @@ class EagerLoaderTest < Minitest::Test
       OpenStruct.new(id: 1002, line_items: []),
     ], orders
   end
+
+  def test_habtm_query
+    ref = User.reflections.fetch 'offices'
+    loader = OccamsRecord::EagerLoaders::Habtm.new(ref)
+    users = [
+      OpenStruct.new(id: 1000),
+      OpenStruct.new(id: 1001),
+    ]
+
+    loader.query(users) { |scope|
+      assert_equal %q(SELECT "offices".* FROM "offices" INNER JOIN "offices_users" ON "offices_users"."office_id" = "offices"."id" INNER JOIN "users" ON "users"."id" = "offices_users"."user_id" WHERE "users"."id" IN (1000, 1001)), scope.to_sql
+    }
+  end
 end
