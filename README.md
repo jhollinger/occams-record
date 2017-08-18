@@ -116,6 +116,23 @@ By default your results will only have getters for selected columns and eager-lo
     widgets[0].orders[0].description
     => "O839SJZ98B 1/8/2017"
 
+## Testing
+
+To run the tests, simply run:
+
+    bundle install
+    bundle exec rake test
+
+By default, bundler will install the latest (supported) version of ActiveRecord. To specify a version to test against, run:
+
+    # Test against ActiveRecord 4.2
+    AR=4.2 bundle update activerecord
+    bundle exec rake test
+
+    # Test against ActiveRecord 5.0
+    AR=5.0 bundle update activerecord
+    bundle exec rake test
+
 ## TODO
 
 * Support `has_and_belongs_to_many` associations
