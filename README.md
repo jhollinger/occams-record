@@ -125,13 +125,10 @@ To run the tests, simply run:
 
 By default, bundler will install the latest (supported) version of ActiveRecord. To specify a version to test against, run:
 
-    # Test against ActiveRecord 4.2
     AR=4.2 bundle update activerecord
     bundle exec rake test
 
-    # Test against ActiveRecord 5.0
-    AR=5.0 bundle update activerecord
-    bundle exec rake test
+Look inside `Gemfile` to see all testable versions.
 
 ## TODO
 
