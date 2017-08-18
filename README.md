@@ -132,5 +132,4 @@ Look inside `Gemfile` to see all testable versions.
 
 ## TODO
 
-* Support `has_and_belongs_to_many` associations
-* Support something like `find_each`/`find_in_batches`
+* Support `find_each`/`find_in_batches`

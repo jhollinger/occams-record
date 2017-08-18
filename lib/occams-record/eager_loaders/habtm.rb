@@ -12,8 +12,32 @@ module OccamsRecord
         yield base_scope.where(@ref.association_primary_key => assoc_ids)
       end
 
+      #
+      # Merge the association rows into the given rows.
+      #
+      # @param assoc_rows [Array<OccamsRecord::ResultRow>] rows loaded from the association
+      # @param rows [Array<OccamsRecord::ResultRow>] rows loaded from the main model
+      #
       def merge!(assoc_rows, rows)
-        # TODO
+        joins_by_id = join_rows(rows).reduce({}) { |a, join|
+          id = join[0]
+          a[id] ||= []
+          a[id] << join[1]
+          a
+        }
+
+        assoc_rows_by_id = assoc_rows.reduce({}) { |a, row|
+          id = row.send @ref.association_primary_key
+          a[id] = row
+          a
+        }
+
+        rows.each do |row|
+          id = row.send @ref.active_record_primary_key
+          assoc_fkeys = (joins_by_id[id] || []).uniq
+          associations = assoc_rows_by_id.values_at(*assoc_fkeys).compact.uniq
+          row.send @assign, associations
+        end
       end
 
       private

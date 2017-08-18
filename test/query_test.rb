@@ -179,9 +179,8 @@ class QueryTest < Minitest::Test
   end
 
   def test_poly_has_many
-    log = []
     results = OccamsRecord.
-      query(Widget.all, query_logger: log).
+      query(Widget.all).
       eager_load(:line_items).
       run
 
@@ -189,6 +188,22 @@ class QueryTest < Minitest::Test
     results.each do |widget|
       assert_equal LineItem.where(item_id: widget.id, item_type: 'Widget').count, widget.line_items.size
     end
+  end
+
+  def test_has_and_belongs_to_many
+    users = OccamsRecord.
+      query(User.all).
+      eager_load(:offices).
+      run
+
+    assert_equal 3, users.count
+    bob = users.detect { |u| u.username == 'bob' }
+    sue = users.detect { |u| u.username == 'sue' }
+    craig = users.detect { |u| u.username == 'craig' }
+
+    assert_equal %w(Bar Foo), bob.offices.map(&:name).sort
+    assert_equal %w(Bar Zorp), sue.offices.map(&:name).sort
+    assert_equal %w(Foo), craig.offices.map(&:name).sort
   end
 
   def test_including_module

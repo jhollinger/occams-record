@@ -1,6 +1,14 @@
 require 'test_helper'
 
 class EagerLoaderTest < Minitest::Test
+  def setup
+    DatabaseCleaner.start
+  end
+
+  def teardown
+    DatabaseCleaner.clean
+  end
+
   def test_polymorphic_belongs_to
     ref = LineItem.reflections.fetch 'item'
     loader = OccamsRecord::EagerLoaders::PolymorphicBelongsTo.new(ref)
@@ -136,5 +144,33 @@ class EagerLoaderTest < Minitest::Test
     loader.query(users) { |scope|
       assert_equal %q(SELECT "offices".* FROM "offices" WHERE "offices"."id" IN (100, 101, 102)), scope.to_sql
     }
+  end
+
+  def test_habtm_merge
+    ref = User.reflections.fetch 'offices'
+    loader = OccamsRecord::EagerLoaders::Habtm.new(ref)
+    users = [
+      OpenStruct.new(id: 1000, username: 'bob'),
+      OpenStruct.new(id: 1001, username: 'sue'),
+    ]
+    User.connection.execute "INSERT INTO offices_users (user_id, office_id) VALUES (1000, 100), (1000, 101), (1001, 101), (1001, 102), (1002, 103)"
+
+    loader.merge!([
+      OpenStruct.new(id: 100, name: 'A'),
+      OpenStruct.new(id: 101, name: 'B'),
+      OpenStruct.new(id: 102, name: 'C'),
+      OpenStruct.new(id: 103, name: 'D'),
+    ], users)
+
+    assert_equal [
+      OpenStruct.new(id: 1000, username: 'bob', offices: [
+        OpenStruct.new(id: 100, name: 'A'),
+        OpenStruct.new(id: 101, name: 'B'),
+      ]),
+      OpenStruct.new(id: 1001, username: 'sue', offices: [
+        OpenStruct.new(id: 101, name: 'B'),
+        OpenStruct.new(id: 102, name: 'C'),
+      ]),
+    ], users
   end
 end
