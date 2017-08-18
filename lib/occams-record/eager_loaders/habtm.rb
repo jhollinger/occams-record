@@ -8,34 +8,34 @@ module OccamsRecord
       # @param rows [Array<OccamsRecord::ResultRow>] Array of rows used to calculate the query.
       #
       def query(rows)
-        table_name = @ref.active_record.table_name
-        pkey = @ref.active_record_primary_key
-
-        ids = rows.map { |r| r.send @ref.active_record_primary_key }.compact.uniq
-        q = base_scope.where("#{table_name}.#{pkey}" => ids)
-        yield q
-        # TODO cache join table results
+        assoc_ids = join_rows(rows).map { |row| row[1] }.compact.uniq
+        yield base_scope.where(@ref.association_primary_key => assoc_ids)
       end
 
       def merge!(assoc_rows, rows)
-        # TODO look up key from cached join table results
+        # TODO
       end
 
       private
 
-      def base_scope
+      #
+      # Fetches (and caches) an array of rows from the join table. The rows are [fkey, assoc_fkey].
+      #
+      # @param rows [Array<OccamsRecord::ResultRow>]
+      # @return [Array<Array<String>>]
+      #
+      def join_rows(rows)
+        return @join_rows if defined? @join_rows
+
         conn = @model.connection
         join_table = conn.quote_table_name @ref.join_table
         assoc_fkey = conn.quote_column_name @ref.association_foreign_key
-        assoc_pkey = conn.quote_table_name @ref.association_primary_key
-
-        table_name = @ref.active_record.quoted_table_name
-        pkey = conn.quote_column_name @ref.active_record_primary_key
         fkey = conn.quote_column_name @ref.foreign_key
+        quoted_ids = rows.map { |r| conn.quote r.send @ref.active_record_primary_key }
 
-        super.
-          joins("INNER JOIN #{join_table} ON #{join_table}.#{assoc_fkey} = #{@ref.quoted_table_name}.#{assoc_pkey}").
-          joins("INNER JOIN #{table_name} ON #{table_name}.#{pkey} = #{join_table}.#{fkey}")
+        @join_rows = conn.
+          exec_query("SELECT #{fkey}, #{assoc_fkey} FROM #{join_table} WHERE #{fkey} IN (#{quoted_ids.join ','})").
+          rows
       end
     end
   end

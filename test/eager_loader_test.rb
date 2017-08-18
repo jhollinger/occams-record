@@ -131,9 +131,10 @@ class EagerLoaderTest < Minitest::Test
       OpenStruct.new(id: 1000),
       OpenStruct.new(id: 1001),
     ]
+    User.connection.execute "INSERT INTO offices_users (user_id, office_id) VALUES (1000, 100), (1000, 101), (1001, 101), (1001, 102), (1002, 103)"
 
     loader.query(users) { |scope|
-      assert_equal %q(SELECT "offices".* FROM "offices" INNER JOIN "offices_users" ON "offices_users"."office_id" = "offices"."id" INNER JOIN "users" ON "users"."id" = "offices_users"."user_id" WHERE "users"."id" IN (1000, 1001)), scope.to_sql
+      assert_equal %q(SELECT "offices".* FROM "offices" WHERE "offices"."id" IN (100, 101, 102)), scope.to_sql
     }
   end
 end
