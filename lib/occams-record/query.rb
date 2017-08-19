@@ -68,6 +68,7 @@ module OccamsRecord
     # @param scope [Proc] a scope to apply to the query (optional)
     # @param use [Module] optional Module to include in the result class
     # @param eval_block [Proc] a block where you may perform eager loading on *this* association (optional)
+    # @return [OccamsRecord::Query] returns self
     #
     def eager_load(assoc, scope = nil, use: nil, &eval_block)
       ref = model.reflections[assoc.to_s]
