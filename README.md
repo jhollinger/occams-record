@@ -129,7 +129,3 @@ By default, bundler will install the latest (supported) version of ActiveRecord.
     bundle exec rake test
 
 Look inside `Gemfile` to see all testable versions.
-
-## TODO
-
-* Support `find_each`/`find_in_batches`

@@ -14,7 +14,7 @@ class QueryTest < Minitest::Test
   def test_initializes_correctly
     q = OccamsRecord::Query.new(Category.all)
     assert_equal Category, q.model
-    assert_match %r{SELECT}, q.sql
+    assert_match %r{SELECT}, q.scope.to_sql
     refute_nil q.conn
   end
 

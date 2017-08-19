@@ -1,3 +1,5 @@
+require 'occams-record/batches'
+
 module OccamsRecord
   #
   # Starts building a OccamsRecord::Query. Pass it a scope from any of ActiveRecord's query builder
@@ -20,30 +22,36 @@ module OccamsRecord
   # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
   # @return [OccamsRecord::Query]
   #
-  def self.query(query, use: nil, query_logger: nil)
-    Query.new(query, use: use, query_logger: query_logger)
+  def self.query(scope, use: nil, query_logger: nil)
+    Query.new(scope, use: use, query_logger: query_logger)
   end
 
+  #
+  # Represents a query to be run and eager associations to be loaded.
+  #
   class Query
     # @return [ActiveRecord::Base]
     attr_reader :model
-    # @return [String] SQL string for the main query
-    attr_reader :sql
+    # @return [ActiveRecord::Relation] scope for building the main SQL query
+    attr_reader :scope
     # @return [ActiveRecord::Connection]
     attr_reader :conn
+
+    include Batches
 
     #
     # Initialize a new query.
     #
-    # @param query [ActiveRecord::Relation]
+    # @param scope [ActiveRecord::Relation]
     # @param use [Module] optional Module to include in the result class
     # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
+    # @param eager_loaders [OccamsRecord::EagerLoaders::Base]
     # @param eval_block [Proc] block that will be eval'd on this instance. Can be used for eager loading. (optional)
     #
-    def initialize(query, use: nil, query_logger: nil, &eval_block)
-      @model = query.klass
-      @sql = query.to_sql
-      @eager_loaders = []
+    def initialize(scope, use: nil, query_logger: nil, eager_loaders: [], &eval_block)
+      @model = scope.klass
+      @scope = scope
+      @eager_loaders = eager_loaders
       @conn = model.connection
       @use = use
       @query_logger = query_logger
@@ -73,6 +81,7 @@ module OccamsRecord
     # @return [Array<OccamsRecord::ResultRow>]
     #
     def run
+      sql = scope.to_sql
       @query_logger << sql if @query_logger
       result = conn.exec_query sql
       row_class = OccamsRecord.build_result_row_class(model, result.columns, @eager_loaders.map(&:name), @use)
