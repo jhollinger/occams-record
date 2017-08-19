@@ -32,6 +32,12 @@ module OccamsRecord
         raise 'Not Implemented'
       end
 
+      #
+      # Merges the associated rows into the parent rows.
+      #
+      # @param assoc_rows [Array<OccamsRecord::ResultRow>]
+      # @param rows [Array<OccamsRecord::ResultRow>]
+      #
       def merge!(assoc_rows, rows)
         raise 'Not Implemented'
       end

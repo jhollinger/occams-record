@@ -3,10 +3,10 @@ require_relative 'lib/occams-record/version'
 Gem::Specification.new do |s|
   s.name = 'occams-record'
   s.version = OccamsRecord::VERSION
-  s.licenses = []
+  s.licenses = ['MIT']
   s.summary = 'The missing high-efficiency query API for ActiveRecord'
-  s.description = 'A superior large-result querying API for ActiveRecord that returns results as unadorned, read-only objects.'
-  s.date = '2017-08-07'
+  s.description = 'A faster, lower-memory querying API for ActiveRecord that returns results as unadorned, read-only objects.'
+  s.date = '2017-08-19'
   s.authors = ['Jordan Hollinger']
   s.email = 'jordan.hollinger@gmail.com'
   s.homepage = 'https://github.com/jhollinger/occams-record'

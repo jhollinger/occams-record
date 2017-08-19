@@ -27,7 +27,8 @@ module OccamsRecord
   end
 
   #
-  # Represents a query to be run and eager associations to be loaded.
+  # Represents a query to be run and eager associations to be loaded. Use OccamsRecord.query to create your queries
+  # instead of instantiating objects directly.
   #
   class Query
     # @return [ActiveRecord::Base]
