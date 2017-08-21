@@ -25,7 +25,11 @@ For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by m
 
 Glad you asked. [Look over the results yourself.](https://github.com/jhollinger/occams-record/wiki/Measurements)
 
-## Examples
+## Usage
+
+**Add to your Gemfile**
+
+    gem 'occams-record'
 
 **Simple example**
 
