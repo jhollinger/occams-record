@@ -44,7 +44,7 @@ module OccamsRecord
     # Initialize a new query.
     #
     # @param scope [ActiveRecord::Relation]
-    # @param use [Module] optional Module to include in the result class
+    # @param use [Array<Module>] optional Module to include in the result class (single or array)
     # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
     # @param eager_loaders [OccamsRecord::EagerLoaders::Base]
     # @param eval_block [Proc] block that will be eval'd on this instance. Can be used for eager loading. (optional)
@@ -66,7 +66,7 @@ module OccamsRecord
     #
     # @param assoc [Symbol] name of association
     # @param scope [Proc] a scope to apply to the query (optional)
-    # @param use [Module] optional Module to include in the result class
+    # @param use [Array<Module>] optional Module to include in the result class (single or array)
     # @param eval_block [Proc] a block where you may perform eager loading on *this* association (optional)
     # @return [OccamsRecord::Query] returns self
     #

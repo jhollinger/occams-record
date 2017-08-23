@@ -218,8 +218,52 @@ class QueryTest < Minitest::Test
     assert_equal Order.count, orders.size
     orders.each do |order|
       assert order.is_a?(mod_a)
+      refute order.is_a?(mod_b)
+      refute order.is_a?(mod_c)
+
+      assert order.line_items.any?
+      refute order.line_items.all? { |line_item| line_item.is_a? mod_a }
       assert order.line_items.all? { |line_item| line_item.is_a? mod_b }
+      refute order.line_items.all? { |line_item| line_item.is_a? mod_c }
+
+      assert order.line_items.map(&:item).compact.any?
+      refute order.line_items.all? { |line_item| line_item.item.is_a? mod_a }
+      refute order.line_items.all? { |line_item| line_item.item.is_a? mod_b }
       assert order.line_items.all? { |line_item| line_item.item.is_a? mod_c }
+    end
+  end
+
+  def test_including_multiple_modules
+    mod_a, mod_b, mod_c = Module.new, Module.new, Module.new
+    orders = OccamsRecord.
+      query(Order.all, use: [mod_a, mod_b]).
+      eager_load(:line_items, use: mod_b) {
+        eager_load(:item, use: mod_c) {
+          eager_load(:category, use: [mod_a, mod_c])
+        }
+      }.
+      run
+
+    assert_equal Order.count, orders.size
+    orders.each do |order|
+      assert order.is_a?(mod_a)
+      assert order.is_a?(mod_b)
+      refute order.is_a?(mod_c)
+
+      assert order.line_items.any?
+      refute order.line_items.all? { |line_item| line_item.is_a? mod_a }
+      assert order.line_items.all? { |line_item| line_item.is_a? mod_b }
+      refute order.line_items.all? { |line_item| line_item.is_a? mod_c }
+
+      assert order.line_items.map(&:item).compact.any?
+      refute order.line_items.all? { |line_item| line_item.item.is_a? mod_a }
+      refute order.line_items.all? { |line_item| line_item.item.is_a? mod_b }
+      assert order.line_items.all? { |line_item| line_item.item.is_a? mod_c }
+
+      assert order.line_items.map(&:item).map(&:category).compact.any?
+      assert order.line_items.all? { |line_item| line_item.item.category.is_a? mod_a }
+      refute order.line_items.all? { |line_item| line_item.item.category.is_a? mod_b }
+      assert order.line_items.all? { |line_item| line_item.item.category.is_a? mod_c }
     end
   end
 end

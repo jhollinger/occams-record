@@ -12,12 +12,12 @@ module OccamsRecord
   # @param model [ActiveRecord::Base] the AR model representing the table (it holds column & type info).
   # @param column_names [Array<String>] the column names in the result set. The order MUST match the order returned by the query.
   # @param association_names [Array<String>] names of associations that will be eager loaded into the results.
-  # @param included_module [Module] (optional)
+  # @param included_modules [Array<Module>] (optional)
   # @return [OccamsRecord::ResultRow] a class customized for this result set
   #
-  def self.build_result_row_class(model, column_names, association_names, included_module = nil)
+  def self.build_result_row_class(model, column_names, association_names, included_modules = nil)
     Class.new(ResultRow) do
-      include included_module if included_module
+      Array(included_modules).each { |mod| include mod } if included_modules
 
       self.columns = column_names.map(&:to_s)
       self.associations = association_names.map(&:to_s)
