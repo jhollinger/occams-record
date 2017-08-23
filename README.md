@@ -29,107 +29,121 @@ Glad you asked. [Look over the results yourself.](https://github.com/jhollinger/
 
 **Add to your Gemfile**
 
-    gem 'occams-record'
+```ruby
+gem 'occams-record'
+```
 
 **Simple example**
 
-    widgets = OccamsRecord.
-      query(Widget.order("name")).
-      eager_load(:category).
-      run
+```ruby
+widgets = OccamsRecord.
+  query(Widget.order("name")).
+  eager_load(:category).
+  run
 
-    widgets[0].id
-    => 1000
+widgets[0].id
+=> 1000
 
-    widgets[0].name
-    => "Widget 1000"
+widgets[0].name
+=> "Widget 1000"
 
-    widgets[0].category.name
-    => "Category 1"
+widgets[0].category.name
+=> "Category 1"
+```
 
 **More complicated example**
 
 Notice that we're eager loading splines, but *only the fields that we need*. If that's a wide table, your DBA will thank you.
 
-    widgets = OccamsRecord.
-      query(Widget.order("name")).
-      eager_load(:category).
-      eager_load(:splines, -> { select("widget_id, description") }).
-      run
+```ruby
+widgets = OccamsRecord.
+  query(Widget.order("name")).
+  eager_load(:category).
+  eager_load(:splines, -> { select("widget_id, description") }).
+  run
 
-    widgets[0].splines.map { |s| s.description }
-    => ["Spline 1", "Spline 2", "Spline 3"]
+widgets[0].splines.map { |s| s.description }
+=> ["Spline 1", "Spline 2", "Spline 3"]
 
-    widgets[1].splines.map { |s| s.description }
-    => ["Spline 4", "Spline 5"]
+widgets[1].splines.map { |s| s.description }
+=> ["Spline 4", "Spline 5"]
+```
 
 **An insane example, but only half as insane as the one that prompted the creation of this library**
 
 In addition to custom eager loading queries, we're also adding nested eager loading (and customizing those queries!).
 
-    widgets = OccamsRecord.
-      query(Widget.order("name")).
-      eager_load(:category).
+```ruby
+widgets = OccamsRecord.
+  query(Widget.order("name")).
+  eager_load(:category).
 
-      # load order_items, but only the fields needed to identify which orders go with which widgets
-      eager_load(:order_items, -> { select("widget_id, order_id") }) {
+  # load order_items, but only the fields needed to identify which orders go with which widgets
+  eager_load(:order_items, -> { select("widget_id, order_id") }) {
 
-        # load the orders
-        eager_load(:orders) {
+    # load the orders
+    eager_load(:orders) {
 
-          # load the customers who made the orders, but only their names
-          eager_load(:customer, -> { select("id, name") })
-        }
-      }.
-      run
+      # load the customers who made the orders, but only their names
+      eager_load(:customer, -> { select("id, name") })
+    }
+  }.
+  run
+```
 
 ## Injecting instance methods
 
 By default your results will only have getters for selected columns and eager-loaded associations. If you must, you *can* inject extra methods into your results by putting those methods into a Module. NOTE this is discouraged, as you should try to maintain a clear separation between your persistence layer and your domain.
 
-    module MyWidgetMethods
-      def to_s
-        name
-      end
+```ruby
+module MyWidgetMethods
+  def to_s
+    name
+  end
 
-      def expensive?
-        price_per_unit > 100
-      end
-    end
+  def expensive?
+    price_per_unit > 100
+  end
+end
 
-    module MyOrderMethods
-      def description
-        "#{order_number} - #{date}"
-      end
-    end
+module MyOrderMethods
+  def description
+    "#{order_number} - #{date}"
+  end
+end
 
-    widgets = OccamsRecord.
-      query(Widget.order("name"), use: MyWidgetMethods).
-      eager_load(:orders, use: MyOrderMethods).
-      run
+widgets = OccamsRecord.
+  query(Widget.order("name"), use: MyWidgetMethods).
+  eager_load(:orders, use: MyOrderMethods).
+  run
 
-    widgets[0].to_s
-    => "Widget A"
+widgets[0].to_s
+=> "Widget A"
 
-    widgets[0].price_per_unit
-    => 57.23
+widgets[0].price_per_unit
+=> 57.23
 
-    widgets[0].expensive?
-    => false
+widgets[0].expensive?
+=> false
 
-    widgets[0].orders[0].description
-    => "O839SJZ98B 1/8/2017"
+widgets[0].orders[0].description
+=> "O839SJZ98B 1/8/2017"
+```
 
 ## Testing
 
 To run the tests, simply run:
 
-    bundle install
-    bundle exec rake test
+```bash
+bundle install
+bundle exec rake test
+```
 
 By default, bundler will install the latest (supported) version of ActiveRecord. To specify a version to test against, run:
 
-    AR=4.2 bundle update activerecord
-    bundle exec rake test
+```bash
+AR=4.2 bundle update activerecord
+bundle exec rake test
+```
 
 Look inside `Gemfile` to see all testable versions.
