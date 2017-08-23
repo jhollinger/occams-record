@@ -37,13 +37,26 @@ class QueryTest < Minitest::Test
     }, results[0].to_hash(symbolize_names: true))
   end
 
-  def test_eager_load_custom_select
+  def test_eager_load_custom_select_from_proc
+    log = []
     results = OccamsRecord.
-      query(Order.all).
+      query(Order.all, query_logger: log).
       eager_load(:line_items, -> { where('1 != 2') }).
       run
 
     assert_equal LineItem.count, results.map(&:line_items).flatten.size
+    assert_includes log, %q(SELECT "line_items".* FROM "line_items" WHERE (1 != 2) AND "line_items"."order_id" IN (683130438, 834596858))
+  end
+
+  def test_eager_load_custom_select_from_string
+    log = []
+    results = OccamsRecord.
+      query(Order.all, query_logger: log).
+      eager_load(:line_items, select: "id, order_id").
+      run
+
+    assert_equal LineItem.count, results.map(&:line_items).flatten.size
+    assert_includes log, %q(SELECT id, order_id FROM "line_items" WHERE "line_items"."order_id" IN (683130438, 834596858))
   end
 
   def test_belongs_to

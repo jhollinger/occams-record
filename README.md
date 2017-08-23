@@ -59,7 +59,7 @@ Notice that we're eager loading splines, but *only the fields that we need*. If 
 widgets = OccamsRecord.
   query(Widget.order("name")).
   eager_load(:category).
-  eager_load(:splines, -> { select("widget_id, description") }).
+  eager_load(:splines, select: "widget_id, description").
   run
 
 widgets[0].splines.map { |s| s.description }
@@ -71,7 +71,7 @@ widgets[1].splines.map { |s| s.description }
 
 **An insane example, but only half as insane as the one that prompted the creation of this library**
 
-In addition to custom eager loading queries, we're also adding nested eager loading (and customizing those queries!).
+Here we're eager loading several levels down. Notice the `Proc` given to `eager_load(:orders)`. The `select:` option is just for convenience; you may instead pass a `Proc` and customize the query with any of ActiveRecord's query builder helpers (`select`, `where`, `order`, etc).
 
 ```ruby
 widgets = OccamsRecord.
@@ -79,13 +79,13 @@ widgets = OccamsRecord.
   eager_load(:category).
 
   # load order_items, but only the fields needed to identify which orders go with which widgets
-  eager_load(:order_items, -> { select("widget_id, order_id") }) {
+  eager_load(:order_items, select: "widget_id, order_id") {
 
     # load the orders
-    eager_load(:orders) {
+    eager_load(:orders, -> { order "order_date DESC" }) {
 
       # load the customers who made the orders, but only their names
-      eager_load(:customer, -> { select("id, name") })
+      eager_load(:customer, select: "id, name")
     }
   }.
   run

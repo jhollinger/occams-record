@@ -66,13 +66,15 @@ module OccamsRecord
     #
     # @param assoc [Symbol] name of association
     # @param scope [Proc] a scope to apply to the query (optional)
+    # @param select [String] a custom SELECT statement, minus the SELECT (optional)
     # @param use [Array<Module>] optional Module to include in the result class (single or array)
     # @param eval_block [Proc] a block where you may perform eager loading on *this* association (optional)
     # @return [OccamsRecord::Query] returns self
     #
-    def eager_load(assoc, scope = nil, use: nil, &eval_block)
+    def eager_load(assoc, scope = nil, select: nil, use: nil, &eval_block)
       ref = model.reflections[assoc.to_s]
       raise "OccamsRecord: No assocation `:#{assoc}` on `#{model.name}`" if ref.nil?
+      scope ||= -> { self.select select } if select
       @eager_loaders << EagerLoaders.fetch!(ref).new(ref, scope, use, &eval_block)
       self
     end
