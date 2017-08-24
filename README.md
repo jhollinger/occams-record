@@ -82,7 +82,7 @@ widgets = OccamsRecord.
   eager_load(:order_items, select: "widget_id, order_id") {
 
     # load the orders
-    eager_load(:orders, -> { order "order_date DESC" }) {
+    eager_load(:orders, -> { select("id, customer_id").order("order_date DESC") }) {
 
       # load the customers who made the orders, but only their names
       eager_load(:customer, select: "id, name")
