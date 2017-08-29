@@ -20,20 +20,20 @@ module OccamsRecord
       #
       def merge!(assoc_rows, rows)
         joins_by_id = join_rows(rows).reduce({}) { |a, join|
-          id = join[0]
+          id = join[0].to_s
           a[id] ||= []
-          a[id] << join[1]
+          a[id] << join[1].to_s
           a
         }
 
         assoc_rows_by_id = assoc_rows.reduce({}) { |a, row|
-          id = row.send @ref.association_primary_key
+          id = row.send(@ref.association_primary_key).to_s
           a[id] = row
           a
         }
 
         rows.each do |row|
-          id = row.send @ref.active_record_primary_key
+          id = row.send(@ref.active_record_primary_key).to_s
           assoc_fkeys = (joins_by_id[id] || []).uniq
           associations = assoc_rows_by_id.values_at(*assoc_fkeys).compact.uniq
           row.send @assign, associations
