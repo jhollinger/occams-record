@@ -1,3 +1,6 @@
+### 0.4.0 (2017-08-29)
+* Bugfix to has_and_belongs_to_many eager loader
+
 ### 0.3.0 (2017-08-23)
 * Add `select:` convenience option to `eager_load`.
 
