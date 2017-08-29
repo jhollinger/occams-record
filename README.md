@@ -130,6 +130,13 @@ widgets[0].orders[0].description
 => "O839SJZ98B 1/8/2017"
 ```
 
+## Unsupported features
+
+The following `ActiveRecord` are not supported, and I have no plans to do so. However, I'd be glad to accept pull requests.
+
+* ActiveRecord enum types
+* ActiveRecord serialized types
+
 ## Testing
 
 To run the tests, simply run:
