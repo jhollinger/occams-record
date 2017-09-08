@@ -12,7 +12,7 @@ For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by m
 **What does this buy you?**
 
 * OccamsRecord results are **one-third the size** of ActiveRecord results.
-* OccamsRecord queries run **three times faster** than ActiveRecord queries, or more.
+* OccamsRecord queries run **three to five times faster** than ActiveRecord queries.
 * When you're eager loading associations you may specify which columns to `SELECT`. (This can be a significant performance boost to both your database and Rails app, on top of the above numbers.)
 
 **What don't you give up?**
