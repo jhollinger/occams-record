@@ -23,6 +23,18 @@ class QueryTest < Minitest::Test
     assert_equal %w(Bar Foo), results.map(&:name)
   end
 
+  def test_simple_query_with_each
+    enum = OccamsRecord.query(Category.all.order('name')).each
+    results = enum.to_a
+    assert_equal %w(Bar Foo), results.map(&:name)
+  end
+
+  def test_simple_query_with_each_block
+    results = []
+    OccamsRecord.query(Category.all.order('name')).each { |row| results << row }
+    assert_equal %w(Bar Foo), results.map(&:name)
+  end
+
   def test_custom_select
     order = Order.create!(date: Date.new(2017, 2, 28), amount: 56.72, customer_id: 42)
 

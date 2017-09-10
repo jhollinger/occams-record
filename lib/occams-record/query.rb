@@ -100,5 +100,21 @@ module OccamsRecord
 
       rows
     end
+
+    alias_method :to_a, :run
+
+    #
+    # If you pass a block, each result row will be yielded to it. If you don't,
+    # an Enumerable will be returned.
+    #
+    # @return Enumerable
+    #
+    def each
+      if block_given?
+        to_a.each { |row| yield row }
+      else
+        to_a.each
+      end
+    end
   end
 end
