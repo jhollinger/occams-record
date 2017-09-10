@@ -1,5 +1,6 @@
 require 'active_record'
 require 'occams-record/version'
+require 'occams-record/merge'
 require 'occams-record/eager_loaders'
 require 'occams-record/result_row'
 require 'occams-record/query'

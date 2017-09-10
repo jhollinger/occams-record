@@ -20,7 +20,6 @@ module OccamsRecord
       def initialize(ref, scope = nil, use = nil, &eval_block)
         @ref, @scope, @use, @eval_block = ref, scope, use, eval_block
         @name, @model = ref.name.to_s, ref.klass
-        @assign = "#{@name}="
       end
 
       #

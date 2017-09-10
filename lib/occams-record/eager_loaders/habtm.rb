@@ -32,11 +32,12 @@ module OccamsRecord
           a
         }
 
+        assign = "#{name}="
         rows.each do |row|
           id = row.send(@ref.active_record_primary_key).to_s
           assoc_fkeys = (joins_by_id[id] || []).uniq
           associations = assoc_rows_by_id.values_at(*assoc_fkeys).compact.uniq
-          row.send @assign, associations
+          row.send assign, associations
         end
       end
 

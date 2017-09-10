@@ -19,17 +19,8 @@ module OccamsRecord
       # @param rows [Array<OccamsRecord::ResultRow>] rows loaded from the main model
       #
       def merge!(assoc_rows, rows)
-        pkey_col = @model.primary_key.to_s
-        assoc_rows_by_id = assoc_rows.reduce({}) { |a, assoc_row|
-          id = assoc_row.send pkey_col
-          a[id] = assoc_row
-          a
-        }
-
-        rows.each do |row|
-          fkey = row.send @ref.foreign_key
-          row.send @assign, fkey ? assoc_rows_by_id[fkey] : nil
-        end
+        Merge.new(rows, name).
+          single!(assoc_rows, @ref.foreign_key.to_s, @model.primary_key.to_s)
       end
     end
   end

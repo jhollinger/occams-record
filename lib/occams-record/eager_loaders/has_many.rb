@@ -9,11 +9,8 @@ module OccamsRecord
       # @param rows [Array<OccamsRecord::ResultRow>] rows loaded from the main model
       #
       def merge!(assoc_rows, rows)
-        assoc_rows_by_fkey = assoc_rows.group_by(&@ref.foreign_key.to_sym)
-        rows.each do |row|
-          pkey = row.send @ref.active_record_primary_key
-          row.send @assign, assoc_rows_by_fkey[pkey] || []
-        end
+        Merge.new(rows, name).
+          many!(assoc_rows, @ref.active_record_primary_key, @ref.foreign_key)
       end
     end
   end

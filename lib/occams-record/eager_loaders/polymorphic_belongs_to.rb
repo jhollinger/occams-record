@@ -20,7 +20,6 @@ module OccamsRecord
         @foreign_type = @ref.foreign_type.to_sym
         @foreign_key = @ref.foreign_key.to_sym
         @use = use
-        @assign = "#{@name}="
       end
 
       #
@@ -45,7 +44,9 @@ module OccamsRecord
         return if assoc_rows_of_type.empty?
         type = assoc_rows_of_type[0].class.model_name
         rows_of_type = rows.select { |r| r.send(@foreign_type) == type }
-        merge_model!(assoc_rows_of_type, rows_of_type, type.constantize)
+        model = type.constantize
+        Merge.new(rows_of_type, name).
+          single!(assoc_rows_of_type, @ref.foreign_key.to_s, model.primary_key.to_s)
       end
 
       private
@@ -55,20 +56,6 @@ module OccamsRecord
         q = q.instance_exec(&@ref.scope) if @ref.scope
         q = q.instance_exec(&@scope) if @scope
         q
-      end
-
-      def merge_model!(assoc_rows, rows, model)
-        pkey_col = model.primary_key.to_s
-        assoc_rows_by_id = assoc_rows.reduce({}) { |a, assoc_row|
-          id = assoc_row.send pkey_col
-          a[id] = assoc_row
-          a
-        }
-
-        rows.each do |row|
-          fkey = row.send @ref.foreign_key
-          row.send @assign, fkey ? assoc_rows_by_id[fkey] : nil
-        end
       end
     end
   end
