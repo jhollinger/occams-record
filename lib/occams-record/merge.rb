@@ -3,7 +3,7 @@ module OccamsRecord
   # Represents a merge operation to be performed. Merges are always "left" merges. You initialize the
   # Merge with the "left" records, and the name of the attribute into which "right" records will be placed.
   #
-  # After initializing, perform a specific type of merge by calling the appropriate merge_*! methods.
+  # After initializing, perform a specific type of merge by calling the appropriate *! method.
   #
   class Merge
     # @return [Array<OccamsRecord::ResultRow>] the rows into which associated rows will be merged
@@ -42,8 +42,8 @@ module OccamsRecord
     end
 
     #
-    # Merge an array of assoc_rows into the target_rows. (NOTE some target_rows may end up with
-    # empty arrays, if no matching associated records were found.)
+    # Merge an array of assoc_rows into the target_rows. Some target_rows may end up with 0 matching
+    # associations, and they'll be assigned empty arrays.
     # target_attr and assoc_attr are the matching keys on target_rows and assoc_rows, respectively.
     #
     def many!(assoc_rows, target_attr, assoc_attr)
