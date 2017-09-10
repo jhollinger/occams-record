@@ -1,3 +1,6 @@
+### 0.5.0 (2017-09-10)
+* Add Query#to_a and each, to better match ActiveRecord semantics.
+
 ### 0.4.1 (2017-09-09)
 * Bugfix to polymorphic belongs_to eager loader. (Edge case. If all instances of an associated type were somehow missing/deleted, and the foreign keys weren't cleaned up, the eager loader would blow up.)
 
