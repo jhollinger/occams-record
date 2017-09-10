@@ -29,6 +29,10 @@ For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by m
 
 Glad you asked. [Look over the results yourself.](https://github.com/jhollinger/occams-record/wiki/Measurements)
 
+**Why not use a different ORM?**
+
+That's a great idea; check out [sequel](https://rubygems.org/gems/sequel) or [rom](https://rubygems.org/gems/rom)! But for large, legacy codebases heavily invested in ActiveRecord, switching ORMs often isn't practical. OccamsRecord can help you get some of those wins without throwing everything out.
+
 ## Usage
 
 **Add to your Gemfile**
