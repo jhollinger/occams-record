@@ -47,10 +47,10 @@ module OccamsRecord
     # target_attr and assoc_attr are the matching keys on target_rows and assoc_rows, respectively.
     #
     def many!(assoc_rows, target_attr, assoc_attr)
-      assoc_rows_by_fkey = assoc_rows.group_by(&assoc_attr.to_sym)
+      assoc_rows_by_attr = assoc_rows.group_by(&assoc_attr.to_sym)
       target_rows.each do |row|
         pkey = row.send target_attr
-        row.send @assign, assoc_rows_by_fkey[pkey] || []
+        row.send @assign, assoc_rows_by_attr[pkey] || []
       end
     end
   end

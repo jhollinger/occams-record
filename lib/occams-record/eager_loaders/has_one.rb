@@ -8,6 +8,7 @@ module OccamsRecord
       # @param rows [Array<OccamsRecord::ResultRow>] Array of rows used to calculate the query.
       #
       def query(rows)
+        return if rows.empty?
         ids = rows.map { |r| r.send @ref.active_record_primary_key }.compact.uniq
         q = base_scope.where(@ref.foreign_key => ids)
         q.where!(@ref.type => rows[0].class.try!(:model_name)) if @ref.options[:as]

@@ -16,10 +16,10 @@ module OccamsRecord
       # @param eval_block [Proc] a block where you may perform eager loading on *this* association (optional)
       #
       def initialize(ref, scope = nil, use = nil, &eval_block)
-        @ref, @name, @scope, @eval_block = ref, ref.name.to_s, scope, eval_block
+        @ref, @scope, @use, @eval_block = ref, scope, use, eval_block
+        @name = ref.name.to_s
         @foreign_type = @ref.foreign_type.to_sym
         @foreign_key = @ref.foreign_key.to_sym
-        @use = use
       end
 
       #
