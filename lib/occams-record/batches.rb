@@ -1,11 +1,14 @@
 module OccamsRecord
   #
-  # Methods for building batch finding methods.
+  # Methods for building batch finding methods. It expects "model" and "scope" methods to be present.
   #
   module Batches
     #
     # Load records in batches of N and yield each record to a block if given.
     # If no block is given, returns an Enumerator.
+    #
+    # NOTE Unlike ActiveRecord's find_each, order IS respected. The primary key will be appended
+    # to the ORDER BY clause to help ensure consistent batches.
     #
     # @param batch_size [Integer]
     # @return [Enumerator] will yield each record
@@ -27,6 +30,9 @@ module OccamsRecord
     # Load records in batches of N and yield each batch to a block if given.
     # If no block is given, returns an Enumerator.
     #
+    # NOTE Unlike ActiveRecord's find_in_batches, order IS respected. The primary key will be appended
+    # to the ORDER BY clause to help ensure consistent batches.
+    #
     # @param batch_size [Integer]
     # @return [Enumerator] will yield each batch
     #
@@ -44,7 +50,7 @@ module OccamsRecord
     #
     # Returns an Enumerator that yields batches of records, of size "of".
     # NOTE ActiveRecord 5+ provides the 'in_batches' method to do something
-    # similiar, but 4.2 doesn't have it, so...
+    # similiar, although 4.2 does not. Also it does not respect ORDER BY.
     #
     # @param of [Integer] batch size
     # @return [Enumerator] yields batches
@@ -58,7 +64,7 @@ module OccamsRecord
 
         until out_of_records
           l = limit && batch_size > limit - count ? limit - count : batch_size
-          q = scope.offset(offset).limit(l)
+          q = scope.order(model.primary_key.to_sym).offset(offset).limit(l)
           results = Query.new(q, use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders).run
 
           y.yield results if results.any?
