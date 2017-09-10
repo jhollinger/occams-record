@@ -8,6 +8,7 @@ For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by m
 
 * OccamsRecord results are **read-only**.
 * OccamsRecord objects are **purely database rows** - they don't have any instance methods from your Rails models.
+* OccamsRecord queries must specify each association that will be used. Otherwise they simply won't be availble.
 
 **What does this buy you?**
 
@@ -15,6 +16,8 @@ For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by m
 * OccamsRecord queries run **three to five times faster** than ActiveRecord queries.
 * When eager loading associations you may specify which columns to `SELECT`. (This can be a significant performance boost to both your database and Rails app, on top of the above numbers.)
 * When eager loading associations you may completely customize the query (`WHERE`, `ORDER BY`, `LIMIT`, etc.)
+* By forcing eager loading of associations, OccamsRecord bypasses the primary cause of performance problems in Rails: N+1 queries.
+* The forced eager loading helps the developer visualize the "shape" of the query/result, which can make obvious certain insights that would otherwise require lots of digging. For example, if you're eager loading 15 associations, maybe you need to add some redundant foreign keys or denormalize some fields.
 
 **What don't you give up?**
 
