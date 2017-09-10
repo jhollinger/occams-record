@@ -1,3 +1,6 @@
+### 0.4.1 (2017-09-09)
+* Bugfix to polymorphic belongs_to eager loader. (Edge case. If all instances of an associated type were somehow missing/deleted, and the foreign keys weren't cleaned up, the eager loader would blow up.)
+
 ### 0.4.0 (2017-08-29)
 * Bugfix to has_and_belongs_to_many eager loader
 
