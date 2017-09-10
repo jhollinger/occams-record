@@ -9,7 +9,7 @@ class EagerLoaderTest < Minitest::Test
     DatabaseCleaner.clean
   end
 
-  def test_polymorphic_belongs_to
+  def test_polymorphic_belongs_to_query
     ref = LineItem.reflections.fetch 'item'
     loader = OccamsRecord::EagerLoaders::PolymorphicBelongsTo.new(ref)
     line_items = [
@@ -24,6 +24,55 @@ class EagerLoaderTest < Minitest::Test
       %q(SELECT "splines".* FROM "splines" WHERE "splines"."id" IN (10, 11)),
       %q(SELECT "widgets".* FROM "widgets" WHERE "widgets"."id" IN (5, 6)),
     ].sort, sqlz.sort
+  end
+
+  def test_polymorphic_belongs_to_merge
+    ref = LineItem.reflections.fetch 'item'
+    loader = OccamsRecord::EagerLoaders::PolymorphicBelongsTo.new(ref)
+    widget_result = OccamsRecord.build_result_row_class(Widget, %w(id name), [])
+    widget_a = widget_result.new(['5', 'Widget A'])
+    widget_b = widget_result.new(['6', 'Widget B'])
+
+    spline_result = OccamsRecord.build_result_row_class(Spline, %w(id name), [])
+    spline_a = spline_result.new(['10', 'Spline A'])
+
+    line_items = [
+      OpenStruct.new(item_id: widget_a.id, item_type: 'Widget'),
+      OpenStruct.new(item_id: widget_b.id, item_type: 'Widget'),
+      OpenStruct.new(item_id: spline_a.id, item_type: 'Spline'),
+      OpenStruct.new(item_id: 11, item_type: 'Spline'),
+    ]
+
+    # Merge in widgets
+    loader.merge!([
+      widget_a,
+      widget_b,
+      widget_result.new(['7', 'Widget C']),
+    ], line_items)
+    assert_equal [
+      OpenStruct.new(item_id: widget_a.id, item_type: 'Widget', item: widget_a),
+      OpenStruct.new(item_id: widget_b.id, item_type: 'Widget', item: widget_b),
+      OpenStruct.new(item_id: spline_a.id, item_type: 'Spline'),
+      OpenStruct.new(item_id: 11, item_type: 'Spline'),
+    ], line_items
+
+    # Merge in nothing (simulate that none of the referenced Splines actually exist)
+    loader.merge!([], line_items)
+    assert_equal [
+      OpenStruct.new(item_id: widget_a.id, item_type: 'Widget', item: widget_a),
+      OpenStruct.new(item_id: widget_b.id, item_type: 'Widget', item: widget_b),
+      OpenStruct.new(item_id: spline_a.id, item_type: 'Spline'),
+      OpenStruct.new(item_id: 11, item_type: 'Spline'),
+    ], line_items
+
+    # Now merge in one of the Splines, but pretend the other doesn't exist
+    loader.merge!([spline_a], line_items)
+    assert_equal [
+      OpenStruct.new(item_id: widget_a.id, item_type: 'Widget', item: widget_a),
+      OpenStruct.new(item_id: widget_b.id, item_type: 'Widget', item: widget_b),
+      OpenStruct.new(item_id: spline_a.id, item_type: 'Spline', item: spline_a),
+      OpenStruct.new(item_id: 11, item_type: 'Spline', item: nil),
+    ], line_items
   end
 
   def test_belongs_to_query

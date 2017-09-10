@@ -42,7 +42,8 @@ module OccamsRecord
       # Merge associations of type N into rows of model N.
       #
       def merge!(assoc_rows_of_type, rows)
-        type = assoc_rows_of_type[0].class.try!(:model_name) || return
+        return if assoc_rows_of_type.empty?
+        type = assoc_rows_of_type[0].class.model_name
         rows_of_type = rows.select { |r| r.send(@foreign_type) == type }
         merge_model!(assoc_rows_of_type, rows_of_type, type.constantize)
       end
