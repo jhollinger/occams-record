@@ -1,3 +1,7 @@
+### 0.6.0 (PENDING)
+* Always append the primary key to the ORDER BY clause when using find_each/find_in_batches.
+* Refactor (most) eager loading merge code into a dedicated class.
+
 ### 0.5.0 (2017-09-10)
 * Add Query#to_a and each, to better match ActiveRecord semantics.
 
