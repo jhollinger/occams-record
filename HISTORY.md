@@ -1,4 +1,4 @@
-### 0.6.0 (PENDING)
+### 0.6.0 (2017-09-11)
 * Always append the primary key to the ORDER BY clause when using find_each/find_in_batches.
 * Refactor (most) eager loading merge code into a dedicated class.
 
