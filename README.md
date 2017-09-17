@@ -17,7 +17,7 @@ For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by m
 * When eager loading associations you may specify which columns to `SELECT`. (This can be a significant performance boost to both your database and Rails app, on top of the above numbers.)
 * When eager loading associations you may completely customize the query (`WHERE`, `ORDER BY`, `LIMIT`, etc.)
 * By forcing eager loading of associations, OccamsRecord bypasses the primary cause of performance problems in Rails: N+1 queries.
-* The forced eager loading helps the developer visualize the "shape" of the query/result, which can make obvious certain insights that would otherwise require lots of digging. For example, if you're eager loading 15 associations, maybe you need to add some redundant foreign keys or denormalize some fields.
+* Forced eager loading also makes you consider the "shape" of your data, which can help you identify areas that need refactored (e.g. redundant foreign keys, more denormalization, etc.)
 
 **What don't you give up?**
 
@@ -31,7 +31,7 @@ Glad you asked. [Look over the results yourself.](https://github.com/jhollinger/
 
 **Why not use a different ORM?**
 
-That's a great idea; check out [sequel](https://rubygems.org/gems/sequel) or [rom](https://rubygems.org/gems/rom)! But for large, legacy codebases heavily invested in ActiveRecord, switching ORMs often isn't practical. OccamsRecord can help you get some of those wins without throwing everything out.
+That's a great idea; check out [sequel](https://rubygems.org/gems/sequel) or [rom](https://rubygems.org/gems/rom)! But for large, legacy codebases heavily invested in ActiveRecord, switching ORMs often isn't practical. OccamsRecord can help you get some of those wins without a rewrite.
 
 ## Usage
 
