@@ -122,7 +122,7 @@ end
 
 widgets = OccamsRecord.
   query(Widget.order("name"), use: MyWidgetMethods).
-  eager_load(:orders, use: MyOrderMethods).
+  eager_load(:orders, use: [MyOrderMethods, SomeAdditionalMethods]).
   run
 
 widgets[0].to_s
