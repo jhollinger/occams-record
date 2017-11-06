@@ -11,13 +11,14 @@ module OccamsRecord
   #
   # @param model [ActiveRecord::Base] the AR model representing the table (it holds column & type info).
   # @param column_names [Array<String>] the column names in the result set. The order MUST match the order returned by the query.
+  # @param column_types [Hash] Column name => type from an ActiveRecord::Result
   # @param association_names [Array<String>] names of associations that will be eager loaded into the results.
-  # @param included_modules [Array<Module>] (optional)
+  # @param modules [Array<Module>] (optional)
   # @return [OccamsRecord::ResultRow] a class customized for this result set
   #
-  def self.build_result_row_class(model, column_names, association_names, included_modules = nil)
+  def self.build_result_row_class(model, column_names, column_types, association_names, modules: nil)
     Class.new(ResultRow) do
-      Array(included_modules).each { |mod| include mod } if included_modules
+      Array(modules).each { |mod| include mod } if modules
 
       self.columns = column_names.map(&:to_s)
       self.associations = association_names.map(&:to_s)
@@ -27,8 +28,11 @@ module OccamsRecord
       attr_accessor(*association_names)
 
       # Build a getter for each attribute returned by the query. The values will be type converted on demand.
-      column_names.each_with_index do |col, idx|
-        type = model.attributes_builder.types[col.to_s] || raise("OccamsRecord: Column `#{col}` does not exist on model `#{model.name}`")
+      self.columns.each_with_index do |col, idx|
+        type =
+          column_types[col] ||
+          model.attributes_builder.types[col] ||
+          raise("OccamsRecord: Column `#{col}` does not exist on model `#{self.model_name}`")
         define_method col do
           @cast_values_cache[idx] ||= type.send(TYPE_CAST_METHOD, @raw_values[idx])
         end

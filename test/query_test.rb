@@ -49,6 +49,16 @@ class QueryTest < Minitest::Test
     }, results[0].to_hash(symbolize_names: true))
   end
 
+  def test_custom_select_with_casted_columns
+    results = OccamsRecord.
+      query(LineItem.select("order_id, SUM(amount) AS total_amount").group("order_id").order("total_amount")).
+      run
+
+    assert_equal 2, results.size
+    assert_equal 100, results[0].total_amount
+    assert_equal 520, results[1].total_amount
+  end
+
   def test_eager_load_custom_select_from_proc
     log = []
     results = OccamsRecord.

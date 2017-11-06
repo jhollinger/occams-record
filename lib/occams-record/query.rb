@@ -88,7 +88,7 @@ module OccamsRecord
       sql = scope.to_sql
       @query_logger << sql if @query_logger
       result = conn.exec_query sql
-      row_class = OccamsRecord.build_result_row_class(model, result.columns, @eager_loaders.map(&:name), @use)
+      row_class = OccamsRecord.build_result_row_class(model, result.columns, result.column_types, @eager_loaders.map(&:name), modules: @use)
       rows = result.rows.map { |row| row_class.new row }
 
       @eager_loaders.each { |loader|

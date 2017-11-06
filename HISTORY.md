@@ -1,3 +1,6 @@
+### 0.7.0 (2017-11-05)
+* Improvement to selecting columngs by different names, aggregates, etc. wrt to type conversion.
+
 ### 0.6.0 (2017-09-11)
 * Always append the primary key to the ORDER BY clause when using find_each/find_in_batches.
 * Refactor (most) eager loading merge code into a dedicated class.
