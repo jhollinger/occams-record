@@ -32,6 +32,17 @@ class RawQueryTest < Minitest::Test
     assert_equal ["Widget A", "Widget B", "Widget C"], results.map(&:name)
   end
 
+  def test_simple_query_with_array_binds
+    results = OccamsRecord.
+      sql(
+        "SELECT * FROM widgets WHERE category_id IN (%{cat_id}) ORDER BY name",
+        {cat_id: Category.pluck(:id)}
+      ).
+      model(Widget). # NOTE this is only necessary with SQLite
+      run
+    assert_equal ["Widget A", "Widget B", "Widget C", "Widget D", "Widget E", "Widget F"], results.map(&:name)
+  end
+
   def test_eager_load
     results = OccamsRecord.
       sql(

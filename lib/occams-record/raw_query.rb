@@ -1,7 +1,8 @@
 module OccamsRecord
   #
   # Starts building a OccamsRecord::RawQuery. Pass it a raw SQL statement, optionally followed by
-  # a Hash of binds.
+  # a Hash of binds. While this doesn't offer an additional performance boost, it's a nice way to
+  # write safe, complicated SQL by hand while also supporting eager loading.
   #
   #   results = OccamsRecord.sql(%(
   #     SELECT * FROM widgets
@@ -11,13 +12,14 @@ module OccamsRecord
   #   }).run
   #
   # If you want to do eager loading, you must first the define a model to pull the associations from.
+  # NOTE If you're using SQLite, you must *always* specify the model.
   #
   #   results = OccamsRecord.
   #     sql(%(
   #       SELECT * FROM widgets
-  #       WHERE category_id = %{cat_id}
+  #       WHERE category_id IN (%{cat_ids})
   #     ), {
-  #       cat_id: 5
+  #       cat_ids: [5, 10]
   #     }).
   #     model(Widget).
   #     eager_load(:category).
@@ -62,11 +64,15 @@ module OccamsRecord
       @eager_loaders = eager_loaders
       @query_logger = query_logger
       @model = nil
+      @conn = @model&.connection || ActiveRecord::Base.connection
     end
 
     #
     # Specify the model to be used to load eager associations. Normally this would be the main table you're
     # SELECTing from.
+    #
+    # NOTE Some database adapters, notably SQLite's, require that the model *always* be specified, even if you
+    # aren't doing eager loading.
     #
     # @param klass [ActiveRecord::Base]
     # @return [OccamsRecord::RawQuery] self
@@ -82,12 +88,7 @@ module OccamsRecord
     # @return [Array<OccamsRecord::Results::Row>]
     #
     def run
-      conn = @model&.connection || ActiveRecord::Base.connection
-      escaped_sql = sql % binds.reduce({}) { |a, (col, val)|
-        a[col.to_sym] = conn.quote val
-        a
-      }
-      result = conn.exec_query escaped_sql
+      result = @conn.exec_query escaped_sql
       row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.map(&:name), model: @model, modules: @use)
       rows = result.rows.map { |row| row_class.new row }
       eager_load! rows
@@ -108,6 +109,20 @@ module OccamsRecord
       else
         to_a.each
       end
+    end
+
+    private
+
+    # Returns the SQL as a String with all variables escaped
+    def escaped_sql
+      sql % binds.reduce({}) { |a, (col, val)|
+        a[col.to_sym] = if val.is_a? Array
+                          val.map { |x| @conn.quote x }.join(', ')
+                        else
+                          @conn.quote val
+                        end
+        a
+      }
     end
   end
 end

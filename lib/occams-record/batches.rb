@@ -50,7 +50,8 @@ module OccamsRecord
     #
     # Returns an Enumerator that yields batches of records, of size "of".
     # NOTE ActiveRecord 5+ provides the 'in_batches' method to do something
-    # similiar, although 4.2 does not. Also it does not respect ORDER BY.
+    # similiar, although 4.2 does not. Also it does not respect ORDER BY,
+    # whereas this does.
     #
     # @param of [Integer] batch size
     # @return [Enumerator] yields batches

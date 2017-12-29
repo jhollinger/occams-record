@@ -138,6 +138,36 @@ widgets[0].orders[0].description
 => "O839SJZ98B 1/8/2017"
 ```
 
+## Raw SQL queries
+
+If you have a complicated query to run, you may drop down to hand-written SQL while still taking advantage of eager loading and variable escaping. (Note the slightly different syntax for binding variables.)
+
+NOTE this feature is quite new and might have some bugs. Issues and Pull Requests welcome.
+
+```ruby
+widgets = OccamsRecord.sql(%(
+  SELECT * FROM widgets
+  WHERE category_id = %{cat_id}
+), {
+  cat_id: 5
+}).run
+```
+
+To perform eager loading, you must specify the base model. NOTE some database adapters, notably SQLite, require you to always specify the model.
+
+```ruby
+widgets = OccamsRecord.
+  sql(%(
+    SELECT * FROM widgets
+    WHERE category_id IN (%{cat_ids})
+  ), {
+    cat_ids: [5, 10]
+  }).
+  model(Widget).
+  eager_load(:category).
+  run
+```
+
 ## Unsupported features
 
 The following `ActiveRecord` are not supported, and I have no plans to do so. However, I'd be glad to accept pull requests.
