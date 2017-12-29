@@ -25,7 +25,7 @@ module OccamsRecord
       #
       # Yield ActiveRecord::Relations to the given block, one for every "type" represented in the given rows.
       #
-      # @param rows [Array<OccamsRecord::ResultRow>] Array of rows used to calculate the query.
+      # @param rows [Array<OccamsRecord::Results::Row>] Array of rows used to calculate the query.
       #
       def query(rows)
         rows_by_type = rows.group_by(&@foreign_type)

@@ -5,8 +5,8 @@ module OccamsRecord
       #
       # Merge the association rows into the given rows.
       #
-      # @param assoc_rows [Array<OccamsRecord::ResultRow>] rows loaded from the association
-      # @param rows [Array<OccamsRecord::ResultRow>] rows loaded from the main model
+      # @param assoc_rows [Array<OccamsRecord::Results::Row>] rows loaded from the association
+      # @param rows [Array<OccamsRecord::Results::Row>] rows loaded from the main model
       #
       def merge!(assoc_rows, rows)
         Merge.new(rows, name).

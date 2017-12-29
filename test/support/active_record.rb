@@ -43,6 +43,7 @@ ActiveRecord::Base.connection.instance_eval do
 
   create_table :users do |t|
     t.string :username
+    t.timestamps null: false
   end
 
   create_table :offices do |t|

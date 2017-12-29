@@ -5,7 +5,7 @@ module OccamsRecord
       #
       # Yield one or more ActiveRecord::Relation objects to a given block.
       #
-      # @param rows [Array<OccamsRecord::ResultRow>] Array of rows used to calculate the query.
+      # @param rows [Array<OccamsRecord::Results::Row>] Array of rows used to calculate the query.
       #
       def query(rows)
         ids = rows.map { |r| r.send @ref.foreign_key }.compact.uniq
@@ -15,8 +15,8 @@ module OccamsRecord
       #
       # Merge the association rows into the given rows.
       #
-      # @param assoc_rows [Array<OccamsRecord::ResultRow>] rows loaded from the association
-      # @param rows [Array<OccamsRecord::ResultRow>] rows loaded from the main model
+      # @param assoc_rows [Array<OccamsRecord::Results::Row>] rows loaded from the association
+      # @param rows [Array<OccamsRecord::Results::Row>] rows loaded from the main model
       #
       def merge!(assoc_rows, rows)
         Merge.new(rows, name).

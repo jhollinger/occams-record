@@ -6,13 +6,13 @@ module OccamsRecord
   # After initializing, perform a specific type of merge by calling the appropriate *! method.
   #
   class Merge
-    # @return [Array<OccamsRecord::ResultRow>] the rows into which associated rows will be merged
+    # @return [Array<OccamsRecord::Results::Row>] the rows into which associated rows will be merged
     attr_reader :target_rows
 
     #
     # Initialize a new Merge operation.
     #
-    # @param target_rows [Array<OccamsRecord::ResultRow] the rows into which associated rows should be merged
+    # @param target_rows [Array<OccamsRecord::Results::Row] the rows into which associated rows should be merged
     # @param assoc_name [String|Symbol] name of the attribute where associated rows will be put
     #
     def initialize(target_rows, assoc_name)
@@ -24,7 +24,7 @@ module OccamsRecord
     # Merge a single assoc_row into each target_rows (or nil if one can't be found).
     # target_attr and assoc_attr are the matching keys on target_rows and assoc_rows, respectively.
     #
-    # @param assoc_rows [Array<OccamsRecord::ResultRow>] rows to merge into target_rows
+    # @param assoc_rows [Array<OccamsRecord::Results::Row>] rows to merge into target_rows
     # @param target_attr [String|Symbol] name of the matching key on the target records
     # @param assoc_attr [String] name of the matching key on the associated records
     #

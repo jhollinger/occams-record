@@ -35,10 +35,9 @@ module OccamsRecord
     attr_reader :model
     # @return [ActiveRecord::Relation] scope for building the main SQL query
     attr_reader :scope
-    # @return [ActiveRecord::Connection]
-    attr_reader :conn
 
     include Batches
+    include EagerLoaders::Builder
 
     #
     # Initialize a new query.
@@ -53,51 +52,23 @@ module OccamsRecord
       @model = scope.klass
       @scope = scope
       @eager_loaders = eager_loaders
-      @conn = model.connection
       @use = use
       @query_logger = query_logger
       instance_eval(&eval_block) if eval_block
     end
 
     #
-    # Specify an association to be eager-loaded. You may optionally pass a block that accepts a scope
-    # which you may modify to customize the query. For maximum memory savings, always `select` only
-    # the colums you actually need.
-    #
-    # @param assoc [Symbol] name of association
-    # @param scope [Proc] a scope to apply to the query (optional)
-    # @param select [String] a custom SELECT statement, minus the SELECT (optional)
-    # @param use [Array<Module>] optional Module to include in the result class (single or array)
-    # @param eval_block [Proc] a block where you may perform eager loading on *this* association (optional)
-    # @return [OccamsRecord::Query] returns self
-    #
-    def eager_load(assoc, scope = nil, select: nil, use: nil, &eval_block)
-      ref = model.reflections[assoc.to_s]
-      raise "OccamsRecord: No assocation `:#{assoc}` on `#{model.name}`" if ref.nil?
-      scope ||= -> { self.select select } if select
-      @eager_loaders << EagerLoaders.fetch!(ref).new(ref, scope, use, &eval_block)
-      self
-    end
-
-    #
     # Run the query and return the results.
     #
-    # @return [Array<OccamsRecord::ResultRow>]
+    # @return [Array<OccamsRecord::Results::Row>]
     #
     def run
       sql = scope.to_sql
       @query_logger << sql if @query_logger
-      result = conn.exec_query sql
-      row_class = OccamsRecord.build_result_row_class(model, result.columns, result.column_types, @eager_loaders.map(&:name), modules: @use)
+      result = model.connection.exec_query sql
+      row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.map(&:name), model: model, modules: @use)
       rows = result.rows.map { |row| row_class.new row }
-
-      @eager_loaders.each { |loader|
-        loader.query(rows) { |scope|
-          assoc_rows = Query.new(scope, use: loader.use, query_logger: @query_logger, &loader.eval_block).run
-          loader.merge! assoc_rows, rows
-        }
-      }
-
+      eager_load! rows
       rows
     end
 

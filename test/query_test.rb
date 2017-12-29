@@ -5,17 +5,18 @@ class QueryTest < Minitest::Test
 
   def setup
     DatabaseCleaner.start
+    Time.zone = "Eastern Time (US & Canada)"
   end
 
   def teardown
     DatabaseCleaner.clean
+    Time.zone = nil
   end
 
   def test_initializes_correctly
     q = OccamsRecord::Query.new(Category.all)
     assert_equal Category, q.model
     assert_match %r{SELECT}, q.scope.to_sql
-    refute_nil q.conn
   end
 
   def test_simple_query
@@ -300,5 +301,10 @@ class QueryTest < Minitest::Test
       refute order.line_items.all? { |line_item| line_item.item.category.is_a? mod_b }
       assert order.line_items.all? { |line_item| line_item.item.category.is_a? mod_c }
     end
+  end
+
+  def test_converts_datetimes_to_local_tz
+    bob = OccamsRecord.query(User.where(id: users(:bob).id)).to_a.first
+    assert_equal "2017-12-29T10:00:37-05:00", bob.created_at.iso8601
   end
 end

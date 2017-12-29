@@ -29,11 +29,11 @@ class EagerLoaderTest < Minitest::Test
   def test_polymorphic_belongs_to_merge
     ref = LineItem.reflections.fetch 'item'
     loader = OccamsRecord::EagerLoaders::PolymorphicBelongsTo.new(ref)
-    widget_result = OccamsRecord.build_result_row_class(Widget, %w(id name), {}, [])
+    widget_result = OccamsRecord::Results.klass(%w(id name), {}, [], model: Widget)
     widget_a = widget_result.new(['5', 'Widget A'])
     widget_b = widget_result.new(['6', 'Widget B'])
 
-    spline_result = OccamsRecord.build_result_row_class(Spline, %w(id name), {}, [])
+    spline_result = OccamsRecord::Results.klass(%w(id name), {}, [], model: Spline)
     spline_a = spline_result.new(['10', 'Spline A'])
 
     line_items = [
