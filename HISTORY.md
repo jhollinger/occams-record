@@ -1,3 +1,7 @@
+### 0.8.0 (2017-12-29)
+* Bugfix - Convert datetime results to local timezone (i.e. `Time.zone`), instead of leaving them as UTC.
+* Add support for running raw SQL queries with `OccamsRecord.sql`.
+
 ### 0.7.0 (2017-11-05)
 * Improvement to selecting columngs by different names, aggregates, etc. wrt to type conversion.
 
