@@ -21,6 +21,7 @@ module OccamsRecord
       # @param scope [Proc] a scope to apply to the query (optional)
       # @param select [String] a custom SELECT statement, minus the SELECT (optional)
       # @param use [Array<Module>] optional Module to include in the result class (single or array)
+      # @param as [Symbol] Load the association usign a different attribute name
       # @param eval_block [Proc] a block where you may perform eager loading on *this* association (optional)
       # @return [OccamsRecord::Query] returns self
       #
