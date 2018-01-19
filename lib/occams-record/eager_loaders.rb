@@ -24,11 +24,11 @@ module OccamsRecord
       # @param eval_block [Proc] a block where you may perform eager loading on *this* association (optional)
       # @return [OccamsRecord::Query] returns self
       #
-      def eager_load(assoc, scope = nil, select: nil, use: nil, &eval_block)
+      def eager_load(assoc, scope = nil, select: nil, use: nil, as: nil, &eval_block)
         ref = @model ? @model.reflections[assoc.to_s] : nil
         raise "OccamsRecord: No assocation `:#{assoc}` on `#{@model&.name || '<model missing>'}`" if ref.nil?
         scope ||= -> { self.select select } if select
-        @eager_loaders << eager_loader_for_association(ref).new(ref, scope, use, &eval_block)
+        @eager_loaders << eager_loader_for_association(ref).new(ref, scope, use: use, as: as, &eval_block)
         self
       end
 

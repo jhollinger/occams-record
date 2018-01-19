@@ -95,6 +95,19 @@ class QueryTest < Minitest::Test
     }.sort
   end
 
+  def test_belongs_to_with_alt_name
+    results = OccamsRecord.
+      query(Widget.all).
+      eager_load(:category, as: :cat).
+      run
+
+    assert_equal Widget.all.map { |w|
+      "#{w.name}: #{w.category.name}"
+    }.sort, results.map { |w|
+      "#{w.name}: #{w.cat.name}"
+    }.sort
+  end
+
   def test_has_one
     results = OccamsRecord.
       query(Widget.all).
@@ -306,5 +319,12 @@ class QueryTest < Minitest::Test
   def test_converts_datetimes_to_local_tz
     bob = OccamsRecord.query(User.where(id: users(:bob).id)).to_a.first
     assert_equal "2017-12-29T10:00:37-05:00", bob.created_at.iso8601
+  end
+
+  def test_loading_just_first
+    log = []
+    bob = OccamsRecord.query(User.where(username: "bob"), query_logger: log).first
+    assert_equal "bob", bob.username
+    assert_includes log, %q|SELECT  "users".* FROM "users" WHERE "users"."username" = 'bob' LIMIT 1|
   end
 end

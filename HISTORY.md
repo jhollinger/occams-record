@@ -1,3 +1,7 @@
+### 0.9.0 (2018-01-19)
+* Allow eager loading `as:` a different attribute name.
+* Add `OccamsRecord::Query#first` (returns only one record).
+
 ### 0.8.1 (2018-01-09)
 * Bugfix to null datetimes
 

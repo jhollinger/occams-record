@@ -13,11 +13,12 @@ module OccamsRecord
       # @param ref [ActiveRecord::Association] the ActiveRecord association
       # @param scope [Proc] a scope to apply to the query (optional)
       # @param use [Array<Module>] optional Module to include in the result class (single or array)
+      # @param as [Symbol] Load the association into this attr instead
       # @param eval_block [Proc] a block where you may perform eager loading on *this* association (optional)
       #
-      def initialize(ref, scope = nil, use = nil, &eval_block)
+      def initialize(ref, scope = nil, use: nil, as: nil, &eval_block)
         @ref, @scope, @use, @eval_block = ref, scope, use, eval_block
-        @name = ref.name.to_s
+        @name = (as || ref.name).to_s
         @foreign_type = @ref.foreign_type.to_sym
         @foreign_key = @ref.foreign_key.to_sym
       end

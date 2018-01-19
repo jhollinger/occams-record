@@ -13,11 +13,11 @@ module OccamsRecord
     # Initialize a new Merge operation.
     #
     # @param target_rows [Array<OccamsRecord::Results::Row] the rows into which associated rows should be merged
-    # @param assoc_name [String|Symbol] name of the attribute where associated rows will be put
+    # @param assoc_attr [String|Symbol] name of the attribute where associated rows will be put
     #
-    def initialize(target_rows, assoc_name)
+    def initialize(target_rows, assoc_attr)
       @target_rows = target_rows
-      @assign = "#{assoc_name}="
+      @assign = "#{assoc_attr}="
     end
 
     #
