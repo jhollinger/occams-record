@@ -2,7 +2,7 @@
 
 > Do not multiply entities beyond necessity. -- Occam's Razor
 
-Occam's Record is a high-efficiency query API for ActiveRecord. When loading thousands of records, ActiveRecord wastes a lot of RAM and CPU cycles on *things you'll never use.* Additionally, eagerly-loaded associations are forced to load each and every column, even if you only need a few.
+Occam's Record is a high-efficiency query API for ActiveRecord. When loading thousands of records, ActiveRecord wastes a lot of RAM and CPU cycles on *things you'll never use.* Additionally, eagerly-loaded associations are forced to load each and every column, each and every record, and all in a certain order.
 
 For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by making some very specific trade-offs:
 
@@ -10,28 +10,7 @@ For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by m
 * OccamsRecord objects are **purely database rows** - they don't have any instance methods from your Rails models.
 * OccamsRecord queries must specify each association that will be used. Otherwise they simply won't be availble.
 
-**What does this buy you?**
-
-* OccamsRecord results are **one-third the size** of ActiveRecord results.
-* OccamsRecord queries run **three to five times faster** than ActiveRecord queries.
-* When eager loading associations you may specify which columns to `SELECT`. (This can be a significant performance boost to both your database and Rails app, on top of the above numbers.)
-* When eager loading associations you may completely customize the query (`WHERE`, `ORDER BY`, `LIMIT`, etc.)
-* By forcing eager loading of associations, OccamsRecord bypasses the primary cause of performance problems in Rails: N+1 queries.
-* Forced eager loading also makes you consider the "shape" of your data, which can help you identify areas that need refactored (e.g. redundant foreign keys, more denormalization, etc.)
-
-**What don't you give up?**
-
-* You can still write your queries using ActiveRecord's query builder, as well as your existing models' associations & scopes.
-* You can still use ActiveRecord for everything else - small queries, creating, updating, and deleting records.
-* You can still inject some instance methods into your results, if you must. See below.
-
-**Is there evidence to back any of this up?**
-
-Glad you asked. [Look over the results yourself.](https://github.com/jhollinger/occams-record/wiki/Measurements)
-
-**Why not use a different ORM?**
-
-That's a great idea; check out [sequel](https://rubygems.org/gems/sequel) or [rom](https://rubygems.org/gems/rom)! But for large, legacy codebases heavily invested in ActiveRecord, switching ORMs often isn't practical. OccamsRecord can help you get some of those wins without a rewrite.
+For more on the rational behind OccamsRecord, see the Rational section at the end of the README.
 
 ## Usage
 
@@ -167,6 +146,31 @@ widgets = OccamsRecord.
   eager_load(:category).
   run
 ```
+
+## Rational
+
+**What does OccamsRecord buy you?**
+
+* OccamsRecord results are **one-third the size** of ActiveRecord results.
+* OccamsRecord queries run **three to five times faster** than ActiveRecord queries.
+* When eager loading associations you may specify which columns to `SELECT`. (This can be a significant performance boost to both your database and Rails app, on top of the above numbers.)
+* When eager loading associations you may completely customize the query (`WHERE`, `ORDER BY`, `LIMIT`, etc.)
+* By forcing eager loading of associations, OccamsRecord bypasses the primary cause of performance problems in Rails: N+1 queries.
+* Forced eager loading also makes you consider the "shape" of your data, which can help you identify areas that need refactored (e.g. redundant foreign keys, more denormalization, etc.)
+
+**What don't you give up?**
+
+* You can still write your queries using ActiveRecord's query builder, as well as your existing models' associations & scopes.
+* You can still use ActiveRecord for everything else - small queries, creating, updating, and deleting records.
+* You can still inject some instance methods into your results, if you must. See below.
+
+**Is there evidence to back any of this up?**
+
+Glad you asked. [Look over the results yourself.](https://github.com/jhollinger/occams-record/wiki/Measurements)
+
+**Why not use a different ORM?**
+
+That's a great idea; check out [sequel](https://rubygems.org/gems/sequel) or [rom](https://rubygems.org/gems/rom)! But for large, legacy codebases heavily invested in ActiveRecord, switching ORMs often isn't practical. OccamsRecord can help you get some of those wins without a rewrite.
 
 ## Unsupported features
 
