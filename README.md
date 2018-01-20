@@ -20,6 +20,8 @@ For more on the rational behind OccamsRecord, see the Rational section at the en
 gem 'occams-record'
 ```
 
+Full documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record).
+
 **Simple example**
 
 ```ruby
