@@ -17,7 +17,7 @@ module OccamsRecord
   #    }.
   #    run
   #
-  # @param query [ActiveRecord::Relation]
+  # @param scope [ActiveRecord::Relation]
   # @param use [Module] optional Module to include in the result class
   # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
   # @return [OccamsRecord::Query]
@@ -46,7 +46,7 @@ module OccamsRecord
     # @param use [Array<Module>] optional Module to include in the result class (single or array)
     # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
     # @param eager_loaders [OccamsRecord::EagerLoaders::Base]
-    # @param eval_block [Proc] block that will be eval'd on this instance. Can be used for eager loading. (optional)
+    # @yield will be eval'd on this instance. Can be used for eager loading. (optional)
     #
     def initialize(scope, use: nil, query_logger: nil, eager_loaders: [], &eval_block)
       @model = scope.klass
@@ -88,6 +88,7 @@ module OccamsRecord
     # If you pass a block, each result row will be yielded to it. If you don't,
     # an Enumerable will be returned.
     #
+    # @yield [OccamsRecord::Results::Row]
     # @return Enumerable
     #
     def each

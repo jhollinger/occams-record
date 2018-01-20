@@ -11,6 +11,7 @@ module OccamsRecord
     # to the ORDER BY clause to help ensure consistent batches.
     #
     # @param batch_size [Integer]
+    # @yield [OccamsRecord::Results::Row]
     # @return [Enumerator] will yield each record
     #
     def find_each(batch_size: 1000)
@@ -34,6 +35,7 @@ module OccamsRecord
     # to the ORDER BY clause to help ensure consistent batches.
     #
     # @param batch_size [Integer]
+    # @yield [OccamsRecord::Results::Row]
     # @return [Enumerator] will yield each batch
     #
     def find_in_batches(batch_size: 1000)

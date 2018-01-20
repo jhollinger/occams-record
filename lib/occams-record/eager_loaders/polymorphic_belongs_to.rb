@@ -14,7 +14,7 @@ module OccamsRecord
       # @param scope [Proc] a scope to apply to the query (optional)
       # @param use [Array<Module>] optional Module to include in the result class (single or array)
       # @param as [Symbol] Load the association usign a different attribute name
-      # @param eval_block [Proc] a block where you may perform eager loading on *this* association (optional)
+      # @yield perform eager loading on *this* association (optional)
       #
       def initialize(ref, scope = nil, use: nil, as: nil, &eval_block)
         @ref, @scope, @use, @eval_block = ref, scope, use, eval_block
@@ -27,6 +27,7 @@ module OccamsRecord
       # Yield ActiveRecord::Relations to the given block, one for every "type" represented in the given rows.
       #
       # @param rows [Array<OccamsRecord::Results::Row>] Array of rows used to calculate the query.
+      # @yield
       #
       def query(rows)
         rows_by_type = rows.group_by(&@foreign_type)

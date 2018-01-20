@@ -25,7 +25,7 @@ module OccamsRecord
   #     eager_load(:category).
   #     run
   #
-  # @param sql [String] The SELECT statement to run. Binds should use the built-in Ruby "%{bind_name}" syntax.
+  # @param sql [String] The SELECT statement to run. Binds should use Ruby's named string substitution.
   # @param binds [Hash] Bind values (Symbol keys)
   # @param use [Array<Module>] optional Module to include in the result class (single or array)
   # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
@@ -50,12 +50,11 @@ module OccamsRecord
     #
     # Initialize a new query.
     #
-    # @param sql [String] The SELECT statement to run. Binds should use the built-in Ruby "%{bind_name}" syntax.
+    # @param sql [String] The SELECT statement to run. Binds should use Ruby's named string substitution.
     # @param binds [Hash] Bind values (Symbol keys)
     # @param use [Array<Module>] optional Module to include in the result class (single or array)
     # @param eager_loaders [OccamsRecord::EagerLoaders::Base]
     # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
-    # @param eval_block [Proc] block that will be eval'd on this instance. Can be used for eager loading. (optional)
     #
     def initialize(sql, binds, use: nil, eager_loaders: [], query_logger: nil)
       @sql = sql
@@ -110,7 +109,8 @@ module OccamsRecord
     # If you pass a block, each result row will be yielded to it. If you don't,
     # an Enumerable will be returned.
     #
-    # @return Enumerable
+    # @yield [OccansR::Results::Row]
+    # @return [Enumerable]
     #
     def each
       if block_given?

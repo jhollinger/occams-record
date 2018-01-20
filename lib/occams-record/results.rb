@@ -1,4 +1,5 @@
 module OccamsRecord
+  # Classes and methods for handing query results.
   module Results
     # ActiveRecord's internal type casting API changes from version to version.
     CASTER = case ActiveRecord::VERSION::MAJOR
@@ -98,6 +99,11 @@ module OccamsRecord
 
       alias_method :to_hash, :to_h
 
+      #
+      # Returns a string with the "real" model name and raw result values.
+      #
+      # @return [String]
+      #
       def inspect
         "#<OccamsRecord::Results::Row @model_name=#{self.class.model_name} @raw_values=#{@raw_values}>"
       end

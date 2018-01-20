@@ -6,6 +6,7 @@ module OccamsRecord
       # Yield one or more ActiveRecord::Relation objects to a given block.
       #
       # @param rows [Array<OccamsRecord::Results::Row>] Array of rows used to calculate the query.
+      # @yield
       #
       def query(rows)
         assoc_ids = join_rows(rows).map { |row| row[1] }.compact.uniq
