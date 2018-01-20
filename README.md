@@ -10,7 +10,7 @@ For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by m
 * OccamsRecord objects are **purely database rows** - they don't have any instance methods from your Rails models.
 * OccamsRecord queries must specify each association that will be used. Otherwise they simply won't be availble.
 
-For more on the rational behind OccamsRecord, see the Rational section at the end of the README. But in short, OccamsRecord is 3x-5x faster, uses 1/3 of the memory, and eliminates N+1 queries.
+For more on the rational behind OccamsRecord, see the Rational section at the end of the README. But in short, OccamsRecord is 3x-5x faster, uses 1/3 of the memory, and eliminates the N+1 query problem.
 
 ## Usage
 
