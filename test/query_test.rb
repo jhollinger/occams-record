@@ -60,11 +60,22 @@ class QueryTest < Minitest::Test
     assert_equal 520, results[1].total_amount
   end
 
+  def test_eager_load_with_default_scope
+    log = []
+    results = OccamsRecord.
+      query(Order.all, query_logger: log).
+      eager_load(:ordered_line_items, ->(q) { q.where('1 != 2') }).
+      run
+
+    assert_equal LineItem.count, results.map(&:ordered_line_items).flatten.size
+    assert_includes log, %q(SELECT "line_items".* FROM "line_items" WHERE (1 != 2) AND "line_items"."order_id" IN (683130438, 834596858) ORDER BY item_type)
+  end
+
   def test_eager_load_custom_select_from_proc
     log = []
     results = OccamsRecord.
       query(Order.all, query_logger: log).
-      eager_load(:line_items, -> { where('1 != 2') }).
+      eager_load(:line_items, ->(q) { q.where('1 != 2') }).
       run
 
     assert_equal LineItem.count, results.map(&:line_items).flatten.size

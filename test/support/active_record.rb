@@ -82,6 +82,7 @@ end
 class Order < ActiveRecord::Base
   belongs_to :customer
   has_many :line_items
+  has_many :ordered_line_items, -> { order("item_type") }, class_name: "LineItem"
 end
 
 class LineItem < ActiveRecord::Base

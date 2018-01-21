@@ -77,7 +77,7 @@ class EagerLoaderTest < Minitest::Test
 
   def test_belongs_to_query
     ref = Widget.reflections.fetch 'category'
-    loader = OccamsRecord::EagerLoaders::BelongsTo.new(ref, -> { where(name: 'Foo') })
+    loader = OccamsRecord::EagerLoaders::BelongsTo.new(ref, ->(q) { q.where(name: 'Foo') })
     widgets = [
       OpenStruct.new(category_id: 5),
       OpenStruct.new(category_id: 10),

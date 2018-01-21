@@ -70,8 +70,8 @@ widgets = OccamsRecord.
   # load order_items, but only the fields needed to identify which orders go with which widgets
   eager_load(:order_items, select: "widget_id, order_id") {
 
-    # load the orders
-    eager_load(:orders, -> { select("id, customer_id").order("order_date DESC") }) {
+    # load the orders ("q" has all the normal query methods and any scopes defined on Order)
+    eager_load(:orders, ->(q) { q.select("id, customer_id").order("order_date DESC") }) {
 
       # load the customers who made the orders, but only their names
       eager_load(:customer, select: "id, name")

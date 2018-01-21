@@ -11,7 +11,8 @@ module OccamsRecord
 
       #
       # @param ref [ActiveRecord::Association] the ActiveRecord association
-      # @param scope [Proc] a scope to apply to the query (optional)
+      # @param scope [Proc] a scope to apply to the query (optional). It will be passed an
+      # ActiveRecord::Relation on which you may call all the normal query hethods (select, where, etc) as well as any scopes you've defined on the model.
       # @param use [Array<Module>] optional Module to include in the result class (single or array)
       # @param as [Symbol] Load the association usign a different attribute name
       # @yield perform eager loading on *this* association (optional)
@@ -56,7 +57,7 @@ module OccamsRecord
       def base_scope(model)
         q = model.all
         q = q.instance_exec(&@ref.scope) if @ref.scope
-        q = q.instance_exec(&@scope) if @scope
+        q = @scope.(q) if @scope
         q
       end
     end

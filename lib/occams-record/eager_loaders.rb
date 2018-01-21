@@ -13,12 +13,12 @@ module OccamsRecord
     # Methods for adding eager loading to a query.
     module Builder
       #
-      # Specify an association to be eager-loaded. You may optionally pass a block that accepts a scope
-      # which you may modify to customize the query. For maximum memory savings, always `select` only
-      # the colums you actually need.
+      # Specify an association to be eager-loaded. For maximum memory savings, only SELECT the
+      # colums you actually need.
       #
       # @param assoc [Symbol] name of association
-      # @param scope [Proc] a scope to apply to the query (optional)
+      # @param scope [Proc] a scope to apply to the query (optional). It will be passed an
+      # ActiveRecord::Relation on which you may call all the normal query hethods (select, where, etc) as well as any scopes you've defined on the model.
       # @param select [String] a custom SELECT statement, minus the SELECT (optional)
       # @param use [Array<Module>] optional Module to include in the result class (single or array)
       # @param as [Symbol] Load the association usign a different attribute name
@@ -28,7 +28,7 @@ module OccamsRecord
       def eager_load(assoc, scope = nil, select: nil, use: nil, as: nil, &eval_block)
         ref = @model ? @model.reflections[assoc.to_s] : nil
         raise "OccamsRecord: No assocation `:#{assoc}` on `#{@model&.name || '<model missing>'}`" if ref.nil?
-        scope ||= -> { self.select select } if select
+        scope ||= ->(q) { q.select select } if select
         @eager_loaders << eager_loader_for_association(ref).new(ref, scope, use: use, as: as, &eval_block)
         self
       end
