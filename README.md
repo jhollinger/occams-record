@@ -12,6 +12,8 @@ For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by m
 
 For more on the rational behind OccamsRecord, see the Rational section at the end of the README. But in short, OccamsRecord is 3x-5x faster, uses 1/3 of the memory, and eliminates the N+1 query problem.
 
+**BREAKING CHANGE** to `eager_load` in version **0.10.0**. See the examples below or [HISTORY.md](https://github.com/jhollinger/occams-record/blob/v0.10.0/HISTORY.md) for the new usage.
+
 ## Usage
 
 **Add to your Gemfile**
