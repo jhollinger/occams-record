@@ -10,7 +10,7 @@ For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by m
 * OccamsRecord objects are **purely database rows** - they don't have any instance methods from your Rails models.
 * OccamsRecord queries must specify each association that will be used. Otherwise they simply won't be availble.
 
-For more on the rational behind OccamsRecord, see the Rational section at the end of the README. But in short, OccamsRecord is 3x-5x faster, uses 1/3 of the memory, and eliminates the N+1 query problem.
+OccamsRecord is **not** an ORM or an ActiveRecord replacement. For more on the rational behind OccamsRecord, see the Rational section at the end of the README. But in short, OccamsRecord is 3x-5x faster, uses 1/3 of the memory, and eliminates the N+1 query problem. Use it to solve pain points in your existing ActiveRecord app.
 
 **BREAKING CHANGE** to `eager_load` in version **0.10.0**. See the examples below or [HISTORY.md](https://github.com/jhollinger/occams-record/blob/v0.10.0/HISTORY.md) for the new usage.
 
@@ -62,7 +62,7 @@ widgets[1].splines.map { |s| s.description }
 
 **An insane example, but only half as insane as the one that prompted the creation of this library**
 
-Here we're eager loading several levels down. Notice the `Proc` given to `eager_load(:orders)`. The `select:` option is just for convenience; you may instead pass a `Proc` and customize the query with any of ActiveRecord's query builder helpers (`select`, `where`, `order`, etc).
+Here we're eager loading several levels down. Notice the `Proc` given to `eager_load(:orders)`. The `select:` option is just for convenience; you may instead pass a `Proc` and customize the query with any of ActiveRecord's query builder helpers (`select`, `where`, `order`, `limit`, etc).
 
 ```ruby
 widgets = OccamsRecord.
@@ -118,7 +118,7 @@ widgets[0].expensive?
 => false
 
 widgets[0].orders[0].description
-=> "O839SJZ98B 1/8/2017"
+=> "O839SJZ98B - 1/8/2017"
 ```
 
 ## Raw SQL queries
