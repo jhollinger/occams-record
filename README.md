@@ -14,13 +14,13 @@ OccamsRecord is **not** an ORM or an ActiveRecord replacement. Use it to solve p
 
 ## Usage
 
+Full documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record).
+
 **Add to your Gemfile**
 
 ```ruby
 gem 'occams-record'
 ```
-
-Full documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record).
 
 **Simple example**
 
