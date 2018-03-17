@@ -10,8 +10,6 @@ Occam's Record is a high-efficiency query API for ActiveRecord. It is 3x-5x fast
 
 OccamsRecord is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app. For more on the rational behind OccamsRecord, see the Rational section at the end of the README.
 
-**BREAKING CHANGE** to `eager_load` in version **0.10.0**. See the examples below or [HISTORY.md](https://github.com/jhollinger/occams-record/blob/v0.10.0/HISTORY.md) for the new usage.
-
 ## Usage
 
 Full documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record).
@@ -123,7 +121,7 @@ widgets[0].orders[0].description
 
 If you have a complicated query to run, you may drop down to hand-written SQL while still taking advantage of eager loading and variable escaping (not possible in ActiveRecord). Note the slightly different syntax for binding variables.
 
-NOTE this feature is quite new and might have some bugs. Issues and Pull Requests welcome.
+NOTE this feature is quite new and might have some bugs. Since we are not yet at 1.0, breaking changes may occur. Issues and Pull Requests welcome.
 
 ```ruby
 widgets = OccamsRecord.sql(%(
