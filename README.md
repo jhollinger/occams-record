@@ -6,7 +6,7 @@ Occam's Record is a high-efficiency query API for ActiveRecord. It is 3x-5x fast
 
 * OccamsRecord results are **read-only**.
 * OccamsRecord objects are **purely database rows** - they don't have any instance methods from your Rails models.
-* OccamsRecord queries must specify each association that will be used. Otherwise they simply won't be availble.
+* OccamsRecord queries must eager load each association that will be used. Otherwise they simply won't be availble.
 
 OccamsRecord is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app. For more on the rational behind OccamsRecord, see the Rational section at the end of the README.
 
