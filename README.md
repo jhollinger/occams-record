@@ -2,15 +2,13 @@
 
 > Do not multiply entities beyond necessity. -- Occam's Razor
 
-Occam's Record is a high-efficiency query API for ActiveRecord. When loading thousands of records, ActiveRecord wastes a lot of RAM and CPU cycles on *things you'll never use.* Additionally, eagerly-loaded associations are forced to load each and every column, each and every record, and all in a certain order.
-
-For those stuck with ActiveRecord, OccamsRecord seeks to solve these issues by making some very specific trade-offs:
+Occam's Record is a high-efficiency query API for ActiveRecord. It is 3x-5x faster, uses 1/3 of the memory, eliminates the N+1 query problem, and allows for much more flexible eager loading. OccamsRecord achieves this by making some very specific trade-offs:
 
 * OccamsRecord results are **read-only**.
 * OccamsRecord objects are **purely database rows** - they don't have any instance methods from your Rails models.
 * OccamsRecord queries must specify each association that will be used. Otherwise they simply won't be availble.
 
-OccamsRecord is **not** an ORM or an ActiveRecord replacement. For more on the rational behind OccamsRecord, see the Rational section at the end of the README. But in short, OccamsRecord is 3x-5x faster, uses 1/3 of the memory, and eliminates the N+1 query problem. Use it to solve pain points in your existing ActiveRecord app.
+OccamsRecord is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app. For more on the rational behind OccamsRecord, see the Rational section at the end of the README.
 
 **BREAKING CHANGE** to `eager_load` in version **0.10.0**. See the examples below or [HISTORY.md](https://github.com/jhollinger/occams-record/blob/v0.10.0/HISTORY.md) for the new usage.
 
@@ -123,7 +121,7 @@ widgets[0].orders[0].description
 
 ## Raw SQL queries
 
-If you have a complicated query to run, you may drop down to hand-written SQL while still taking advantage of eager loading and variable escaping. (Note the slightly different syntax for binding variables.)
+If you have a complicated query to run, you may drop down to hand-written SQL while still taking advantage of eager loading and variable escaping (not possible in ActiveRecord). Note the slightly different syntax for binding variables.
 
 NOTE this feature is quite new and might have some bugs. Issues and Pull Requests welcome.
 
@@ -160,7 +158,7 @@ widgets = OccamsRecord.
 * When eager loading associations you may specify which columns to `SELECT`. (This can be a significant performance boost to both your database and Rails app, on top of the above numbers.)
 * When eager loading associations you may completely customize the query (`WHERE`, `ORDER BY`, `LIMIT`, etc.)
 * By forcing eager loading of associations, OccamsRecord bypasses the primary cause of performance problems in Rails: N+1 queries.
-* Forced eager loading also makes you consider the "shape" of your data, which can help you identify areas that need refactored (e.g. redundant foreign keys, more denormalization, etc.)
+* Forced eager loading also makes you consider the "shape" of your data, which can help you identify areas that need refactored (e.g. add redundant foreign keys, more denormalization, etc.)
 
 **What don't you give up?**
 
@@ -174,7 +172,7 @@ Glad you asked. [Look over the results yourself.](https://github.com/jhollinger/
 
 **Why not use a different ORM?**
 
-That's a great idea; check out [sequel](https://rubygems.org/gems/sequel) or [rom](https://rubygems.org/gems/rom)! But for large, legacy codebases heavily invested in ActiveRecord, switching ORMs often isn't practical. OccamsRecord can help you get some of those wins without a rewrite.
+That's a great idea; check out [sequel](https://rubygems.org/gems/sequel) or [rom](https://rubygems.org/gems/rom)! But for large, legacy codebases heavily invested in ActiveRecord, switching ORMs usually isn't practical. OccamsRecord can help you get some of those wins without a rewrite.
 
 ## Unsupported features
 
