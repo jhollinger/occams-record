@@ -55,4 +55,24 @@ class RawQueryTest < Minitest::Test
     assert_equal ["Widget A", "Widget B", "Widget C"], results.map(&:name)
     assert_equal ["Foo", "Foo", "Foo"], results.map { |r| r.category.name }
   end
+
+  def test_find_in_batches
+    batches = []
+    OccamsRecord.
+      sql("SELECT * FROM line_items WHERE amount > %{amount} ORDER BY amount LIMIT %{batch_limit} OFFSET %{batch_offset}", {
+        amount: 5,
+      }).
+      model(LineItem).
+      eager_load(:item).
+      find_in_batches(batch_size: 2) { |batch|
+        batches << batch
+      }
+    assert_equal [2, 2, 1], batches.map(&:size)
+    assert_equal [[20, 30], [70, 200], [300]], batches.map { |b|
+      b.map(&:amount)
+    }
+    assert_equal [["Spline C", "Widget A"], ["Spline A", "Widget C"], ["Widget D"]], batches.map { |b|
+      b.map(&:item).map(&:name)
+    }
+  end
 end

@@ -25,6 +25,10 @@ module OccamsRecord
   #     eager_load(:category).
   #     run
   #
+  # NOTE To use find_each/find_in_batches, your SQL string must include 'LIMIT %{batch_limit} OFFSET %{batch_offset}',
+  # and an ORDER BY is strongly recomended.
+  # OccamsRecord will provide the bind values for you.
+  #
   # @param sql [String] The SELECT statement to run. Binds should use Ruby's named string substitution.
   # @param binds [Hash] Bind values (Symbol keys)
   # @param use [Array<Module>] optional Module to include in the result class (single or array)
@@ -46,6 +50,7 @@ module OccamsRecord
     attr_reader :binds
 
     include EagerLoaders::Builder
+    include Batches
 
     #
     # Initialize a new query.
@@ -132,6 +137,34 @@ module OccamsRecord
                         end
         a
       }
+    end
+
+    #
+    # Returns an Enumerator that yields batches of records, of size "of".
+    # The SQL string must include 'LIMIT %{batch_limit} OFFSET %{batch_offset}'.
+    # The bind values will be provided by OccamsRecord.
+    #
+    # @param of [Integer] batch size
+    # @return [Enumerator] yields batches
+    #
+    def batches(of:)
+      unless @sql =~ /LIMIT\s+%\{batch_limit\}/i and @sql =~ /OFFSET\s+%\{batch_offset\}/i
+        raise ArgumentError, "When using find_each/find_in_batches you must specify 'LIMIT %{batch_limit} OFFSET %{batch_offset}'. SQL statement: #{@sql}"
+      end
+
+      Enumerator.new do |y|
+        offset = 0
+        loop do
+          results = RawQuery.new(@sql, @binds.merge({
+            batch_limit: of,
+            batch_offset: offset,
+          }), use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders).model(@model).run
+
+          y.yield results if results.any?
+          break if results.size < of
+          offset += results.size
+        end
+      end
     end
   end
 end
