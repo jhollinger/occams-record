@@ -2,13 +2,21 @@
 
 > Do not multiply entities beyond necessity. -- Occam's Razor
 
-Occam's Record is a high-efficiency query API for ActiveRecord. It is 3x-5x faster, uses 1/3 of the memory, eliminates the N+1 query problem, and allows for much more flexible eager loading. OccamsRecord achieves this by making some very specific trade-offs:
+Occam's Record is a high-efficiency query API for ActiveRecord. It is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app.
+
+* 3x-5x faster than ActiveRecord.
+* Uses 1/3 the memory of ActiveRecord.
+* Eliminates the N+1 query problem.
+* Allows custom SQL when eager loading associations (use `select`, `where`, `order`, etc).
+* `find_each`/`find_in_batches` respects `order` and `limit`.
+* Allows eager loading when using raw SQL.
+* Allows `find_each`/`find_in_batches` when using raw SQL.
+
+[Look over the speed and memory measurements yourself!](https://github.com/jhollinger/occams-record/wiki/Measurements). OccamsRecord achieves all of this by making some very specific trade-offs:
 
 * OccamsRecord results are **read-only**.
 * OccamsRecord objects are **purely database rows** - they don't have any instance methods from your Rails models.
 * OccamsRecord queries must eager load each association that will be used. Otherwise they simply won't be availble.
-
-OccamsRecord is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app. For more on the rational behind OccamsRecord, see the Rational section at the end of the README.
 
 ## Usage
 
@@ -147,30 +155,20 @@ widgets = OccamsRecord.
   run
 ```
 
-## Rational
+To use `find_each` or `find_in_batches` with raw SQL you must provide the `LIMIT` and `OFFSET` statements yourself.
 
-**What does OccamsRecord buy you?**
-
-* OccamsRecord results are **one-third the size** of ActiveRecord results.
-* OccamsRecord queries run **three to five times faster** than ActiveRecord queries.
-* When eager loading associations you may specify which columns to `SELECT`. (This can be a significant performance boost to both your database and Rails app, on top of the above numbers.)
-* When eager loading associations you may completely customize the query (`WHERE`, `ORDER BY`, `LIMIT`, etc.)
-* By forcing eager loading of associations, OccamsRecord bypasses the primary cause of performance problems in Rails: N+1 queries.
-* Forced eager loading also makes you consider the "shape" of your data, which can help you identify areas that need refactored (e.g. add redundant foreign keys, more denormalization, etc.)
-
-**What don't you give up?**
-
-* You can still write your queries using ActiveRecord's query builder, as well as your existing models' associations & scopes.
-* You can still use ActiveRecord for everything else - small queries, creating, updating, and deleting records.
-* You can still inject some instance methods into your results, if you must. See below.
-
-**Is there evidence to back any of this up?**
-
-Glad you asked. [Look over the results yourself.](https://github.com/jhollinger/occams-record/wiki/Measurements)
-
-**Why not use a different ORM?**
-
-That's a great idea; check out [sequel](https://rubygems.org/gems/sequel) or [rom](https://rubygems.org/gems/rom)! But for large, legacy codebases heavily invested in ActiveRecord, switching ORMs usually isn't practical. OccamsRecord can help you get some of those wins without a rewrite.
+```ruby
+widgets = OccamsRecord.sql(%(
+  SELECT * FROM widgets
+  WHERE category_id = %{cat_id}
+  LIMIT %{batch_limit}
+  OFFSET %{batch_offset}
+), {
+  cat_id: 5
+}).find_each { |widget|
+  puts widget.name
+}
+```
 
 ## Unsupported features
 
