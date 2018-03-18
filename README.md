@@ -9,13 +9,13 @@ Occam's Record is a high-efficiency query API for ActiveRecord. It is **not** an
 * Eliminates the N+1 query problem.
 * Allows custom SQL when eager loading associations (use `select`, `where`, `order`, etc).
 * `find_each`/`find_in_batches` respects `order` and `limit`.
-* Allows eager loading when using raw SQL.
+* Allows eager loading of associations when using raw SQL.
 * Allows `find_each`/`find_in_batches` when using raw SQL.
 
 [Look over the speed and memory measurements yourself!](https://github.com/jhollinger/occams-record/wiki/Measurements). OccamsRecord achieves all of this by making some very specific trade-offs:
 
 * OccamsRecord results are **read-only**.
-* OccamsRecord objects are **purely database rows** - they don't have any instance methods from your Rails models.
+* OccamsRecord results are **purely database rows** - they don't have any instance methods from your Rails models.
 * OccamsRecord queries must eager load each association that will be used. Otherwise they simply won't be availble.
 
 ## Usage
