@@ -140,7 +140,7 @@ widgets = OccamsRecord.sql(%(
 }).run
 ```
 
-** Performing eager loading with raw SQL**
+**Performing eager loading with raw SQL**
 
 To perform eager loading with raw SQL you must specify the base model. NOTE some database adapters, notably SQLite, require you to always specify the model.
 
@@ -157,7 +157,7 @@ widgets = OccamsRecord.
   run
 ```
 
-** Using find_each/find_in_batches with raw SQL **
+**Using find_each/find_in_batches with raw SQL **
 
 To use `find_each` or `find_in_batches` with raw SQL you must provide the `LIMIT` and `OFFSET` statements yourself. The bind values for these will be filled in by OccamsRecord.
 
