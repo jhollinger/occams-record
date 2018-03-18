@@ -1,3 +1,6 @@
+### 0.11.0 (2018-03-18)
+* Add `find_each` and `find_in_batches` for raw SQL queries.
+
 ### 0.10.0 (2018-01-21)
 * BREAKING CHANGE to `eager_load`. If you pass it a Proc, that Proc must now accept one argument (an `ActiveRecord::Relation`). You will call `select`, `where`, etc, and any model scopes on it instead of calling them "magically" on nothing.
 
