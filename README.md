@@ -12,7 +12,7 @@ Occam's Record is a high-efficiency query API for ActiveRecord. It is **not** an
 * Allows eager loading of associations when using raw SQL.
 * Allows `find_each`/`find_in_batches` when using raw SQL.
 
-[Look over the speed and memory measurements yourself!](https://github.com/jhollinger/occams-record/wiki/Measurements) OccamsRecord achieves all of this by making some very specific trade-offs:
+[Look over the speed and memory measurements yourself!](https://github.com/jhollinger/occams-record/wiki/Measurements). OccamsRecord achieves all of this by making some very specific trade-offs:
 
 * OccamsRecord results are **read-only**.
 * OccamsRecord results are **purely database rows** - they don't have any instance methods from your Rails models.
@@ -34,7 +34,7 @@ gem 'occams-record'
 widgets = OccamsRecord.
   query(Widget.order("name")).
   eager_load(:category).
-  to_a
+  run
 
 widgets[0].id
 => 1000
@@ -55,7 +55,7 @@ widgets = OccamsRecord.
   query(Widget.order("name")).
   eager_load(:category).
   eager_load(:splines, select: "widget_id, description").
-  to_a
+  run
 
 widgets[0].splines.map { |s| s.description }
 => ["Spline 1", "Spline 2", "Spline 3"]
@@ -83,7 +83,7 @@ widgets = OccamsRecord.
       eager_load(:customer, select: "id, name")
     }
   }.
-  to_a
+  run
 ```
 
 ## Injecting instance methods
@@ -110,7 +110,7 @@ end
 widgets = OccamsRecord.
   query(Widget.order("name"), use: MyWidgetMethods).
   eager_load(:orders, use: [MyOrderMethods, SomeAdditionalMethods]).
-  to_a
+  run
 
 widgets[0].to_s
 => "Widget A"
@@ -137,7 +137,7 @@ widgets = OccamsRecord.sql(%(
   WHERE category_id = %{cat_id}
 ), {
   cat_id: 5
-}).to_a
+}).run
 ```
 
 To perform eager loading, you must specify the base model. NOTE some database adapters, notably SQLite, require you to always specify the model.
@@ -152,7 +152,7 @@ widgets = OccamsRecord.
   }).
   model(Widget).
   eager_load(:category).
-  to_a
+  run
 ```
 
 To use `find_each` or `find_in_batches` with raw SQL you must provide the `LIMIT` and `OFFSET` statements yourself.
