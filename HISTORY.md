@@ -1,3 +1,6 @@
+### 0.14.0 (2018-03-19)
+* Change `use:` option to prepend modules instead of including them.
+
 ### 0.13.1 (2018-03-19)
 * Bugfix to friendly exception edge case
 
