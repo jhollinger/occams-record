@@ -20,7 +20,7 @@ module OccamsRecord
     #
     def self.klass(column_names, column_types, association_names = [], model: nil, modules: nil)
       Class.new(Results::Row) do
-        Array(modules).each { |mod| include mod } if modules
+        Array(modules).each { |mod| prepend mod } if modules
 
         self.columns = column_names.map(&:to_s)
         self.associations = association_names.map(&:to_s)
