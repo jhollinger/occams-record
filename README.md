@@ -159,12 +159,13 @@ widgets = OccamsRecord.
 
 **Using find_each/find_in_batches with raw SQL**
 
-To use `find_each` or `find_in_batches` with raw SQL you must provide the `LIMIT` and `OFFSET` statements yourself. The bind values for these will be filled in by OccamsRecord.
+To use `find_each` or `find_in_batches` with raw SQL you must provide the `LIMIT` and `OFFSET` clauses yourself. The bind values for these will be filled in by OccamsRecord. Remember to always specific a consitent `ORDER BY` clause.
 
 ```ruby
 widgets = OccamsRecord.sql(%(
   SELECT * FROM widgets
   WHERE category_id = %{cat_id}
+  ORDER BY name, id
   LIMIT %{batch_limit}
   OFFSET %{batch_offset}
 ), {
