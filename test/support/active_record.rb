@@ -48,6 +48,7 @@ ActiveRecord::Base.connection.instance_eval do
 
   create_table :offices do |t|
     t.string :name
+    t.boolean :active
   end
 
   create_table :offices_users, id: false do |t|

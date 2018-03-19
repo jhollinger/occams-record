@@ -40,6 +40,9 @@ module OccamsRecord
           case type.type
           when :datetime
             define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx])&.in_time_zone }
+          when :boolean
+            define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx]) }
+            define_method("#{col}?") { !!send(col) }
           else
             define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx]) }
           end

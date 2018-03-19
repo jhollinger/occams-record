@@ -1,3 +1,7 @@
+### 0.12.0 (2018-03-19)
+* eager_load should check subclasses for matching associations.
+* For booleans in results, add `<field>?` aliases.
+
 ### 0.11.0 (2018-03-18)
 * Add `find_each` and `find_in_batches` for raw SQL queries.
 

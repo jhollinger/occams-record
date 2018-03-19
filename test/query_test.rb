@@ -338,4 +338,13 @@ class QueryTest < Minitest::Test
     assert_equal "bob", bob.username
     assert_includes log, %q|SELECT  "users".* FROM "users" WHERE "users"."username" = 'bob' LIMIT 1|
   end
+
+  def test_boolean_aliases
+    offices(:bar).update_column(:active, true)
+    offices(:foo).update_column(:active, false)
+    offices(:zorp).update_column(:active, nil)
+
+    offices = OccamsRecord.query(Office.order("name")).run
+    assert_equal [true, false, false], offices.map(&:active?)
+  end
 end
