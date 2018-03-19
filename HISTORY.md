@@ -1,3 +1,6 @@
+### 0.13.0 (2018-03-19)
+* Friendly exceptions when eager loading fails (usually b/c a column wasn't in the `SELECT`).
+
 ### 0.12.0 (2018-03-19)
 * eager_load should check subclasses for matching associations.
 * For booleans in results, add `<field>?` aliases.
