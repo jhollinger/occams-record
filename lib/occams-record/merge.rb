@@ -77,7 +77,7 @@ module OccamsRecord
       begin
         assoc_rows_by_attr = assoc_rows.group_by(&assoc_attr.to_sym)
       rescue NoMethodError => e
-        raise MissingFieldError.new(assoc_rows_by_attr[0], e.name)
+        raise MissingFieldError.new(assoc_rows[0], e.name)
       end
 
       target_rows.each do |row|
