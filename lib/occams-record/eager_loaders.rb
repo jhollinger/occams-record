@@ -27,7 +27,8 @@ module OccamsRecord
       #
       def eager_load(assoc, scope = nil, select: nil, use: nil, as: nil, &eval_block)
         ref = @model ? @model.reflections[assoc.to_s] : nil
-        raise "OccamsRecord: No assocation `:#{assoc}` on `#{@model&.name || '<model missing>'}`" if ref.nil?
+        ref ||= @model.subclasses.map(&:reflections).detect { |x| x.has_key? assoc.to_s }&.[](assoc.to_s) if @model
+        raise "OccamsRecord: No assocation `:#{assoc}` on `#{@model&.name || '<model missing>'}` or subclasses" if ref.nil?
         scope ||= ->(q) { q.select select } if select
         @eager_loaders << eager_loader_for_association(ref).new(ref, scope, use: use, as: as, &eval_block)
         self
