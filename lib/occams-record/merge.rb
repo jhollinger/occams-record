@@ -9,6 +9,25 @@ module OccamsRecord
     # @return [Array<OccamsRecord::Results::Row>] the rows into which associated rows will be merged
     attr_reader :target_rows
 
+    # Exception raised when a foreign or primary key is missing from a record
+    class MissingFieldError < StandardError
+      # @return [OccamsRecord::Result::Row]
+      attr_reader :record
+      # @return [Symbol]
+      attr_reader :field
+
+      # @param record [OccamsRecord::Result::Row]
+      # @param field [Symbol]
+      def initialize(record, field)
+        @record, @field = record, field
+      end
+
+      # @return [String]
+      def message
+        "Missing field '#{field}' on #{record.inspect}. Did you forget to select it?"
+      end
+    end
+
     #
     # Initialize a new Merge operation.
     #
@@ -30,13 +49,21 @@ module OccamsRecord
     #
     def single!(assoc_rows, target_attr, assoc_attr)
       assoc_rows_by_id = assoc_rows.reduce({}) { |a, assoc_row|
-        id = assoc_row.send assoc_attr
+        begin
+          id = assoc_row.send assoc_attr
+        rescue NoMethodError => e
+          raise MissingFieldError.new(assoc_row, e.name)
+        end
         a[id] = assoc_row
         a
       }
 
       target_rows.each do |row|
-        attr = row.send target_attr
+        begin
+          attr = row.send target_attr
+        rescue NoMethodError => e
+          raise MissingFieldError.new(row, e.name)
+        end
         row.send @assign, attr ? assoc_rows_by_id[attr] : nil
       end
     end
@@ -47,9 +74,18 @@ module OccamsRecord
     # target_attr and assoc_attr are the matching keys on target_rows and assoc_rows, respectively.
     #
     def many!(assoc_rows, target_attr, assoc_attr)
-      assoc_rows_by_attr = assoc_rows.group_by(&assoc_attr.to_sym)
+      begin
+        assoc_rows_by_attr = assoc_rows.group_by(&assoc_attr.to_sym)
+      rescue NoMethodError => e
+        raise MissingFieldError.new(assoc_rows_by_attr[0], e.name)
+      end
+
       target_rows.each do |row|
-        pkey = row.send target_attr
+        begin
+          pkey = row.send target_attr
+        rescue NoMethodError => e
+          raise MissingFieldError.new(row, e.name)
+        end
         row.send @assign, assoc_rows_by_attr[pkey] || []
       end
     end
