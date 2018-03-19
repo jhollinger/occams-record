@@ -1,3 +1,6 @@
+### 0.13.1 (2018-03-19)
+* Bugfix to friendly exception edge case
+
 ### 0.13.0 (2018-03-19)
 * Friendly exceptions when eager loading fails (usually b/c a column wasn't in the `SELECT`).
 
