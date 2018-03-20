@@ -2,6 +2,8 @@ module OccamsRecord
   module EagerLoaders
     # Eager loader for belongs_to associations.
     class BelongsTo < Base
+      private
+
       #
       # Yield one or more ActiveRecord::Relation objects to a given block.
       #

@@ -6,10 +6,6 @@ module OccamsRecord
     class Base
       # @return [String] association name
       attr_reader :name
-      # @return [Array<Module>] optional Module to include in the result class (single or array)
-      attr_reader :use
-      # @return [Proc] optional Proc for eager loading things on this association
-      attr_reader :eval_block
 
       #
       # @param ref [ActiveRecord::Association] the ActiveRecord association
@@ -24,6 +20,21 @@ module OccamsRecord
         @model = ref.klass
         @name = (as || ref.name).to_s
       end
+
+      #
+      # Run the query and merge the results into the given rows.
+      #
+      # @param rows [Array<OccamsRecord::Results::Row>] Array of rows used to calculate the query.
+      # @param query_logger [Array<String>]
+      #
+      def run(rows, query_logger: nil)
+        query(rows) { |scope|
+          assoc_rows = Query.new(scope, use: @use, query_logger: query_logger, &@eval_block).run
+          merge! assoc_rows, rows
+        }
+      end
+
+      private
 
       #
       # Yield one or more ActiveRecord::Relation objects to a given block.

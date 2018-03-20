@@ -92,7 +92,9 @@ module OccamsRecord
     # @return [Array<OccamsRecord::Results::Row>]
     #
     def run
-      result = @conn.exec_query escaped_sql
+      _escaped_sql = escaped_sql
+      @query_logger << _escaped_sql if @query_logger
+      result = @conn.exec_query _escaped_sql
       row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.map(&:name), model: @model, modules: @use)
       rows = result.rows.map { |row| row_class.new row }
       eager_load! rows

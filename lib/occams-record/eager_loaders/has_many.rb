@@ -2,6 +2,8 @@ module OccamsRecord
   module EagerLoaders
     # Eager loader for has_many associations.
     class HasMany < HasOne
+      private
+
       #
       # Merge the association rows into the given rows.
       #

@@ -10,6 +10,10 @@ module OccamsRecord
     autoload :HasMany, 'occams-record/eager_loaders/has_many'
     autoload :Habtm, 'occams-record/eager_loaders/habtm'
 
+    autoload :AdHocBase, 'occams-record/eager_loaders/ad_hoc_base'
+    autoload :AdHocOne, 'occams-record/eager_loaders/ad_hoc_one'
+    autoload :AdHocMany, 'occams-record/eager_loaders/ad_hoc_many'
+
     # Methods for adding eager loading to a query.
     module Builder
       #
@@ -34,15 +38,21 @@ module OccamsRecord
         self
       end
 
+      def eager_load_one(name, mapping, sql, binds = {}, use: nil)
+        @eager_loaders << EagerLoaders::AdHocOne.new(name, mapping, sql, binds, use: use)
+        self
+      end
+
+      def eager_load_many(name, mapping, sql, binds = {}, use: nil)
+        @eager_loaders << EagerLoaders::AdHocMany.new(name, mapping, sql, binds, use: use)
+      end
+
       private
 
       # Run all defined eager loaders into the given result rows
       def eager_load!(rows)
         @eager_loaders.each { |loader|
-          loader.query(rows) { |scope|
-            assoc_rows = Query.new(scope, use: loader.use, query_logger: @query_logger, &loader.eval_block).run
-            loader.merge! assoc_rows, rows
-          }
+          loader.run(rows, query_logger: @query_logger)
         }
       end
 

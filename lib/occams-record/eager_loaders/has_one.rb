@@ -2,6 +2,8 @@ module OccamsRecord
   module EagerLoaders
     # Eager loader for has_one associations.
     class HasOne < Base
+      private
+
       #
       # Yield one or more ActiveRecord::Relation objects to a given block.
       #

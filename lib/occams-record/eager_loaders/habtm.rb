@@ -2,6 +2,8 @@ module OccamsRecord
   module EagerLoaders
     # Eager loader for has_and_belongs_to_many associations.
     class Habtm < Base
+      private
+
       #
       # Yield one or more ActiveRecord::Relation objects to a given block.
       #
