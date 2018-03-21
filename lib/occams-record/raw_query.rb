@@ -11,7 +11,8 @@ module OccamsRecord
   #     cat_id: 5
   #   }).run
   #
-  # If you want to do eager loading, you must first the define a model to pull the associations from.
+  # If you want to do eager loading, you must first the define a model to pull the associations from (unless
+  # you're using the raw SQL eager loaders `eager_load_one` or `eager_load_many`).
   # NOTE If you're using SQLite, you must *always* specify the model.
   #
   #   results = OccamsRecord.
