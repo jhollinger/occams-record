@@ -11,6 +11,7 @@ Occam's Record is a high-efficiency query API for ActiveRecord. It is **not** an
 * `find_each`/`find_in_batches` respects `order` and `limit`.
 * Allows eager loading of associations when using raw SQL.
 * Allows `find_each`/`find_in_batches` when using raw SQL.
+* Eager load data from arbitrary SQL (no association required).
 
 [Look over the speed and memory measurements yourself!](https://github.com/jhollinger/occams-record/wiki/Measurements) OccamsRecord achieves all of this by making some very specific trade-offs:
 
@@ -83,6 +84,28 @@ widgets = OccamsRecord.
       eager_load(:customer, select: "id, name")
     }
   }.
+  run
+```
+
+**Eager load using raw SQL without a predefined association**
+
+Let's say we want to load each widget and eager load all the customers who've ever ordered it. We could do that using the above example, but we end up loading a bunch of stuff we don't care about. What if we could define an ad hoc association using raw SQL? Enter `eager_load_one` and `eager_load_many`! See the full documentation for a full description of all options.
+
+```ruby
+widgets = OccamsRecord.
+  query(Widget.order("name")).
+
+  # load the results of the query into "customers", matching "widget_id"
+  # in the results to the "id" field of the widgets
+  eager_load_many(:customers, {:widget_id => :id}, %(
+    SELECT DISTINCT customers.id, customers.name, order_items.widget_id
+    FROM customers
+      INNER JOIN orders ON orders.customer_id = customers.id
+      INNER JOIN order_items ON order_items.order_id = orders.id
+    WHERE order_items.widget_id IN (%{ids})
+  ), binds: {
+    # additional bind values (ids will be passed in for you)
+  }).
   run
 ```
 
