@@ -89,7 +89,7 @@ widgets = OccamsRecord.
 
 **Eager load using raw SQL without a predefined association**
 
-Let's say we want to load each widget and eager load all the customers who've ever ordered it. We could do that using the above example, but we end up loading a bunch of stuff we don't care about. What if we could define an ad hoc association using raw SQL? Enter `eager_load_one` and `eager_load_many`! See the full documentation for a full description of all options.
+Let's say we want to load each widget and eager load all the customers who've ever ordered it. We could do that using the above example, but we end up loading a lot of useless intermediate records. What if we could define an ad hoc association, using raw SQL, to load exactly what we need? Enter `eager_load_one` and `eager_load_many`! See the full documentation for a full description of all options.
 
 ```ruby
 widgets = OccamsRecord.
