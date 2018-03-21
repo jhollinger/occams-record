@@ -2,15 +2,15 @@
 
 > Do not multiply entities beyond necessity. -- Occam's Razor
 
-Occam's Record is a high-efficiency query API for ActiveRecord. It is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app.
+Occam's Record is a high-efficiency, advanced query library for ActiveRecord apps. It is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app.
 
-* 3x-5x faster than ActiveRecord.
-* Uses 1/3 the memory of ActiveRecord.
+* 3x-5x faster than ActiveRecord queries.
+* Uses 1/3 the memory of ActiveRecord query results.
 * Eliminates the N+1 query problem.
 * Allows custom SQL when eager loading associations (use `select`, `where`, `order`, etc).
 * `find_each`/`find_in_batches` respects `order` and `limit`.
-* Allows eager loading of associations when using raw SQL.
-* Allows `find_each`/`find_in_batches` when using raw SQL.
+* Allows eager loading of associations when querying with raw SQL.
+* Allows `find_each`/`find_in_batches` when querying with raw SQL.
 * Eager load data from arbitrary SQL (no association required).
 
 [Look over the speed and memory measurements yourself!](https://github.com/jhollinger/occams-record/wiki/Measurements) OccamsRecord achieves all of this by making some very specific trade-offs:
