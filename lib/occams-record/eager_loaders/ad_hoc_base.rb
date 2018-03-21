@@ -14,12 +14,13 @@ module OccamsRecord
       # @param mapping [Hash] a one element Hash with the key being the local/child id and the value being the foreign/parent id
       # @param sql [String] the SQL to query the associated records. Include a bind params called '%{ids}' for the foreign/parent ids.
       # @param binds [Hash] any additional binds for your query.
-      # @param use [Array<Module>] optional - Ruby modules to include in the result objects (single or array)
       # @param model [ActiveRecord::Base] optional - ActiveRecord model that represents what you're loading. required when using Sqlite.
+      # @param use [Array<Module>] optional - Ruby modules to include in the result objects (single or array)
+      # @yield
       #
-      def initialize(name, mapping, sql, binds = {}, use: nil, model: nil)
+      def initialize(name, mapping, sql, binds: {}, model: nil, use: nil, &eval_block)
         @name = name.to_s
-        @sql, @binds, @use, @model = sql, binds, use, model
+        @sql, @binds, @use, @model, @eval_block = sql, binds, use, model, eval_block
         raise ArgumentError, "Add-hoc eager loading mapping must contain exactly one key-value pair" unless mapping.size == 1
         @local_key = mapping.keys.first
         @foreign_key = mapping.fetch(@local_key)
@@ -34,7 +35,7 @@ module OccamsRecord
       def run(rows, query_logger: nil)
         calc_ids(rows) { |ids|
           binds = @binds.merge({:ids => ids})
-          assoc_rows = RawQuery.new(@sql, binds, use: @use, query_logger: query_logger).model(@model).run
+          assoc_rows = RawQuery.new(@sql, binds, use: @use, query_logger: query_logger, &@eval_block).model(@model).run
           merge! assoc_rows, rows
         }
       end

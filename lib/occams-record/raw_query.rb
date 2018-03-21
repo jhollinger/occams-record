@@ -49,8 +49,8 @@ module OccamsRecord
     # @return [Hash]
     attr_reader :binds
 
-    include EagerLoaders::Builder
     include Batches
+    include EagerLoaders::Builder
 
     #
     # Initialize a new query.
@@ -61,7 +61,7 @@ module OccamsRecord
     # @param eager_loaders [OccamsRecord::EagerLoaders::Base]
     # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
     #
-    def initialize(sql, binds, use: nil, eager_loaders: [], query_logger: nil)
+    def initialize(sql, binds, use: nil, eager_loaders: [], query_logger: nil, &eval_block)
       @sql = sql
       @binds = binds
       @use = use
@@ -69,6 +69,7 @@ module OccamsRecord
       @query_logger = query_logger
       @model = nil
       @conn = @model&.connection || ActiveRecord::Base.connection
+      instance_eval(&eval_block) if eval_block
     end
 
     #
