@@ -165,7 +165,7 @@ widgets = OccamsRecord.sql(%(
 
 **Performing eager loading with raw SQL**
 
-To perform eager loading with raw SQL you must specify the base model. NOTE some database adapters, notably SQLite, require you to always specify the model.
+To perform eager loading with raw SQL you must specify the base model (unless you use the raw SQL eager loaders `eager_load_one` or `eager_load_many`). NOTE some database adapters, notably SQLite, require you to always specify the model.
 
 ```ruby
 widgets = OccamsRecord.
