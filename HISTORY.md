@@ -1,3 +1,6 @@
+### 0.15.0 (2018-03-21)
+* Add `eager_load_one` and `eager_load_many` for ad hoc, raw SQL associations.
+
 ### 0.14.0 (2018-03-19)
 * Change `use:` option to prepend modules instead of including them.
 
