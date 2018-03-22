@@ -1,3 +1,7 @@
+### 0.16.0 (2018-03-22)
+* Raise `OccamsRecord::Results::MissingEagerLoadError` if an unloaded association is called.
+* Raise `OccamsRecord::Results::MissingColumnSelectError` if an unselected column is called.
+
 ### 0.15.0 (2018-03-21)
 * Add `eager_load_one` and `eager_load_many` for ad hoc, raw SQL associations.
 
