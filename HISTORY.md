@@ -1,3 +1,6 @@
+### 0.17.0 (2018-03-22)
+* Rubygems.org fucked up.
+
 ### 0.16.0 (2018-03-22)
 * Raise `OccamsRecord::Results::MissingEagerLoadError` if an unloaded association is called.
 * Raise `OccamsRecord::Results::MissingColumnSelectError` if an unselected column is called.
