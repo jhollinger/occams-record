@@ -102,6 +102,19 @@ module OccamsRecord
 
       alias_method :to_hash, :to_h
 
+      def method_missing(name, *args, &block)
+        return super if args.any? or !block.nil?
+        model = self.class.model_name.constantize
+
+        if model.reflections.has_key? name.to_s
+          raise MissingEagerLoadError.new(model.name, name)
+        elsif model.columns_hash.has_key? name.to_s
+          raise MissingColumnSelectError.new(model.name, name)
+        else
+          super
+        end
+      end
+
       #
       # Returns a string with the "real" model name and raw result values.
       #
@@ -109,6 +122,34 @@ module OccamsRecord
       #
       def inspect
         "#<OccamsRecord::Results::Row @model_name=#{self.class.model_name} @raw_values=#{@raw_values}>"
+      end
+    end
+
+    # Exception when an unloaded association is called on a result row
+    class MissingEagerLoadError < StandardError
+      attr_reader :model_name
+      attr_reader :name
+
+      def initialize(model_name, name)
+        @model_name, @name = model_name, name
+      end
+
+      def message
+        "The association '#{name}' is unavailable on #{model_name} because it has not been eager loaded!"
+      end
+    end
+
+    # Exception when an unselected column is called on a result row
+    class MissingColumnSelectError < StandardError
+      attr_reader :model_name
+      attr_reader :name
+
+      def initialize(model_name, name)
+        @model_name, @name = model_name, name
+      end
+
+      def message
+        "The column '#{name}' is unavailable on #{model_name} because it was not included in the SELECT statement!"
       end
     end
   end
