@@ -72,7 +72,7 @@ module OccamsRecord
 
           y.yield results if results.any?
           count += results.size
-          offset += count
+          offset += results.size
           out_of_records = results.size < batch_size || (limit && count >= limit)
         end
       end
