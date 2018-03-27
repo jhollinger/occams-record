@@ -12,7 +12,7 @@ module OccamsRecord
       #
       def query(rows)
         ids = rows.map { |r| r.send @ref.foreign_key }.compact.uniq
-        yield base_scope.where(@ref.active_record_primary_key => ids)
+        yield base_scope.where(@ref.active_record_primary_key => ids) if ids.any?
       end
 
       #

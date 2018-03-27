@@ -15,7 +15,7 @@ module OccamsRecord
         ids = rows.map { |r| r.send @ref.active_record_primary_key }.compact.uniq
         q = base_scope.where(@ref.foreign_key => ids)
         q.where!(@ref.type => rows[0].class&.model_name) if @ref.options[:as]
-        yield q
+        yield q if ids.any?
       end
 
       #

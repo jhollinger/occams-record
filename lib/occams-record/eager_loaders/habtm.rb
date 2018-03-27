@@ -12,7 +12,7 @@ module OccamsRecord
       #
       def query(rows)
         assoc_ids = join_rows(rows).map { |row| row[1] }.compact.uniq
-        yield base_scope.where(@ref.association_primary_key => assoc_ids)
+        yield base_scope.where(@ref.association_primary_key => assoc_ids) if assoc_ids.any?
       end
 
       #
