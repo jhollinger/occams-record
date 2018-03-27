@@ -1,3 +1,9 @@
+### 0.19.0 (2018-03-27)
+* Bugfix to eager loading when no parent records were returned.
+
+### 0.18.0 (2018-03-26)
+* Bugfix to find each.
+
 ### 0.17.0 (2018-03-22)
 * Rubygems.org fucked up.
 
