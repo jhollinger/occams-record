@@ -55,8 +55,6 @@ module OccamsRecord
         raise 'Not Implemented'
       end
 
-      private
-
       #
       # Returns the base scope for the relation, including any scope defined on the association itself,
       # and any optional scope passed into the eager loader.

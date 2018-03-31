@@ -117,7 +117,7 @@ module OccamsRecord
         when :has_many
           HasMany
         when :has_and_belongs_to_many
-          EagerLoaders::Habtm
+          Habtm
         else
           raise "Unsupported association type `#{macro}`"
         end
