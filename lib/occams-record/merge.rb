@@ -9,25 +9,6 @@ module OccamsRecord
     # @return [Array<OccamsRecord::Results::Row>] the rows into which associated rows will be merged
     attr_reader :target_rows
 
-    # Exception raised when a foreign or primary key is missing from a record
-    class MissingFieldError < StandardError
-      # @return [OccamsRecord::Result::Row]
-      attr_reader :record
-      # @return [Symbol]
-      attr_reader :field
-
-      # @param record [OccamsRecord::Result::Row]
-      # @param field [Symbol]
-      def initialize(record, field)
-        @record, @field = record, field
-      end
-
-      # @return [String]
-      def message
-        "Missing field '#{field}' on #{record.inspect}. Did you forget to select it?"
-      end
-    end
-
     #
     # Initialize a new Merge operation.
     #
@@ -52,7 +33,7 @@ module OccamsRecord
         begin
           id = assoc_row.send assoc_attr
         rescue NoMethodError => e
-          raise MissingFieldError.new(assoc_row, e.name)
+          raise MissingColumnError.new(assoc_row, e.name)
         end
         a[id] = assoc_row
         a
@@ -62,7 +43,7 @@ module OccamsRecord
         begin
           attr = row.send target_attr
         rescue NoMethodError => e
-          raise MissingFieldError.new(row, e.name)
+          raise MissingColumnError.new(row, e.name)
         end
         row.send @assign, attr ? assoc_rows_by_id[attr] : nil
       end
@@ -77,14 +58,14 @@ module OccamsRecord
       begin
         assoc_rows_by_attr = assoc_rows.group_by(&assoc_attr.to_sym)
       rescue NoMethodError => e
-        raise MissingFieldError.new(assoc_rows[0], e.name)
+        raise MissingColumnError.new(assoc_rows[0], e.name)
       end
 
       target_rows.each do |row|
         begin
           pkey = row.send target_attr
         rescue NoMethodError => e
-          raise MissingFieldError.new(row, e.name)
+          raise MissingColumnError.new(row, e.name)
         end
         row.send @assign, assoc_rows_by_attr[pkey] || []
       end

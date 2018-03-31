@@ -49,7 +49,13 @@ module OccamsRecord
       # @yield
       #
       def calc_ids(rows)
-        ids = rows.map { |r| r.send @foreign_key }.compact.uniq
+        ids = rows.map { |row|
+          begin
+            row.send @foreign_key
+          rescue NoMethodError => e
+            raise MissingColumnError.new(row, e.name)
+          end
+        }.compact.uniq
         yield ids
       end
 

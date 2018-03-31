@@ -30,14 +30,22 @@ module OccamsRecord
         }
 
         assoc_rows_by_id = assoc_rows.reduce({}) { |a, row|
-          id = row.send(@ref.association_primary_key).to_s
+          begin
+            id = row.send(@ref.association_primary_key).to_s
+          rescue NoMethodError => e
+            raise MissingColumnError.new(row, e.name)
+          end
           a[id] = row
           a
         }
 
         assign = "#{name}="
         rows.each do |row|
-          id = row.send(@ref.active_record_primary_key).to_s
+          begin
+            id = row.send(@ref.active_record_primary_key).to_s
+          rescue NoMethodError => e
+            raise MissingColumnError.new(row, e.name)
+          end
           assoc_fkeys = (joins_by_id[id] || []).uniq
           associations = assoc_rows_by_id.values_at(*assoc_fkeys).compact.uniq
           row.send assign, associations
@@ -59,7 +67,14 @@ module OccamsRecord
         join_table = conn.quote_table_name @ref.join_table
         assoc_fkey = conn.quote_column_name @ref.association_foreign_key
         fkey = conn.quote_column_name @ref.foreign_key
-        quoted_ids = rows.map { |r| conn.quote r.send @ref.active_record_primary_key }
+        quoted_ids = rows.map { |row|
+          begin
+            id = row.send @ref.active_record_primary_key
+          rescue NoMethodError => e
+            raise MissingColumnError.new(row, e.name)
+          end
+          conn.quote id
+        }
 
         @join_rows = conn.
           exec_query("SELECT #{fkey}, #{assoc_fkey} FROM #{join_table} WHERE #{fkey} IN (#{quoted_ids.join ','})").

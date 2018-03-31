@@ -57,7 +57,13 @@ module OccamsRecord
       def merge!(assoc_rows_of_type, rows)
         return if assoc_rows_of_type.empty?
         type = assoc_rows_of_type[0].class.model_name
-        rows_of_type = rows.select { |r| r.send(@foreign_type) == type }
+        rows_of_type = rows.select { |row|
+          begin
+            row.send(@foreign_type) == type
+          rescue NoMethodError => e
+            raise MissingColumnError.new(row, e.name)
+          end
+        }
         model = type.constantize
         Merge.new(rows_of_type, name).
           single!(assoc_rows_of_type, @ref.foreign_key.to_s, model.primary_key.to_s)

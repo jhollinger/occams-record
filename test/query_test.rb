@@ -373,22 +373,22 @@ class QueryTest < Minitest::Test
 
   def test_raises_special_exception_for_missing_eager_load
     widget = OccamsRecord.query(Widget.limit(1)).run.first
-    e = assert_raises OccamsRecord::Results::MissingEagerLoadError do
+    e = assert_raises OccamsRecord::MissingEagerLoadError do
       widget.category
     end
     assert_equal :category, e.name
     assert_equal "Widget", e.model_name
-    assert_equal "The association 'category' is unavailable on Widget because it has not been eager loaded!", e.message
+    assert_equal "Association 'category' is unavailable on Widget because it was not eager loaded!", e.message
   end
 
   def test_raises_special_exception_for_missing_column
     widget = OccamsRecord.query(Widget.select("id").limit(1)).run.first
-    e = assert_raises OccamsRecord::Results::MissingColumnSelectError do
+    e = assert_raises OccamsRecord::MissingColumnError do
       widget.name
     end
     assert_equal :name, e.name
     assert_equal "Widget", e.model_name
-    assert_equal "The column 'name' is unavailable on Widget because it was not included in the SELECT statement!", e.message
+    assert_equal "Column 'name' is unavailable on Widget because it was not included in the SELECT statement!", e.message
   end
 
   def test_raises_normal_method_missing_for_unknown_method

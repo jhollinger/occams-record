@@ -11,7 +11,13 @@ module OccamsRecord
       # @yield
       #
       def query(rows)
-        ids = rows.map { |r| r.send @ref.foreign_key }.compact.uniq
+        ids = rows.map { |row|
+          begin
+            row.send @ref.foreign_key
+          rescue NoMethodError => e
+            raise MissingColumnError.new(row, e.name)
+          end
+        }.compact.uniq
         yield base_scope.where(@ref.active_record_primary_key => ids) if ids.any?
       end
 

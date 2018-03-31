@@ -1,3 +1,7 @@
+### 0.20.0 (?)
+* Clean up error classes. Now just: `OccamsRecord::MissingColumnError`, `OccamsRecord::MissingEagerLoadError`.
+* Raise the above errors when a column is missing during eager loading.
+
 ### 0.19.0 (2018-03-27)
 * Bugfix to eager loading when no parent records were returned.
 
