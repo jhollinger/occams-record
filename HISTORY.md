@@ -1,4 +1,6 @@
-### 0.20.0 (?)
+### 0.20.0 (2018-04-03)
+* Add `OccamsRecord::Query#count` to return number of rows.
+* Allow a block to be given to `OccamsRecord::Query#run` to modify that run's query.
 * Clean up error classes. Now just: `OccamsRecord::MissingColumnError`, `OccamsRecord::MissingEagerLoadError`.
 * Raise the above errors when a column is missing during eager loading.
 

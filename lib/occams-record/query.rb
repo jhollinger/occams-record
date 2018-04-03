@@ -60,10 +60,25 @@ module OccamsRecord
     #
     # Run the query and return the results.
     #
+    # You may optionally pass a block to modify the query just before it's run (the change will NOT persist).
+    # This is very useful for running paginated queries.
+    #
+    #   occams = OccamsRecord.query(Widget.all)
+    #
+    #   # returns first 100 rows
+    #   occams.run { |q| q.offset(0).limit(100) }
+    #
+    #   # returns second 100 rows
+    #   occams.run { |q| q.offset(100).limit(100) }
+    #
+    #   # returns ALL rows
+    #   occams.run
+    #
     # @return [Array<OccamsRecord::Results::Row>]
+    # @yield [ActiveRecord::Relation] You may use this to return and run a modified relation
     #
     def run
-      sql = scope.to_sql
+      sql = block_given? ? yield(scope).to_sql : scope.to_sql
       @query_logger << sql if @query_logger
       result = model.connection.exec_query sql
       row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.map(&:name), model: model, modules: @use)
@@ -73,6 +88,15 @@ module OccamsRecord
     end
 
     alias_method :to_a, :run
+
+    #
+    # Returns the number of rows that will be returned if the query is run.
+    #
+    # @return [Integer]
+    #
+    def count
+      scope.count
+    end
 
     #
     # Run the query and return the first result (which could be nil). This WILL append a LIMIT 1 to the query.
