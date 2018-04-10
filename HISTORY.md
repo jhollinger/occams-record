@@ -1,3 +1,6 @@
+### 0.21.0 (2018-04-10)
+* Bugfix when eager loading many-to-many associations when there are no parent records.
+
 ### 0.20.0 (2018-04-03)
 * Add `OccamsRecord::Query#count` to return number of rows.
 * Allow a block to be given to `OccamsRecord::Query#run` to modify that run's query.
