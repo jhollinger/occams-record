@@ -76,9 +76,9 @@ module OccamsRecord
           conn.quote id
         }
 
-        @join_rows = conn.
+        @join_rows = quoted_ids.any? ? conn.
           exec_query("SELECT #{fkey}, #{assoc_fkey} FROM #{join_table} WHERE #{fkey} IN (#{quoted_ids.join ','})").
-          rows
+          rows : []
       end
     end
   end
