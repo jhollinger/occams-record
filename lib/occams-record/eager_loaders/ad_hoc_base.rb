@@ -56,7 +56,7 @@ module OccamsRecord
             raise MissingColumnError.new(row, e.name)
           end
         }.compact.uniq
-        yield ids
+        yield ids if ids.any?
       end
 
       def merge!(assoc_rows, rows)
