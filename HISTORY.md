@@ -1,3 +1,6 @@
+### 0.22.0 (2018-04-13)
+* Bugfix to `eager_load_one`/`eager_load_many` when there are no parent records.
+
 ### 0.21.0 (2018-04-10)
 * Bugfix when eager loading many-to-many associations when there are no parent records.
 
