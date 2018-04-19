@@ -1,3 +1,7 @@
+### 0.23.0 (2018-04-18)
+* Include `Enumerable` in `OccamsRecord::Query` and `OccamsRecord::RawQuery`.
+* Fix `OccamsRecord::Query#first` so it doesn't modify the query in place.
+
 ### 0.22.0 (2018-04-13)
 * Bugfix to `eager_load_one`/`eager_load_many` when there are no parent records.
 
