@@ -31,6 +31,8 @@ gem 'occams-record'
 
 **Simple example**
 
+Build your query the same as before, using `ActiveRecord`'s excellent query builder. Just hand it off to `OccamsRecord.query` before running it. Be sure to use `OccamsRecord`'s eager loading helpers instead of `ActiveRecord`'s.
+
 ```ruby
 widgets = OccamsRecord.
   query(Widget.order("name")).
@@ -65,7 +67,7 @@ widgets[1].splines.map { |s| s.description }
 => ["Spline 4", "Spline 5"]
 ```
 
-**An insane example, but only half as insane as the one that prompted the creation of this library**
+**Even more complicated example**
 
 Here we're eager loading several levels down. Notice the `Proc` given to `eager_load(:orders)`. The `select:` option is just for convenience; you may instead pass a `Proc` and customize the query with any of ActiveRecord's query builder helpers (`select`, `where`, `order`, `limit`, etc).
 
