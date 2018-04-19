@@ -52,6 +52,7 @@ module OccamsRecord
 
     include Batches
     include EagerLoaders::Builder
+    include Enumerable
 
     #
     # Initialize a new query.

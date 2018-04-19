@@ -38,6 +38,7 @@ module OccamsRecord
 
     include Batches
     include EagerLoaders::Builder
+    include Enumerable
 
     #
     # Initialize a new query.
@@ -99,13 +100,12 @@ module OccamsRecord
     end
 
     #
-    # Run the query and return the first result (which could be nil). This WILL append a LIMIT 1 to the query.
+    # Run the query and return the first result (which could be nil) by using LIMIT 1.
     #
     # @return [OccamsRecord::Results::Row]
     #
     def first
-      scope.limit! 1
-      run[0]
+      run { |q| q.limit 1 }.first
     end
 
     #
