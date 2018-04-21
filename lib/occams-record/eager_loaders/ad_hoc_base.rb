@@ -16,7 +16,7 @@ module OccamsRecord
       # @param binds [Hash] any additional binds for your query.
       # @param model [ActiveRecord::Base] optional - ActiveRecord model that represents what you're loading. required when using Sqlite.
       # @param use [Array<Module>] optional - Ruby modules to include in the result objects (single or array)
-      # @yield
+      # @yield eager load associations nested under this one
       #
       def initialize(name, mapping, sql, binds: {}, model: nil, use: nil, &eval_block)
         @name = name.to_s

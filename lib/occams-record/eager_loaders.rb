@@ -62,9 +62,10 @@ module OccamsRecord
       # @param binds [Hash] any additional binds for your query.
       # @param model [ActiveRecord::Base] optional - ActiveRecord model that represents what you're loading. required when using Sqlite.
       # @param use [Array<Module>] optional - Ruby modules to include in the result objects (single or array)
+      # @yield eager load associations nested under this one
       #
-      def eager_load_one(*args, &eval_block)
-        @eager_loaders << EagerLoaders::AdHocOne.new(*args, &eval_block)
+      def eager_load_one(name, mapping, sql, binds: {}, model: nil, use: nil, &eval_block)
+        @eager_loaders << EagerLoaders::AdHocOne.new(name, mapping, sql, binds: binds, model: model, use: use, &eval_block)
         self
       end
 
@@ -92,9 +93,10 @@ module OccamsRecord
       # @param use [Array<Module>] optional - Ruby modules to include in the result objects (single or array)
       # @param binds [Hash] any additional binds for your query.
       # @param model [ActiveRecord::Base] optional - ActiveRecord model that represents what you're loading. required when using Sqlite.
+      # @yield eager load associations nested under this one
       #
-      def eager_load_many(*args, &eval_block)
-        @eager_loaders << EagerLoaders::AdHocMany.new(*args, &eval_block)
+      def eager_load_many(name, mapping, sql, binds: {}, model: nil, use: nil, &eval_block)
+        @eager_loaders << EagerLoaders::AdHocMany.new(name, mapping, sql, binds: binds, model: model, use: use, &eval_block)
         self
       end
 
