@@ -1,3 +1,6 @@
+### 0.24.0 (2018-04-23)
+* Support for ActiveRecord 5.2
+
 ### 0.23.0 (2018-04-18)
 * Include `Enumerable` in `OccamsRecord::Query` and `OccamsRecord::RawQuery`.
 * Fix `OccamsRecord::Query#first` so it doesn't modify the query in place.
