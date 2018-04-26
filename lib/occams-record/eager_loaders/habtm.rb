@@ -29,12 +29,14 @@ module OccamsRecord
           a
         }
 
-        assoc_rows_by_id = assoc_rows.reduce({}) { |a, row|
+        assoc_order_cache = {} # maintains the original order of assoc_rows
+        assoc_rows_by_id = assoc_rows.each_with_index.reduce({}) { |a, (row, idx)|
           begin
             id = row.send(@ref.association_primary_key).to_s
           rescue NoMethodError => e
             raise MissingColumnError.new(row, e.name)
           end
+          assoc_order_cache[id] = idx
           a[id] = row
           a
         }
@@ -46,7 +48,9 @@ module OccamsRecord
           rescue NoMethodError => e
             raise MissingColumnError.new(row, e.name)
           end
-          assoc_fkeys = (joins_by_id[id] || []).uniq
+          assoc_fkeys = (joins_by_id[id] || []).uniq.
+            sort_by { |fkey| assoc_order_cache[fkey] || 0 }
+
           associations = assoc_rows_by_id.values_at(*assoc_fkeys).compact.uniq
           row.send assign, associations
         end

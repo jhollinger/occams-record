@@ -185,7 +185,7 @@ class EagerLoaderTest < Minitest::Test
 
   def test_habtm_query
     ref = User.reflections.fetch 'offices'
-    loader = OccamsRecord::EagerLoaders::Habtm.new(ref)
+    loader = OccamsRecord::EagerLoaders::Habtm.new(ref, ->(q) { q.order('offices.name DESC') })
     users = [
       OpenStruct.new(id: 1000),
       OpenStruct.new(id: 1001),
@@ -193,7 +193,7 @@ class EagerLoaderTest < Minitest::Test
     User.connection.execute "INSERT INTO offices_users (user_id, office_id) VALUES (1000, 100), (1000, 101), (1001, 101), (1001, 102), (1002, 103)"
 
     loader.send(:query, users) { |scope|
-      assert_equal %q(SELECT "offices".* FROM "offices" WHERE "offices"."id" IN (100, 101, 102)), scope.to_sql
+      assert_equal %q(SELECT "offices".* FROM "offices" WHERE "offices"."id" IN (100, 101, 102) ORDER BY offices.name DESC), scope.to_sql
     }
   end
 
@@ -223,6 +223,21 @@ class EagerLoaderTest < Minitest::Test
         OpenStruct.new(id: 102, name: 'C'),
       ]),
     ], users
+  end
+
+  def test_habtm_full_with_order
+    users = OccamsRecord.
+      query(User.order("username ASC")).
+      eager_load(:offices, ->(q) { q.order("name DESC") }).
+      run
+
+    assert_equal [
+      ["bob", ["Foo", "Bar"]],
+      ["craig", ["Foo"]],
+      ["sue", ["Zorp", "Bar"]]
+    ], users.map { |u|
+      [u.username, u.offices.map(&:name)]
+    }
   end
 
   def test_eager_load_one_belongs_to_style
