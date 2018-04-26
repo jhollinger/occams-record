@@ -1,3 +1,6 @@
+### 0.25.0 (2018-04-26)
+* Bugfix to using ORDER BY when eager loading a `has_and_belongs_to_many` relationship.
+
 ### 0.24.0 (2018-04-23)
 * Support for ActiveRecord 5.2
 
