@@ -1,3 +1,6 @@
+### 0.26.0 (2018-04-27)
+* Bugfix to habtm eager loading when used with `find_each`/`find_in_batches`.
+
 ### 0.25.0 (2018-04-26)
 * Bugfix to using ORDER BY when eager loading a `has_and_belongs_to_many` relationship.
 
