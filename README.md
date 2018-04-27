@@ -7,7 +7,7 @@ Occam's Record is a high-efficiency, advanced query library for ActiveRecord app
 * 3x-5x faster than ActiveRecord queries.
 * Uses 1/3 the memory of ActiveRecord query results.
 * Eliminates the N+1 query problem.
-* Allows custom SQL when eager loading associations (use `select`, `where`, `order`, etc).
+* Customize the SQL when eager loading associations.
 * `find_each`/`find_in_batches` respects `order` and `limit`.
 * Allows eager loading of associations when querying with raw SQL.
 * Allows `find_each`/`find_in_batches` when querying with raw SQL.
