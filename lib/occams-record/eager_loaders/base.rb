@@ -1,7 +1,7 @@
 module OccamsRecord
   module EagerLoaders
     #
-    # Base class for eagoer loading an association.
+    # Base class for eagoer loading an association. IMPORTANT eager loaders MUST remain stateless after initialization!
     #
     class Base
       # @return [String] association name
@@ -28,9 +28,10 @@ module OccamsRecord
       # @param query_logger [Array<String>]
       #
       def run(rows, query_logger: nil)
-        query(rows) { |scope|
+        query(rows) { |*args|
+          scope = args[0]
           assoc_rows = Query.new(scope, use: @use, query_logger: query_logger, &@eval_block).run
-          merge! assoc_rows, rows
+          merge! assoc_rows, rows, *args[1..-1]
         }
       end
 

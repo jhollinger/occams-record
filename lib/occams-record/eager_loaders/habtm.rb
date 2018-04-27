@@ -11,8 +11,9 @@ module OccamsRecord
       # @yield
       #
       def query(rows)
-        assoc_ids = join_rows(rows).map { |row| row[1] }.compact.uniq
-        yield base_scope.where(@ref.association_primary_key => assoc_ids) if assoc_ids.any?
+        join_rows = fetch_join_rows(rows)
+        assoc_ids = join_rows.map { |row| row[1] }.compact.uniq
+        yield base_scope.where(@ref.association_primary_key => assoc_ids), join_rows if assoc_ids.any?
       end
 
       #
@@ -20,9 +21,10 @@ module OccamsRecord
       #
       # @param assoc_rows [Array<OccamsRecord::Results::Row>] rows loaded from the association
       # @param rows [Array<OccamsRecord::Results::Row>] rows loaded from the main model
+      # @param join_rows [Array<Array<String>>] raw join'd ids from the db
       #
-      def merge!(assoc_rows, rows)
-        joins_by_id = join_rows(rows).reduce({}) { |a, join|
+      def merge!(assoc_rows, rows, join_rows)
+        joins_by_id = join_rows.reduce({}) { |a, join|
           id = join[0].to_s
           a[id] ||= []
           a[id] << join[1].to_s
@@ -64,9 +66,7 @@ module OccamsRecord
       # @param rows [Array<OccamsRecord::Results::Row>]
       # @return [Array<Array<String>>]
       #
-      def join_rows(rows)
-        return @join_rows if defined? @join_rows
-
+      def fetch_join_rows(rows)
         conn = @model.connection
         join_table = conn.quote_table_name @ref.join_table
         assoc_fkey = conn.quote_column_name @ref.association_foreign_key
@@ -80,7 +80,7 @@ module OccamsRecord
           conn.quote id
         }
 
-        @join_rows = quoted_ids.any? ? conn.
+        quoted_ids.any? ? conn.
           exec_query("SELECT #{fkey}, #{assoc_fkey} FROM #{join_table} WHERE #{fkey} IN (#{quoted_ids.join ','})").
           rows : []
       end
