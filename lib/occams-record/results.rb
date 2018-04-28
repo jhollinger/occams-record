@@ -53,6 +53,9 @@ module OccamsRecord
     #
     # Abstract class for result rows.
     #
+    # Like ActiveRecord, Boolean columns have #field? methods. However, unlike ActiveRecord,
+    # other column types do NOT.
+    #
     class Row
       class << self
         # Array of column names
