@@ -17,187 +17,196 @@ Occam's Record is a high-efficiency, advanced query library for ActiveRecord app
 
 * OccamsRecord results are **read-only**.
 * OccamsRecord results are **purely database rows** - they don't have any instance methods from your Rails models.
-* OccamsRecord queries must eager load each association that will be used. Otherwise they simply won't be availble.
+* You **must eager load** each assocation you intend to use. If you forget one, an exception will be raised.
 
-## Usage
+## Installation
 
-Full documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record).
-
-**Add to your Gemfile**
+Simply add it to your `Gemfile`:
 
 ```ruby
 gem 'occams-record'
 ```
 
-**Simple example**
+## Overview
 
-Build your query the same as before, using `ActiveRecord`'s excellent query builder. Just hand it off to `OccamsRecord.query` before running it. Be sure to use `OccamsRecord`'s eager loading helpers instead of `ActiveRecord`'s.
+Full documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record).
+
+#### Build your queries like normal
+
+Build your queries using `ActiveRecord`'s excellent query builder, just like you're used to.
 
 ```ruby
-widgets = OccamsRecord.
-  query(Widget.order("name")).
-  eager_load(:category).
+q = Order.
+  completed.
+  where("order_date > ?", 30.days.ago).
+  order("order_date DESC")
+````
+
+#### Run them using OccamsRecord
+
+Pass your query to `OccamsRecord.query` and call `run`. This will execute the query and return low-memory, struct-like results. Any of Ruby's `Enumerable` methods (`each`, `map`, `reduce`, etc) may be used instead. `find_each` and `find_in_batches` are also supported (and unlike their `ActiveRecord` counterparts they respect any `ORDER BY` in your query).
+
+```ruby
+orders = OccamsRecord.
+  query(q).
   run
-
-widgets[0].id
-=> 1000
-
-widgets[0].name
-=> "Widget 1000"
-
-widgets[0].category.name
-=> "Category 1"
+  
+puts orders[0].order_date
 ```
 
-**More complicated example**
+Occams Record has great support for raw SQL queries too, but we'll get to those later.
 
-Notice that we're eager loading splines, but *only the fields that we need*. If that's a wide table, your DBA will thank you.
+#### Basic eager loading
+
+Basic eager loading is similiar to `ActiveRecord`'s `preload` (each association is loaded in a separate query). Eager loading of nested associations uses blocks instead of Hashes.
 
 ```ruby
-widgets = OccamsRecord.
-  query(Widget.order("name")).
-  eager_load(:category).
-  eager_load(:splines, select: "widget_id, description").
+orders = OccamsRecord.
+  query(q).
+  eager_load(:customer).
+  eager_load(:line_items) {
+    eager_load(:product)
+  }.
   run
+  
+order = orders[0]
+puts order.customer.name
 
-widgets[0].splines.map { |s| s.description }
-=> ["Spline 1", "Spline 2", "Spline 3"]
-
-widgets[1].splines.map { |s| s.description }
-=> ["Spline 4", "Spline 5"]
+order.line_items.each { |line_item|
+  puts line_item.product.name
+  
+  # this will raise an exception since you didn't eager load the category
+  puts line_item.product.category.name
+}
+OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded!
 ```
 
-**Even more complicated example**
+#### Advanced eager loading
 
-Here we're eager loading several levels down. Notice the `Proc` given to `eager_load(:orders)`. The `select:` option is just for convenience; you may instead pass a `Proc` and customize the query with any of ActiveRecord's query builder helpers (`select`, `where`, `order`, `limit`, etc).
+Occams Record allows you to customize the query for each eager load. Usually this will be for (additional) increases in performance.
 
 ```ruby
-widgets = OccamsRecord.
-  query(Widget.order("name")).
-  eager_load(:category).
-
-  # load order_items, but only the fields needed to identify which orders go with which widgets
-  eager_load(:order_items, select: "widget_id, order_id") {
-
-    # load the orders ("q" has all the normal query methods and any scopes defined on Order)
-    eager_load(:orders, ->(q) { q.select("id, customer_id").order("order_date DESC") }) {
-
-      # load the customers who made the orders, but only their names
-      eager_load(:customer, select: "id, name")
-    }
+orders = OccamsRecord.
+  query(q).
+  # Only SELECT these two columns. Your DBA will thank you, esp. on "wide" tables.
+  eager_load(:customer, select: "id, name").
+  
+  # A Proc can customize the query using any of ActiveRecord's query builders and
+  # any scopes you've defined on the LineItem model.
+  eager_load(:line_items, ->(q) { q.order("created_at") }) {
+    eager_load(:product)
   }.
   run
 ```
 
-**Eager load using raw SQL without a predefined association**
+Occams Record also supports creating ad hoc associations using raw SQL. We'll get to that in the next section.
 
-Let's say we want to load each widget and eager load all the customers who've ever ordered it. We could do that using the above example, but we end up loading a lot of useless intermediate records. What if we could define an ad hoc association, using raw SQL, to load exactly what we need? Enter `eager_load_one` and `eager_load_many`! See the full documentation for a full description of all options.
+#### Raw SQL Queries
+
+ActiveRecord has raw SQL "escape hatches" like `find_by_sql` or `exec_query`, but they both give up critical features like eager loading and `find_each`/`find_in_batches`. Not so with Occams Record!
+
+**Batched loading**
+
+To use `find_each`/`find_in_batches` you must provide the limit and offset statements yourself. OccamsRecord will fill in the values for you. Also, notice that the binding syntax is a bit different (Occams uses Ruby's native named string substitution).
 
 ```ruby
-widgets = OccamsRecord.
-  query(Widget.order("name")).
+OccamsRecord.
+  sql(%(
+    SELECT * FROM orders
+    WHERE order_date > %{date}
+    ORDER BY order_date DESC
+    LIMIT %{batch_limit}
+    OFFSET %{batch_offset}
+  ), {
+    date: 30.days.ago
+  }).
+  find_each(batch_size: 1000) do |order|
+    ...
+  end
+```
 
-  # load the results of the query into "customers", matching "widget_id"
-  # in the results to the "id" field of the widgets
-  eager_load_many(:customers, {:widget_id => :id}, %(
-    SELECT DISTINCT customers.id, customers.name, order_items.widget_id
-    FROM customers
-      INNER JOIN orders ON orders.customer_id = customers.id
-      INNER JOIN order_items ON order_items.order_id = orders.id
-    WHERE order_items.widget_id IN (%{ids})
+**Eager loading**
+
+To use `eager_load` with a raw SQL query you must tell Occams what the base model is. (That doesn't apply if you're loading an ad hoc, raw SQL association. We'll get to those later).
+
+```ruby
+orders = OccamsRecord.
+  sql(%(
+    SELECT * FROM orders
+    WHERE order_date > %{date}
+    ORDER BY order_date DESC
+  ), {
+    date: 30.days.ago
+  }).
+  model(Order).
+  eager_load(:customer).
+  run
+```
+
+#### Raw SQL Eager Loading
+
+Let's say we want to load each product with an array of all customers who've ordered it. We *could* do that by loading various nested associations:
+
+```ruby
+products_with_orders = OccamsRecord.
+  query(Product.all).
+  eager_load(:line_items) {
+    eager_load(:order) {
+      eager_load(:customer)
+    }
+  }.
+  map { |product|
+    customers = product.line_items.map(&:order).map(&:customer).uniq
+    [product, customers]
+  }
+```
+
+But that's very wasteful. Occams gives us a better option:
+
+```ruby
+products = OccamsRecord.
+  query(Product.all).
+  eager_load_many(:customers, {:product_id => :id}, %w(
+    SELECT DISTINCT product_id, customers.*
+    FROM line_items
+      INNER JOIN orders ON line_items.order_id = orders.id
+      INNER JOIN customers on orders.customer_id = customers.id
+    WHERE line_items.product_id IN (%{ids})
   ), binds: {
     # additional bind values (ids will be passed in for you)
   }).
   run
 ```
 
-## Injecting instance methods
+`eager_load_many` allows us to declare an ad hoc `has_many` association called `customers`. The `{:product_id => :id}` Hash defines the mapping: `product_id` in these results maps to `id` in the parent Product. The SQL string and binds should be familiar by now. The `%{ids}` bind will be provided for you by Occams - just stick it in the right place.
 
-By default your results will only have getters for selected columns and eager-loaded associations. If you must, you *can* inject extra methods into your results by putting those methods into a Module. NOTE this is discouraged, as you should try to maintain a clear separation between your persistence layer and your domain.
+`eager_load_one` is also available, and defines an ad hoc `has_one`/`belongs_to` association.
+
+These ad hoc eager loaders are available on both `OccamsRecord.query` and `OccamsRecord.sql`. Normally, eager loading with `OccamsRecord.sql` requires you to declare the model. But with `eager_load_one`/`eager_load_many` that isn't necessary.
+
+#### Injecting instance methods
+
+Occams Records results are just plain rows; there are no methods from your Rails models. (Separating your persistence layer from your domain is good thing!) But sometimes you need a few methods. Occams Record allows you to specify modules to be included in your results.
 
 ```ruby
-module MyWidgetMethods
-  def to_s
-    name
-  end
-
-  def expensive?
-    price_per_unit > 100
-  end
-end
-
 module MyOrderMethods
   def description
     "#{order_number} - #{date}"
   end
 end
 
-widgets = OccamsRecord.
-  query(Widget.order("name"), use: MyWidgetMethods).
-  eager_load(:orders, use: [MyOrderMethods, SomeAdditionalMethods]).
+module MyProductMethods
+  def expensive?
+    price > 100
+  end
+end
+
+orders = OccamsRecord.
+  query(Product.all, use: MyOrderMethods).
+  eager_load(:line_items) {
+    eager_load(:product, use: [MyProductMethods, OtherMethods])
+  }.
   run
-
-widgets[0].to_s
-=> "Widget A"
-
-widgets[0].price_per_unit
-=> 57.23
-
-widgets[0].expensive?
-=> false
-
-widgets[0].orders[0].description
-=> "O839SJZ98B - 1/8/2017"
-```
-
-## Raw SQL queries
-
-If you have a complicated query to run, you may drop down to hand-written SQL while still taking advantage of eager loading and variable escaping (not possible in ActiveRecord). Note the slightly different syntax for binding variables.
-
-NOTE this feature is quite new and might have some bugs. Since we are not yet at 1.0, breaking changes may occur. Issues and Pull Requests welcome.
-
-```ruby
-widgets = OccamsRecord.sql(%(
-  SELECT * FROM widgets
-  WHERE category_id = %{cat_id}
-), {
-  cat_id: 5
-}).run
-```
-
-**Performing eager loading with raw SQL**
-
-To perform eager loading with raw SQL you must specify the base model (unless you use the raw SQL eager loaders `eager_load_one` or `eager_load_many`). NOTE some database adapters, notably SQLite, require you to always specify the model.
-
-```ruby
-widgets = OccamsRecord.
-  sql(%(
-    SELECT * FROM widgets
-    WHERE category_id IN (%{cat_ids})
-  ), {
-    cat_ids: [5, 10]
-  }).
-  model(Widget).
-  eager_load(:category).
-  run
-```
-
-**Using find_each/find_in_batches with raw SQL**
-
-To use `find_each` or `find_in_batches` with raw SQL you must provide the `LIMIT` and `OFFSET` clauses yourself. The bind values for these will be filled in by OccamsRecord. Remember to always specific a consitent `ORDER BY` clause.
-
-```ruby
-widgets = OccamsRecord.sql(%(
-  SELECT * FROM widgets
-  WHERE category_id = %{cat_id}
-  ORDER BY name, id
-  LIMIT %{batch_limit}
-  OFFSET %{batch_offset}
-), {
-  cat_id: 5
-}).find_each { |widget|
-  puts widget.name
-}
 ```
 
 ## Unsupported features
@@ -219,7 +228,7 @@ bundle exec rake test
 By default, bundler will install the latest (supported) version of ActiveRecord. To specify a version to test against, run:
 
 ```bash
-AR=4.2 bundle update activerecord
+AR=5.2 bundle update activerecord
 bundle exec rake test
 ```
 
