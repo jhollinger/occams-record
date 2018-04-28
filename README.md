@@ -83,7 +83,7 @@ OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Pr
 
 #### Advanced eager loading
 
-Occams Record allows you to customize the query for each eager load. Usually this will be for (additional) increases in performance.
+Occams Record allows you to customize the query for each eager load.
 
 ```ruby
 orders = OccamsRecord.
@@ -93,7 +93,7 @@ orders = OccamsRecord.
   
   # A Proc can customize the query using any of ActiveRecord's query builders and
   # any scopes you've defined on the LineItem model.
-  eager_load(:line_items, ->(q) { q.order("created_at") }) {
+  eager_load(:line_items, ->(q) { q.where(active: true).order("created_at") }) {
     eager_load(:product)
   }.
   run
