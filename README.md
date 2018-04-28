@@ -11,7 +11,7 @@ Occam's Record is a high-efficiency, advanced query library for ActiveRecord app
 * `find_each`/`find_in_batches` respects `order` and `limit`.
 * Allows eager loading of associations when querying with raw SQL.
 * Allows `find_each`/`find_in_batches` when querying with raw SQL.
-* Eager load data from arbitrary SQL (no association required).
+* Eager load an ad hoc assocation using arbitrary SQL.
 
 [Look over the speed and memory measurements yourself!](https://github.com/jhollinger/occams-record/wiki/Measurements) OccamsRecord achieves all of this by making some very specific trade-offs:
 
