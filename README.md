@@ -207,6 +207,10 @@ orders = OccamsRecord.
   run
 ```
 
+## TODO
+
+* `has_many :through` associations.
+
 ## Unsupported features
 
 The following `ActiveRecord` are not supported, and I have no plans to do so. However, I'd be glad to accept pull requests.
