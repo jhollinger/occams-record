@@ -44,7 +44,7 @@ q = Order.
 
 #### Run them using OccamsRecord
 
-Pass your query to `OccamsRecord.query` and call `run`. This will execute the query and return low-memory, struct-like results. Any of Ruby's `Enumerable` methods (`each`, `map`, `reduce`, etc) may be used instead. `find_each` and `find_in_batches` are also supported (and unlike their `ActiveRecord` counterparts they respect any `ORDER BY` in your query).
+Pass your query to `OccamsRecord.query` and call `run` (or `each`, `map`, `reduce`, etc). `find_each` and `find_in_batches` are also supported, and unlike their `ActiveRecord` counterparts they respect any `ORDER BY` in your query.
 
 ```ruby
 orders = OccamsRecord.
@@ -74,11 +74,9 @@ puts order.customer.name
 
 order.line_items.each { |line_item|
   puts line_item.product.name
-  
-  # this will raise an exception since you didn't eager load the category
   puts line_item.product.category.name
+  OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded!
 }
-OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded!
 ```
 
 #### Advanced eager loading
