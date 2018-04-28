@@ -1,3 +1,6 @@
+### 0.27.0 (2018-04-27)
+* Bugfix to misc eager loaders (empty associations would sometimes be nil instead of an empty array)
+
 ### 0.26.0 (2018-04-27)
 * Bugfix to habtm eager loading when used with `find_each`/`find_in_batches`.
 
