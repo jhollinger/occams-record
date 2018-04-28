@@ -202,7 +202,7 @@ module MyProductMethods
 end
 
 orders = OccamsRecord.
-  query(Product.all, use: MyOrderMethods).
+  query(Order.all, use: MyOrderMethods).
   eager_load(:line_items) {
     eager_load(:product, use: [MyProductMethods, OtherMethods])
   }.
