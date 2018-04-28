@@ -241,6 +241,17 @@ class EagerLoaderTest < Minitest::Test
     }
   end
 
+  def test_habtm_makes_empty_arrays_even_if_there_are_no_associated_records
+    User.connection.execute "DELETE FROM offices_users"
+    results = OccamsRecord.
+      query(User.all).
+      eager_load(:offices).
+      map do |user|
+        user.offices
+      end
+    refute results.any?(&:nil?)
+  end
+
   def test_eager_load_one_belongs_to_style
     foo, bar = categories(:foo), categories(:bar)
     widgets = [

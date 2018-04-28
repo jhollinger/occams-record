@@ -21,7 +21,7 @@ module OccamsRecord
         }.compact.uniq
         q = base_scope.where(@ref.foreign_key => ids)
         q.where!(@ref.type => rows[0].class&.model_name) if @ref.options[:as]
-        yield q if ids.any?
+        yield ids.any? ? q : nil
       end
 
       #

@@ -29,8 +29,7 @@ module OccamsRecord
       #
       def run(rows, query_logger: nil)
         query(rows) { |*args|
-          scope = args[0]
-          assoc_rows = Query.new(scope, use: @use, query_logger: query_logger, &@eval_block).run
+          assoc_rows = args[0] ? Query.new(args[0], use: @use, query_logger: query_logger, &@eval_block).run : []
           merge! assoc_rows, rows, *args[1..-1]
         }
       end

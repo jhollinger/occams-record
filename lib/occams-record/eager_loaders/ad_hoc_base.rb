@@ -34,9 +34,13 @@ module OccamsRecord
       #
       def run(rows, query_logger: nil)
         calc_ids(rows) { |ids|
-          binds = @binds.merge({:ids => ids})
-          assoc_rows = RawQuery.new(@sql, binds, use: @use, query_logger: query_logger, &@eval_block).model(@model).run
-          merge! assoc_rows, rows
+          assoc = if ids.any?
+                    binds = @binds.merge({:ids => ids})
+                    RawQuery.new(@sql, binds, use: @use, query_logger: query_logger, &@eval_block).model(@model).run
+                  else
+                    []
+                  end
+          merge! assoc, rows
         }
       end
 
@@ -56,7 +60,7 @@ module OccamsRecord
             raise MissingColumnError.new(row, e.name)
           end
         }.compact.uniq
-        yield ids if ids.any?
+        yield ids
       end
 
       def merge!(assoc_rows, rows)
