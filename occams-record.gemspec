@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.date = '2018-04-28'
   s.authors = ['Jordan Hollinger']
   s.email = 'jordan.hollinger@gmail.com'
-  s.homepage = 'https://github.com/jhollinger/occams-record'
+  s.homepage = 'https://jhollinger.github.io/occams-record/'
   s.require_paths = ['lib']
   s.files = [Dir.glob('lib/**/*'), 'README.md'].flatten
   s.required_ruby_version = '>= 2.3.0'
