@@ -62,7 +62,7 @@ Occams Record has great support for raw SQL queries too, but we'll get to those 
 
 ## Basic eager loading
 
-Basic eager loading is similiar to ActiveRecord's `preload` (each association is loaded in a separate query). Eager loading of nested associations uses blocks instead of Hashes.
+Eager loading is similiar to ActiveRecord's `preload` (each association is loaded in a separate query). Nested associations use blocks instead of Hashes.
 
 ```ruby
 orders = OccamsRecord.
@@ -85,7 +85,7 @@ order.line_items.each { |line_item|
 
 ## Advanced eager loading
 
-Occams Record allows you to customize the query for each eager load.
+Occams Record allows you to customize each eager load query using the full power of ActiveRecord's query builder.
 
 ```ruby
 orders = OccamsRecord.
@@ -95,7 +95,7 @@ orders = OccamsRecord.
   
   # A Proc can customize the query using any of ActiveRecord's query builders and
   # any scopes you've defined on the LineItem model.
-  eager_load(:line_items, ->(q) { q.where(active: true).order("created_at") }) {
+  eager_load(:line_items, ->(q) { q.active.order("created_at") }) {
     eager_load(:product)
   }.
   run
@@ -109,7 +109,7 @@ ActiveRecord has raw SQL "escape hatches" like `find_by_sql` or `exec_query`, bu
 
 **Batched loading**
 
-To use `find_each`/`find_in_batches` you must provide the limit and offset statements yourself. OccamsRecord will fill in the values for you. Also, notice that the binding syntax is a bit different (Occams uses Ruby's native named string substitution).
+To use `find_each`/`find_in_batches` you must provide the limit and offset statements yourself. OccamsRecord will fill in the values for you. Also, notice that the binding syntax is a bit different (Occams uses Ruby's built-in named string substitution).
 
 ```ruby
 OccamsRecord.
@@ -180,11 +180,11 @@ products = OccamsRecord.
   run
 ```
 
-`eager_load_many` allows us to declare an ad hoc `has_many` association called `customers`. The `{:product_id => :id}` Hash defines the mapping: *product_id* in these results maps to *id* in the parent Product. The SQL string and binds should be familiar by now. The `%{ids}` bind will be provided for you by Occams - just stick it in the right place.
+`eager_load_many` allows us to declare an ad hoc *has_many* association called *customers*. The `{:product_id => :id}` Hash defines the mapping: *product_id* in these results maps to *id* in the parent Product. The SQL string and binds should be familiar by now. The `%{ids}` value will be provided for you - just stick it in the right place.
 
 `eager_load_one` is also available, and defines an ad hoc `has_one`/`belongs_to` association.
 
-These ad hoc eager loaders are available on both `OccamsRecord.query` and `OccamsRecord.sql`. Normally, eager loading with `OccamsRecord.sql` requires you to declare the model. But with `eager_load_one`/`eager_load_many` that isn't necessary.
+These ad hoc eager loaders are available on both `OccamsRecord.query` and `OccamsRecord.sql`. While eager loading with `OccamsRecord.sql` normallly requires you to declare the model, that is not necessary with `eager_load_one`/`eager_load_many`.
 
 ## Injecting instance methods
 
@@ -213,15 +213,13 @@ orders = OccamsRecord.
 
 ---
 
-# TODO
-
-* `has_many :through` associations.
-
----
-
 # Unsupported features
 
-The following ActiveRecord features are not supported, and I have no plans to do so. However, I'd be glad to accept pull requests.
+The following ActiveRecord features are under consideration, but not high priority. Pull requests welcome!
+
+* `:through` associations.
+
+The following ActiveRecord features are not supported, and likely never will be. Pull requests are still welcome, though.
 
 * ActiveRecord enum types
 * ActiveRecord serialized types
