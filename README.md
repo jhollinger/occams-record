@@ -37,7 +37,7 @@ Full documentation is available at [rubydoc.info/gems/occams-record](http://www.
 
 **Build your queries like normal**
 
-Build your queries using `ActiveRecord`'s excellent query builder, just like you're used to.
+Build your queries using ActiveRecord's excellent query builder, just like you're used to.
 
 ```ruby
 q = Order.
@@ -48,7 +48,7 @@ q = Order.
 
 **Run them using OccamsRecord**
 
-Pass your query to `OccamsRecord.query` and call `run` (or `each`, `map`, `reduce`, etc). `find_each` and `find_in_batches` are also supported, and unlike their `ActiveRecord` counterparts they respect any `ORDER BY` in your query.
+Pass your query to `OccamsRecord.query` and call `run` (or `each`, `map`, `reduce`, etc). `find_each` and `find_in_batches` are also supported, and unlike their ActiveRecord counterparts they respect any *ORDER BY* in your query.
 
 ```ruby
 orders = OccamsRecord.
@@ -62,7 +62,7 @@ Occams Record has great support for raw SQL queries too, but we'll get to those 
 
 ## Basic eager loading
 
-Basic eager loading is similiar to `ActiveRecord`'s `preload` (each association is loaded in a separate query). Eager loading of nested associations uses blocks instead of Hashes.
+Basic eager loading is similiar to ActiveRecord's `preload` (each association is loaded in a separate query). Eager loading of nested associations uses blocks instead of Hashes.
 
 ```ruby
 orders = OccamsRecord.
@@ -103,7 +103,7 @@ orders = OccamsRecord.
 
 Occams Record also supports creating ad hoc associations using raw SQL. We'll get to that in the next section.
 
-## Raw SQL Queries
+## Raw SQL queries
 
 ActiveRecord has raw SQL "escape hatches" like `find_by_sql` or `exec_query`, but they both give up critical features like eager loading and `find_each`/`find_in_batches`. Not so with Occams Record!
 
@@ -145,7 +145,7 @@ orders = OccamsRecord.
   run
 ```
 
-## Raw SQL Eager Loading
+## Raw SQL eager loading
 
 Let's say we want to load each product with an array of all customers who've ordered it. We *could* do that by loading various nested associations:
 
@@ -221,7 +221,7 @@ orders = OccamsRecord.
 
 # Unsupported features
 
-The following `ActiveRecord` are not supported, and I have no plans to do so. However, I'd be glad to accept pull requests.
+The following ActiveRecord features are not supported, and I have no plans to do so. However, I'd be glad to accept pull requests.
 
 * ActiveRecord enum types
 * ActiveRecord serialized types
