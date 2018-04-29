@@ -180,7 +180,7 @@ products = OccamsRecord.
   run
 ```
 
-`eager_load_many` allows us to declare an ad hoc `has_many` association called `customers`. The `{:product_id => :id}` Hash defines the mapping: `product_id` in these results maps to `id` in the parent Product. The SQL string and binds should be familiar by now. The `%{ids}` bind will be provided for you by Occams - just stick it in the right place.
+`eager_load_many` allows us to declare an ad hoc `has_many` association called `customers`. The `{:product_id => :id}` Hash defines the mapping: *product_id* in these results maps to *id* in the parent Product. The SQL string and binds should be familiar by now. The `%{ids}` bind will be provided for you by Occams - just stick it in the right place.
 
 `eager_load_one` is also available, and defines an ad hoc `has_one`/`belongs_to` association.
 
