@@ -35,8 +35,6 @@ gem 'occams-record'
 
 Full documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record).
 
-**Build your queries like normal**
-
 Build your queries like normal, using ActiveRecord's excellent query builder. Then pass then off to Occams Record.
 
 ```ruby
