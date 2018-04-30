@@ -35,7 +35,7 @@ gem 'occams-record'
 
 Full documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record).
 
-Build your queries like normal, using ActiveRecord's excellent query builder. Then pass then off to Occams Record.
+Build your queries like normal, using ActiveRecord's excellent query builder. Then pass them off to Occams Record.
 
 ```ruby
 q = Order.
@@ -99,7 +99,7 @@ ActiveRecord has raw SQL "escape hatches" like `find_by_sql` or `exec_query`, bu
 
 **Batched loading**
 
-To use `find_each`/`find_in_batches` you must provide the limit and offset statements yourself. OccamsRecord will fill in the values for you. Also, notice that the binding syntax is a bit different (Occams uses Ruby's built-in named string substitution).
+To use `find_each`/`find_in_batches` you must provide the limit and offset statements yourself. OccamsRecord will fill in the values for you. Also, notice that the binding syntax is a bit different (it uses Ruby's built-in named string substitution).
 
 ```ruby
 OccamsRecord.
@@ -153,7 +153,7 @@ products_with_orders = OccamsRecord.
   }
 ```
 
-But that's very wasteful. Occams gives us a better option:
+But that's very wasteful. Occams gives us a better options: `eager_load_many` and `eager_load_one`.
 
 ```ruby
 products = OccamsRecord.
@@ -172,7 +172,7 @@ products = OccamsRecord.
 
 `eager_load_many` allows us to declare an ad hoc *has_many* association called *customers*. The `{:product_id => :id}` Hash defines the mapping: *product_id* in these results maps to *id* in the parent Product. The SQL string and binds should be familiar by now. The `%{ids}` value will be provided for you - just stick it in the right place.
 
-`eager_load_one` is also available, and defines an ad hoc `has_one`/`belongs_to` association.
+`eager_load_one` defines an ad hoc `has_one`/`belongs_to` association.
 
 These ad hoc eager loaders are available on both `OccamsRecord.query` and `OccamsRecord.sql`. While eager loading with `OccamsRecord.sql` normallly requires you to declare the model, that is not necessary with `eager_load_one`/`eager_load_many`.
 
