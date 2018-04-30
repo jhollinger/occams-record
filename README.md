@@ -37,28 +37,20 @@ Full documentation is available at [rubydoc.info/gems/occams-record](http://www.
 
 **Build your queries like normal**
 
-Build your queries using ActiveRecord's excellent query builder, just like you're used to.
+Build your queries like normal, using ActiveRecord's excellent query builder. Then pass then off to Occams Record.
 
 ```ruby
 q = Order.
   completed.
   where("order_date > ?", 30.days.ago).
   order("order_date DESC")
-````
 
-**Run them using OccamsRecord**
-
-Pass your query to `OccamsRecord.query` and call `run` (or `each`, `map`, `reduce`, etc). `find_each` and `find_in_batches` are also supported, and unlike their ActiveRecord counterparts they respect any *ORDER BY* in your query.
-
-```ruby
 orders = OccamsRecord.
   query(q).
   run
-  
-puts orders[0].order_date
-```
+````
 
-Occams Record has great support for raw SQL queries too, but we'll get to those later.
+`each`, `map`, `reduce`, and all other Enumerable methods are supported. `find_each` and `find_in_batches` are also supported, and unlike their ActiveRecord counterparts they respect *ORDER BY*. Occams Record has great support for raw SQL queries too, but we'll get to those later.
 
 ## Basic eager loading
 
