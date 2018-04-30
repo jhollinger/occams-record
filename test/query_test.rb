@@ -398,6 +398,11 @@ class QueryTest < Minitest::Test
     end
   end
 
+  def test_to_s
+    widget1 = OccamsRecord.query(Widget.limit(1)).run.first
+    assert_equal %q(Widget{:id=>112844655, :name=>"Widget C", :category_id=>208889123}), widget1.to_s
+  end
+
   def test_object_equality
     widget1 = OccamsRecord.query(Widget.limit(1)).run.first
     widget2 = OccamsRecord.query(Widget.limit(1)).run.first

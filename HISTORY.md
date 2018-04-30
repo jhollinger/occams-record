@@ -1,3 +1,8 @@
+### 0.28.0 (2018-04-29)
+* Implement `==` so that two objects from the same table with the same primary key value are equal.
+* Fix `#inspect` in results so it's < 65 chars and will show up in exception messages (https://bugs.ruby-lang.org/issues/8982).
+* Add `#to_s` to results to return the originating model name and attributes.
+
 ### 0.27.0 (2018-04-27)
 * Bugfix to misc eager loaders (empty associations would sometimes be nil instead of an empty array)
 

@@ -126,6 +126,28 @@ module OccamsRecord
 
       alias_method :to_hash, :to_h
 
+      #
+      # Returns the name of the model and the attributes.
+      #
+      # @return [String]
+      #
+      def to_s
+        "#{self.class.model_name || "Anonymous"}#{to_h(symbolize_names: true, recursive: false)}"
+      end
+
+      #
+      # Returns a string with the "real" model name and raw result values.
+      #
+      # Weird note - if this string is longer than 65 chars it won't be used in exception messages.
+      # https://bugs.ruby-lang.org/issues/8982
+      #
+      # @return [String]
+      #
+      def inspect
+        id = self.class.primary_key ? send(self.class.primary_key) : "none"
+        "#<#{self.class.model_name || "Anonymous"} #{self.class.primary_key}: #{id}>"
+      end
+
       def method_missing(name, *args, &block)
         return super if args.any? or !block.nil?
         model = self.class.model_name.constantize
@@ -137,15 +159,6 @@ module OccamsRecord
         else
           super
         end
-      end
-
-      #
-      # Returns a string with the "real" model name and raw result values.
-      #
-      # @return [String]
-      #
-      def inspect
-        "#<OccamsRecord::Results::Row @model_name=#{self.class.model_name} @raw_values=#{@raw_values}>"
       end
     end
   end
