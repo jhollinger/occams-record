@@ -99,13 +99,13 @@ module OccamsRecord
       end
 
       #
-      # Return row as a Hash (recursive).
+      # Return row as a Hash. By default the hash does NOT include associations.
       #
       # @param symbolize_names [Boolean] if true, make Hash keys Symbols instead of Strings
-      # @param recursive [Boolean] if true, convert all associated records to Hashes too
+      # @param recursive [Boolean] if true, include assiciations and them (and their associations) to hashes.
       # @return [Hash] a Hash with String or Symbol keys
       #
-      def to_h(symbolize_names: false, recursive: true)
+      def to_h(symbolize_names: false, recursive: false)
         hash = self.class.columns.reduce({}) { |a, col_name|
           key = symbolize_names ? col_name.to_sym : col_name
           a[key] = send col_name
@@ -116,9 +116,9 @@ module OccamsRecord
           key = symbolize_names ? assoc_name.to_sym : assoc_name
           assoc = send assoc_name
           a[key] = if assoc.is_a? Array
-                     assoc.map { |x| x.to_h(symbolize_names: symbolize_names) }
+                     assoc.map { |x| x.to_h(symbolize_names: symbolize_names, recursive: true) }
                    elsif assoc
-                     assoc.to_h(symbolize_names: symbolize_names)
+                     assoc.to_h(symbolize_names: symbolize_names, recursive: true)
                    end
           a
         } : hash

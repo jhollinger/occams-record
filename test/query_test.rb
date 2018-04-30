@@ -47,7 +47,7 @@ class QueryTest < Minitest::Test
       id: order.id,
       date: Date.new(2017, 2, 28),
       customer_id: 42
-    }, results[0].to_hash(symbolize_names: true))
+    }, results[0].to_hash(symbolize_names: true, recursive: true))
   end
 
   def test_custom_select_with_casted_columns
@@ -177,7 +177,7 @@ class QueryTest < Minitest::Test
           }
         }
       }
-    }, results.map { |r| r.to_hash(symbolize_names: true) }
+    }, results.map { |r| r.to_hash(symbolize_names: true, recursive: true) }
   end
 
   def test_nested
@@ -212,7 +212,7 @@ class QueryTest < Minitest::Test
           }
         }
       }
-    }, results.map { |r| r.to_hash(symbolize_names: true) }
+    }, results.map { |r| r.to_hash(symbolize_names: true, recursive: true) }
   end
 
   def test_nested_with_poly_belongs_to
@@ -258,7 +258,7 @@ class QueryTest < Minitest::Test
           }
         }
       }
-    }, results.map { |r| r.to_hash(symbolize_names: true) }
+    }, results.map { |r| r.to_hash(symbolize_names: true, recursive: true) }
   end
 
   def test_poly_has_many

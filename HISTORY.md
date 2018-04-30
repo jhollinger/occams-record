@@ -1,5 +1,6 @@
 ### 0.29.0 (?)
 * Add `OccamsRecord::Query#first!`
+* Don't include associations in `#to_h` by default.
 
 ### 0.28.0 (2018-04-29)
 * Implement `==` so that two objects from the same table with the same primary key value are equal.
