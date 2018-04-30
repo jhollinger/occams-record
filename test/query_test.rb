@@ -397,4 +397,14 @@ class QueryTest < Minitest::Test
       widget.foo
     end
   end
+
+  def test_object_equality
+    widget1 = OccamsRecord.query(Widget.limit(1)).run.first
+    widget2 = OccamsRecord.query(Widget.limit(1)).run.first
+    widget3 = OccamsRecord.query(Widget.all).run.last
+
+    assert widget1 == widget2
+    refute widget1 == widget3
+    refute widget1 == OpenStruct.new(id: widget1.id)
+  end
 end

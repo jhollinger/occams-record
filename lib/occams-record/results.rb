@@ -25,6 +25,8 @@ module OccamsRecord
         self.columns = column_names.map(&:to_s)
         self.associations = association_names.map(&:to_s)
         self.model_name = model ? model.name : nil
+        self.table_name = model ? model.table_name : nil
+        self.primary_key = model&.primary_key&.to_s
 
         # Build getters & setters for associations. (We need setters b/c they're set AFTER the row is initialized
         attr_accessor(*association_names)
@@ -64,6 +66,10 @@ module OccamsRecord
         attr_accessor :associations
         # Name of Rails model
         attr_accessor :model_name
+        # Name of originating database table
+        attr_accessor :table_name
+        # Name of primary key column (nil if column wasn't in the SELECT)
+        attr_accessor :primary_key
       end
       self.columns = []
       self.associations = []
@@ -76,6 +82,20 @@ module OccamsRecord
       def initialize(raw_values)
         @raw_values = raw_values
         @cast_values = {}
+      end
+
+      #
+      # Returns true if the two objects are from the same table and have the same primary key.
+      #
+      # @param obj [OccamsRecord::Results::Row]
+      # @return [Boolean]
+      #
+      def ==(obj)
+        super ||
+          obj.is_a?(OccamsRecord::Results::Row) &&
+          obj.class.table_name && obj.class.table_name == self.class.table_name &&
+          (pkey1 = obj.class.primary_key) && (pkey2 = self.class.primary_key) &&
+          obj.send(pkey1) == self.send(pkey2)
       end
 
       #
