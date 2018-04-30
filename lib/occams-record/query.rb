@@ -100,12 +100,22 @@ module OccamsRecord
     end
 
     #
-    # Run the query and return the first result (which could be nil) by using LIMIT 1.
+    # Run the query with LIMIT 1 and return the first result (which could be nil).
     #
     # @return [OccamsRecord::Results::Row]
     #
     def first
       run { |q| q.limit 1 }.first
+    end
+
+    #
+    # Run the query with LIMIT 1 and return the first result. If nothing is found
+    # an OccamsRecord::NotFound exception will be raised.
+    #
+    # @return [OccamsRecord::Results::Row]
+    #
+    def first!
+      first || raise(OccamsRecord::NotFound.new(model.name, scope.where_values_hash))
     end
 
     #

@@ -362,6 +362,15 @@ class QueryTest < Minitest::Test
     assert_includes log, %q|SELECT  "users".* FROM "users" WHERE "users"."username" = 'bob' LIMIT 1|
   end
 
+  def test_loading_just_first_raises_exception
+    log = []
+    q = OccamsRecord.query(User.where(username: "nobody"), query_logger: log)
+    assert_raises OccamsRecord::NotFound do
+      q.first!
+    end
+    assert_includes log, %q|SELECT  "users".* FROM "users" WHERE "users"."username" = 'nobody' LIMIT 1|
+  end
+
   def test_boolean_aliases
     offices(:bar).update_column(:active, true)
     offices(:foo).update_column(:active, false)
@@ -399,13 +408,13 @@ class QueryTest < Minitest::Test
   end
 
   def test_to_s
-    widget1 = OccamsRecord.query(Widget.limit(1)).run.first
+    widget1 = OccamsRecord.query(Widget.all).first
     assert_equal %q(Widget{:id=>112844655, :name=>"Widget C", :category_id=>208889123}), widget1.to_s
   end
 
   def test_object_equality
-    widget1 = OccamsRecord.query(Widget.limit(1)).run.first
-    widget2 = OccamsRecord.query(Widget.limit(1)).run.first
+    widget1 = OccamsRecord.query(Widget.all).first
+    widget2 = OccamsRecord.query(Widget.all).first
     widget3 = OccamsRecord.query(Widget.all).run.last
 
     assert widget1 == widget2

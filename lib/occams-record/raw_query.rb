@@ -107,15 +107,6 @@ module OccamsRecord
     alias_method :to_a, :run
 
     #
-    # Run the query and return the first result (which could be nil). IMPORTANT you MUST add LIMIT 1 yourself!
-    #
-    # @return [OccamsRecord::Results::Row]
-    #
-    def first
-      run[0]
-    end
-
-    #
     # If you pass a block, each result row will be yielded to it. If you don't,
     # an Enumerable will be returned.
     #

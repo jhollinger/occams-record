@@ -31,4 +31,23 @@ module OccamsRecord
       "Association '#{name}' is unavailable on #{model_name} because it was not eager loaded!"
     end
   end
+
+  # Exception when a requested record couldn't be found.
+  class NotFound < StandardError
+    # @return [String]
+    attr_reader :model_name
+    # @return [Hash]
+    attr_reader :attrs
+
+    # @param model_name [String]
+    # @param attrs [Hash]
+    def initialize(model_name, attrs)
+      @model_name, @attrs = model_name, attrs
+    end
+
+    # @return [String]
+    def message
+      "#{model_name} could not be found with #{attrs}!"
+    end
+  end
 end

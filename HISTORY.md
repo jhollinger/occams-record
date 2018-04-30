@@ -1,3 +1,6 @@
+### 0.29.0 (?)
+* Add `OccamsRecord::Query#first!`
+
 ### 0.28.0 (2018-04-29)
 * Implement `==` so that two objects from the same table with the same primary key value are equal.
 * Fix `#inspect` in results so it's < 65 chars and will show up in exception messages (https://bugs.ruby-lang.org/issues/8982).
