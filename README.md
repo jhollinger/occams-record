@@ -48,11 +48,11 @@ orders = OccamsRecord.
   run
 ````
 
-`each`, `map`, `reduce`, and all other Enumerable methods are supported. `find_each` and `find_in_batches` are also supported, and unlike their ActiveRecord counterparts they respect *ORDER BY*. Occams Record has great support for raw SQL queries too, but we'll get to those later.
+`each`, `map`, `reduce`, and other Enumerable methods may be used instead of *run*. `find_each` and `find_in_batches` are also supported. Unlike their ActiveRecord counterparts they respect *ORDER BY*. Occams Record has great support for raw SQL queries too, but we'll get to those later.
 
 ## Basic eager loading
 
-Eager loading is similiar to ActiveRecord's `preload` (each association is loaded in a separate query). Nested associations use blocks instead of Hashes.
+Eager loading is similiar to ActiveRecord's `preload` (each association is loaded in a separate query). Nested associations use blocks instead of Hashes. And if you try to use an association you didn't eager load an exception will be raised.
 
 ```ruby
 orders = OccamsRecord.
