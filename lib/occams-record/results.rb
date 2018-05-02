@@ -85,6 +85,16 @@ module OccamsRecord
       end
 
       #
+      # Hash-like accessor for attributes and associations.
+      #
+      # @param attr [String|Symbol\
+      # @return [Object]
+      #
+      def [](attr)
+        respond_to?(attr) ? send(attr) : nil
+      end
+
+      #
       # Returns true if the two objects are from the same table and have the same primary key.
       #
       # @param obj [OccamsRecord::Results::Row]

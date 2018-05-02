@@ -1,6 +1,7 @@
-### 0.29.0 (?)
+### 0.29.0 (2018-05-2)
 * Add `OccamsRecord::Query#first!`
 * Don't include associations in `#to_h` by default.
+* Allow Hash-like access for results (both String and Symbol keys)
 
 ### 0.28.0 (2018-04-29)
 * Implement `==` so that two objects from the same table with the same primary key value are equal.

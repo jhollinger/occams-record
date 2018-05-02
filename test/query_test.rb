@@ -421,4 +421,12 @@ class QueryTest < Minitest::Test
     refute widget1 == widget3
     refute widget1 == OpenStruct.new(id: widget1.id)
   end
+
+  def test_object_hash_access
+    widget1 = OccamsRecord.query(Widget.all).eager_load(:category).first
+    assert_equal widget1.name, widget1[:name]
+    assert_equal widget1.name, widget1["name"]
+    assert_equal widget1.category.name, widget1[:category][:name]
+    assert_equal widget1.category.name, widget1["category"]["name"]
+  end
 end
