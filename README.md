@@ -1,4 +1,4 @@
-### Occams Record ![Build Status](https://travis-ci.org/jhollinger/occams-record.svg?branch=master)](https://travis-ci.org/jhollinger/occams-record)
+### Occams Record [![Build Status](https://travis-ci.org/jhollinger/occams-record.svg?branch=master)](https://travis-ci.org/jhollinger/occams-record)
 
 > Do not multiply entities beyond necessity. -- Occam's Razor
 
