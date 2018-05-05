@@ -1,23 +1,28 @@
-### Occams Record [![Build Status](https://travis-ci.org/jhollinger/occams-record.svg?branch=master)](https://travis-ci.org/jhollinger/occams-record)
+### Occams Record ![Build Status](https://travis-ci.org/jhollinger/occams-record.svg?branch=master)](https://travis-ci.org/jhollinger/occams-record)
 
 > Do not multiply entities beyond necessity. -- Occam's Razor
 
-Occam's Record is a high-efficiency, advanced query library for ActiveRecord apps. It is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app.
+Occam's Record is a high-efficiency, advanced query library for ActiveRecord apps. It is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app. Occams Record gives you two things:
+
+**Performance**
 
 * 3x-5x faster than ActiveRecord queries.
 * Uses 1/3 the memory of ActiveRecord query results.
 * Eliminates the N+1 query problem.
-* Customize the SQL when eager loading associations.
-* `find_each`/`find_in_batches` respects `order` and `limit`.
-* Allows eager loading of associations when querying with raw SQL.
-* Allows `find_each`/`find_in_batches` when querying with raw SQL.
-* Eager load an ad hoc assocation using arbitrary SQL.
+
+**Powerful eager loading**
+
+* Customize your SQL when eager loading associations.
+* Use `ORDER BY` with `find_each`/`find_in_batches`.
+* Use `find_each`/`find_in_batches` with raw SQL queries.
+* Eager load when quering with raw SQL.
+* Use raw SQL to eager load into an ad hoc association.
 
 [Look over the speed and memory measurements yourself!](https://github.com/jhollinger/occams-record/wiki/Measurements) OccamsRecord achieves all of this by making some very specific trade-offs:
 
-* OccamsRecord results are **read-only**.
-* OccamsRecord results are **purely database rows** - they don't have any instance methods from your Rails models.
-* You **must eager load** each assocation you intend to use. If you forget one, an exception will be raised.
+* OccamsRecord results are *read-only*.
+* OccamsRecord results are *purely database rows* - they don't have any instance methods from your Rails models.
+* You *must eager load* each assocation you intend to use. If you forget one, an exception will be raised.
 
 ---
 
