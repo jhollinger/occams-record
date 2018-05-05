@@ -65,6 +65,7 @@ orders = OccamsRecord.
   eager_load(:customer).
   eager_load(:line_items) {
     eager_load(:product)
+    eager_load(:something_else)
   }.
   run
   
@@ -85,13 +86,14 @@ Occams Record allows you to customize each eager load query using the full power
 ```ruby
 orders = OccamsRecord.
   query(q).
-  # Only SELECT these two columns. Your DBA will thank you, esp. on "wide" tables.
+  # Only SELECT the columns you need. Your DBA will thank you.
   eager_load(:customer, select: "id, name").
   
-  # A Proc can customize the query using any of ActiveRecord's query builders and
-  # any scopes you've defined on the LineItem model.
+  # A Proc can customize the query using any of ActiveRecord's query
+  # builders and any scopes you've defined on the LineItem model.
   eager_load(:line_items, ->(q) { q.active.order("created_at") }) {
     eager_load(:product)
+    eager_load(:something_else)
   }.
   run
 ```
@@ -100,11 +102,11 @@ Occams Record also supports creating ad hoc associations using raw SQL. We'll ge
 
 ## Raw SQL queries
 
-ActiveRecord has raw SQL "escape hatches" like `find_by_sql` or `exec_query`, but they both give up critical features like eager loading and `find_each`/`find_in_batches`. Not so with Occams Record!
+ActiveRecord has raw SQL escape hatches like `find_by_sql` or `exec_query` but they give up critical features like eager loading and `find_each`/`find_in_batches`. Not so with Occams Record!
 
 **Batched loading**
 
-To use `find_each`/`find_in_batches` you must provide the limit and offset statements yourself. OccamsRecord will fill in the values for you. Also, notice that the binding syntax is a bit different (it uses Ruby's built-in named string substitution).
+To use `find_each`/`find_in_batches` you must provide the limit and offset statements yourself; Occams will provide the values. Also, notice that the binding syntax is a bit different (it uses Ruby's built-in named string substitution).
 
 ```ruby
 OccamsRecord.
@@ -158,7 +160,7 @@ products_with_orders = OccamsRecord.
   }
 ```
 
-But that's very wasteful. Occams gives us a better options: `eager_load_many` and `eager_load_one`.
+But that's very wasteful. Occams gives us better options: `eager_load_many` and `eager_load_one`.
 
 ```ruby
 products = OccamsRecord.
@@ -179,7 +181,7 @@ products = OccamsRecord.
 
 `eager_load_one` defines an ad hoc `has_one`/`belongs_to` association.
 
-These ad hoc eager loaders are available on both `OccamsRecord.query` and `OccamsRecord.sql`. While eager loading with `OccamsRecord.sql` normallly requires you to declare the model, that is not necessary with `eager_load_one`/`eager_load_many`.
+These ad hoc eager loaders are available on both `OccamsRecord.query` and `OccamsRecord.sql`. While eager loading with `OccamsRecord.sql` normallly requires you to declare the model, that isn't necessary when using these methods.
 
 ## Injecting instance methods
 
