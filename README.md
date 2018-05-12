@@ -10,7 +10,7 @@ Occam's Record is a high-efficiency, advanced query library for ActiveRecord app
 * Uses 1/3 the memory of ActiveRecord query results.
 * Eliminates the N+1 query problem.
 
-**Powerful eager loading**
+**More powerful queries & eager loading**
 
 * Customize your SQL when eager loading associations.
 * Use `ORDER BY` with `find_each`/`find_in_batches`.
@@ -53,11 +53,11 @@ orders = OccamsRecord.
   run
 ````
 
-`each`, `map`, `reduce`, and other Enumerable methods may be used instead of *run*. `find_each` and `find_in_batches` are also supported. Unlike their ActiveRecord counterparts they respect *ORDER BY*. Occams Record has great support for raw SQL queries too, but we'll get to those later.
+`each`, `map`, `reduce`, and other Enumerable methods may be used instead of *run*. `find_each` and `find_in_batches` are also supported, and unlike their ActiveRecord counterparts they respect *ORDER BY*. Occams Record has great support for raw SQL queries too, but we'll get to those later.
 
 ## Basic eager loading
 
-Eager loading is similiar to ActiveRecord's `preload` (each association is loaded in a separate query). Nested associations use blocks instead of Hashes. And if you try to use an association you didn't eager load an exception will be raised.
+Eager loading is similiar to ActiveRecord's `preload` (each association is loaded in a separate query). Nested associations use blocks instead of Hashes. If you try to use an association you didn't eager load an exception will be raised.
 
 ```ruby
 orders = OccamsRecord.
@@ -98,11 +98,11 @@ orders = OccamsRecord.
   run
 ```
 
-Occams Record also supports creating ad hoc associations using raw SQL. We'll get to that in the next section.
+Occams Record also supports loading ad hoc associations using raw SQL. We'll get to that in the next section.
 
 ## Raw SQL queries
 
-ActiveRecord has raw SQL escape hatches like `find_by_sql` or `exec_query` but they give up critical features like eager loading and `find_each`/`find_in_batches`. Not so with Occams Record!
+ActiveRecord has raw SQL escape hatches like `find_by_sql` and `exec_query`, but they give up critical features like eager loading and `find_each`/`find_in_batches`. Occams Record's escape hatches don't make you give up anything.
 
 **Batched loading**
 
@@ -113,7 +113,7 @@ OccamsRecord.
   sql(%(
     SELECT * FROM orders
     WHERE order_date > %{date}
-    ORDER BY order_date DESC
+    ORDER BY order_date DESC, id
     LIMIT %{batch_limit}
     OFFSET %{batch_offset}
   ), {
@@ -126,14 +126,14 @@ OccamsRecord.
 
 **Eager loading**
 
-To use `eager_load` with a raw SQL query you must tell Occams what the base model is. (That doesn't apply if you're loading an ad hoc, raw SQL association. We'll get to those later).
+To use `eager_load` with a raw SQL query you must tell Occams what the base model is. (That doesn't apply if you're loading an ad hoc, raw SQL association. We'll get to those later.)
 
 ```ruby
 orders = OccamsRecord.
   sql(%(
     SELECT * FROM orders
     WHERE order_date > %{date}
-    ORDER BY order_date DESC
+    ORDER BY order_date DESC, id
   ), {
     date: 30.days.ago
   }).
