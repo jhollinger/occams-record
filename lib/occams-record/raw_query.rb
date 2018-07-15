@@ -60,18 +60,16 @@ module OccamsRecord
     # @param sql [String] The SELECT statement to run. Binds should use Ruby's named string substitution.
     # @param binds [Hash] Bind values (Symbol keys)
     # @param use [Array<Module>] optional Module to include in the result class (single or array)
-    # @param eager_loaders [OccamsRecord::EagerLoaders::Base]
+    # @param eager_loaders [OccamsRecord::EagerLoaders::Context]
     # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
     #
-    def initialize(sql, binds, use: nil, eager_loaders: [], query_logger: nil, &eval_block)
+    def initialize(sql, binds, use: nil, eager_loaders: nil, query_logger: nil)
       @sql = sql
       @binds = binds
       @use = use
-      @eager_loaders = eager_loaders
+      @eager_loaders = eager_loaders || EagerLoaders::Context.new
       @query_logger = query_logger
-      @model = nil
-      @conn = @model&.connection || ActiveRecord::Base.connection
-      instance_eval(&eval_block) if eval_block
+      @conn = @eager_loaders.model&.connection || ActiveRecord::Base.connection
     end
 
     #
@@ -85,7 +83,7 @@ module OccamsRecord
     # @return [OccamsRecord::RawQuery] self
     #
     def model(klass)
-      @model = klass
+      @eager_loaders.model = klass
       self
     end
 
@@ -98,9 +96,9 @@ module OccamsRecord
       _escaped_sql = escaped_sql
       @query_logger << _escaped_sql if @query_logger
       result = @conn.exec_query _escaped_sql
-      row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.map(&:name), model: @model, modules: @use)
+      row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: @eager_loaders.model, modules: @use)
       rows = result.rows.map { |row| row_class.new row }
-      eager_load! rows
+      @eager_loaders.run!(rows, query_logger: @query_logger)
       rows
     end
 
@@ -154,7 +152,7 @@ module OccamsRecord
           results = RawQuery.new(@sql, @binds.merge({
             batch_limit: of,
             batch_offset: offset,
-          }), use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders).model(@model).run
+          }), use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders).run
 
           y.yield results if results.any?
           break if results.size < of

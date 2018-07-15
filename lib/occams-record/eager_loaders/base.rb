@@ -4,6 +4,8 @@ module OccamsRecord
     # Base class for eagoer loading an association. IMPORTANT eager loaders MUST remain stateless after initialization!
     #
     class Base
+      include EagerLoaders::Builder
+
       # @return [String] association name
       attr_reader :name
 
@@ -15,10 +17,12 @@ module OccamsRecord
       # @param as [Symbol] Load the association usign a different attribute name
       # @yield perform eager loading on *this* association (optional)
       #
-      def initialize(ref, scope = nil, use: nil, as: nil, &eval_block)
-        @ref, @scope, @use, @as, @eval_block = ref, scope, use, as, eval_block
+      def initialize(ref, scope = nil, use: nil, as: nil, &builder)
+        @ref, @scope, @use, @as = ref, scope, use, as
         @model = ref.klass
         @name = (as || ref.name).to_s
+        @eager_loaders = EagerLoaders::Context.new(@model)
+        instance_eval(&builder) if builder
       end
 
       #
@@ -29,7 +33,7 @@ module OccamsRecord
       #
       def run(rows, query_logger: nil)
         query(rows) { |*args|
-          assoc_rows = args[0] ? Query.new(args[0], use: @use, query_logger: query_logger, &@eval_block).run : []
+          assoc_rows = args[0] ? Query.new(args[0], use: @use, eager_loaders: @eager_loaders, query_logger: query_logger).run : []
           merge! assoc_rows, rows, *args[1..-1]
         }
       end

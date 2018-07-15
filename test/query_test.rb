@@ -91,7 +91,9 @@ class QueryTest < Minitest::Test
       run
 
     assert_equal LineItem.count, results.map(&:ordered_line_items).flatten.size
-    assert_includes log, %q(SELECT "line_items".* FROM "line_items" WHERE (1 != 2) AND "line_items"."order_id" IN (683130438, 834596858) ORDER BY item_type)
+    assert_includes log.map { |x|
+      x.gsub(/\s+/, " ")
+    }, %q(SELECT "line_items".* FROM "line_items" WHERE (1 != 2) AND "line_items"."order_id" IN (683130438, 834596858) ORDER BY item_type)
   end
 
   def test_eager_load_custom_select_from_proc
@@ -173,6 +175,7 @@ class QueryTest < Minitest::Test
             order_id: i.order_id,
             item_id: i.item_id,
             item_type: i.item_type,
+            category_id: i.item.category_id,
             amount: i.amount
           }
         }
@@ -249,6 +252,7 @@ class QueryTest < Minitest::Test
             order_id: i.order_id,
             item_id: i.item_id,
             item_type: i.item_type,
+            category_id: i.item.category_id,
             amount: i.amount,
             item: {
               id: i.item.id,

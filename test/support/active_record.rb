@@ -38,6 +38,7 @@ ActiveRecord::Base.connection.instance_eval do
     t.integer :order_id, null: false
     t.integer :item_id
     t.string :item_type
+    t.integer :category_id, null: false
     t.decimal :amount, precision: 10, scale: 2
   end
 
@@ -78,6 +79,10 @@ class Spline < ActiveRecord::Base
 end
 
 class Customer < ActiveRecord::Base
+  has_many :orders
+  has_many :line_items, through: :orders
+  has_many :items, through: :line_items
+  has_many :categories, through: :line_items
 end
 
 class Order < ActiveRecord::Base
@@ -89,6 +94,7 @@ end
 class LineItem < ActiveRecord::Base
   belongs_to :order
   belongs_to :item, polymorphic: true
+  belongs_to :category
 end
 
 class User < ActiveRecord::Base

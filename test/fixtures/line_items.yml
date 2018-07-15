@@ -1,24 +1,29 @@
 a_one:
   order: a
   item: a (Widget)
+  category: foo
   amount: 30
 
 a_two:
   order: a
   item: a (Spline)
+  category: foo
   amount: 70
 
 b_one:
   order: b
   item: c (Widget)
+  category: foo
   amount: 200
 
 b_two:
   order: b
   item: d (Widget)
+  category: bar
   amount: 300
 
 b_three:
   order: b
   item: c (Spline)
+  category: bar
   amount: 20

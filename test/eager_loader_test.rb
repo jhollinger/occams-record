@@ -193,7 +193,7 @@ class EagerLoaderTest < Minitest::Test
     User.connection.execute "INSERT INTO offices_users (user_id, office_id) VALUES (1000, 100), (1000, 101), (1001, 101), (1001, 102), (1002, 103)"
 
     loader.send(:query, users) { |scope, join_rows|
-      assert_equal %q(SELECT "offices".* FROM "offices" WHERE "offices"."id" IN (100, 101, 102) ORDER BY offices.name DESC), scope.to_sql
+      assert_equal %q(SELECT "offices".* FROM "offices" WHERE "offices"."id" IN (100, 101, 102) ORDER BY offices.name DESC), scope.to_sql.gsub(/\s+/, " ")
       assert_equal [[1000, 100], [1000, 101], [1001, 101], [1001, 102]], join_rows
     }
   end

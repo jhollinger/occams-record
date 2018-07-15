@@ -2,6 +2,8 @@ module OccamsRecord
   module EagerLoaders
     # Eager loader for polymorphic belongs tos
     class PolymorphicBelongsTo
+      include EagerLoaders::Builder
+
       # @return [String] association name
       attr_reader :name
 
@@ -13,11 +15,13 @@ module OccamsRecord
       # @param as [Symbol] Load the association usign a different attribute name
       # @yield perform eager loading on *this* association (optional)
       #
-      def initialize(ref, scope = nil, use: nil, as: nil, &eval_block)
-        @ref, @scope, @use, @eval_block = ref, scope, use, eval_block
+      def initialize(ref, scope = nil, use: nil, as: nil, &builder)
+        @ref, @scope, @use = ref, scope, use
         @name = (as || ref.name).to_s
         @foreign_type = @ref.foreign_type.to_sym
         @foreign_key = @ref.foreign_key.to_sym
+        @eager_loaders = EagerLoaders::Context.new
+        instance_eval(&builder) if builder
       end
 
       #
@@ -28,7 +32,9 @@ module OccamsRecord
       #
       def run(rows, query_logger: nil)
         query(rows) { |scope|
-          assoc_rows = Query.new(scope, use: @use, query_logger: query_logger, &@eval_block).run
+          eager_loaders = @eager_loaders.dup
+          eager_loaders.model = scope.klass
+          assoc_rows = Query.new(scope, use: @use, eager_loaders: eager_loaders, query_logger: query_logger).run
           merge! assoc_rows, rows
         }
       end

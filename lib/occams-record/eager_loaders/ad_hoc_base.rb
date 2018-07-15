@@ -4,6 +4,8 @@ module OccamsRecord
     # Base class for eager loading ad hoc associations.
     #
     class AdHocBase
+      include EagerLoaders::Builder
+
       # @return [String] association name
       attr_reader :name
 
@@ -18,12 +20,14 @@ module OccamsRecord
       # @param use [Array<Module>] optional - Ruby modules to include in the result objects (single or array)
       # @yield eager load associations nested under this one
       #
-      def initialize(name, mapping, sql, binds: {}, model: nil, use: nil, &eval_block)
+      def initialize(name, mapping, sql, binds: {}, model: nil, use: nil, &builder)
         @name = name.to_s
-        @sql, @binds, @use, @model, @eval_block = sql, binds, use, model, eval_block
+        @sql, @binds, @use, @model = sql, binds, use, model
         raise ArgumentError, "Add-hoc eager loading mapping must contain exactly one key-value pair" unless mapping.size == 1
         @local_key = mapping.keys.first
         @foreign_key = mapping.fetch(@local_key)
+        @eager_loaders = EagerLoaders::Context.new(@model)
+        instance_eval(&builder) if builder
       end
 
       #
@@ -36,7 +40,7 @@ module OccamsRecord
         calc_ids(rows) { |ids|
           assoc = if ids.any?
                     binds = @binds.merge({:ids => ids})
-                    RawQuery.new(@sql, binds, use: @use, query_logger: query_logger, &@eval_block).model(@model).run
+                    RawQuery.new(@sql, binds, use: @use, eager_loaders: @eager_loaders, query_logger: query_logger).run
                   else
                     []
                   end

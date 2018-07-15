@@ -46,16 +46,14 @@ module OccamsRecord
     # @param scope [ActiveRecord::Relation]
     # @param use [Array<Module>] optional Module to include in the result class (single or array)
     # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
-    # @param eager_loaders [OccamsRecord::EagerLoaders::Base]
-    # @yield will be eval'd on this instance. Can be used for eager loading. (optional)
+    # @param eager_loaders [OccamsRecord::EagerLoaders::Context]
     #
-    def initialize(scope, use: nil, query_logger: nil, eager_loaders: [], &eval_block)
+    def initialize(scope, use: nil, eager_loaders: nil, query_logger: nil)
       @model = scope.klass
       @scope = scope
-      @eager_loaders = eager_loaders
+      @eager_loaders = eager_loaders || EagerLoaders::Context.new(@model)
       @use = use
       @query_logger = query_logger
-      instance_eval(&eval_block) if eval_block
     end
 
     #
@@ -82,9 +80,9 @@ module OccamsRecord
       sql = block_given? ? yield(scope).to_sql : scope.to_sql
       @query_logger << sql if @query_logger
       result = model.connection.exec_query sql
-      row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.map(&:name), model: model, modules: @use)
+      row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: model, modules: @use)
       rows = result.rows.map { |row| row_class.new row }
-      eager_load! rows
+      @eager_loaders.run!(rows, query_logger: @query_logger)
       rows
     end
 
