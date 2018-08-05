@@ -16,12 +16,34 @@ module OccamsRecord
       # @param select [String] a custom SELECT statement, minus the SELECT (optional)
       # @param use [Array<Module>] optional Module to include in the result class (single or array)
       # @param as [Symbol] Load the association usign a different attribute name
+      # @param optimizer [Symbol] Only used for `through` associations. Options are :none (load all intermediate records) | :select (load all intermediate records but only SELECT the necessary columns)
       # @yield a block where you may perform eager loading on *this* association (optional)
       # @return [OccamsRecord::Query] returns self
       #
-      def eager_load(assoc, scope = nil, select: nil, use: nil, as: nil, &builder)
-        @eager_loaders.add(assoc, scope, select: select, use: use, as: as, &builder)
+      def eager_load(assoc, scope = nil, select: nil, use: nil, as: nil, optimizer: :select, &builder)
+        @eager_loaders.add(assoc, scope, select: select, use: use, as: as, optimizer: optimizer, &builder)
         self
+      end
+
+      #
+      # Same as eager_load, except it returns the new eager loader object instead of self. You can use the
+      # new object to call "nest" again, programtically building up nested eager loads instead of passing
+      # nested blocks.
+      #
+      # @param assoc [Symbol] name of association
+      # @param scope [Proc] a scope to apply to the query (optional). It will be passed an
+      # ActiveRecord::Relation on which you may call all the normal query hethods (select, where, etc) as well as any scopes you've defined on the model.
+      # @param select [String] a custom SELECT statement, minus the SELECT (optional)
+      # @param use [Array<Module>] optional Module to include in the result class (single or array)
+      # @param as [Symbol] Load the association usign a different attribute name
+      # @param optimizer [Symbol] Only used for `through` associations. Options are :none (load all intermediate records) | :select (load all intermediate records but only SELECT the necessary columns)
+      # @return [OccamsRecord::EagerLoaders::Base] returns self
+      #
+      #
+      def nest(assoc, scope = nil, select: nil, use: nil, as: nil, optimizer: :select)
+        raise ArgumentError, "OccamsRecord::EagerLoaders::Builder#nest does not accept a block!" if block_given?
+        @eager_loaders.add(assoc, scope, select: select, use: use, as: as, optimizer: optimizer) ||
+          raise("OccamsRecord::EagerLoaders::Builder#nest may not be called under a polymorphic association")
       end
 
       #

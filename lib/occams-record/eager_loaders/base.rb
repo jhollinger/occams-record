@@ -15,13 +15,15 @@ module OccamsRecord
       # ActiveRecord::Relation on which you may call all the normal query hethods (select, where, etc) as well as any scopes you've defined on the model.
       # @param use [Array(Module)] optional Module to include in the result class (single or array)
       # @param as [Symbol] Load the association usign a different attribute name
+      # @param optimizer [Symbol] Only used for `through` associations. Options are :none (load all intermediate records) | :select (load all intermediate records but only SELECT the necessary columns)
       # @yield perform eager loading on *this* association (optional)
       #
-      def initialize(ref, scope = nil, use: nil, as: nil, &builder)
+      def initialize(ref, scope = nil, use: nil, as: nil, optimizer: :select, &builder)
         @ref, @scope, @use, @as = ref, scope, use, as
         @model = ref.klass
         @name = (as || ref.name).to_s
         @eager_loaders = EagerLoaders::Context.new(@model)
+        @optimizer = optimizer
         instance_eval(&builder) if builder
       end
 

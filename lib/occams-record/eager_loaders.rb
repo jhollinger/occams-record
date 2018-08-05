@@ -12,6 +12,7 @@ module OccamsRecord
     autoload :HasOne, 'occams-record/eager_loaders/has_one'
     autoload :HasMany, 'occams-record/eager_loaders/has_many'
     autoload :Habtm, 'occams-record/eager_loaders/habtm'
+    autoload :Through, 'occams-record/eager_loaders/through'
 
     autoload :AdHocBase, 'occams-record/eager_loaders/ad_hoc_base'
     autoload :AdHocOne, 'occams-record/eager_loaders/ad_hoc_one'

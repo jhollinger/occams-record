@@ -43,6 +43,7 @@ ActiveRecord::Base.connection.instance_eval do
   end
 
   create_table :users do |t|
+    t.integer :customer_id
     t.string :username
     t.timestamps null: false
   end
@@ -71,6 +72,7 @@ end
 
 class WidgetDetail < ActiveRecord::Base
   belongs_to :widget
+  has_one :category, through: :widget
 end
 
 class Spline < ActiveRecord::Base
@@ -98,9 +100,11 @@ class LineItem < ActiveRecord::Base
 end
 
 class User < ActiveRecord::Base
+  belongs_to :customer
   has_and_belongs_to_many :offices
 end
 
 class Office < ActiveRecord::Base
   has_and_belongs_to_many :users
+  has_many :customers, through: :users
 end
