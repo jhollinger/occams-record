@@ -1,3 +1,6 @@
+### 0.30.0 (?)
+* Support for `:through` associations!
+
 ### 0.29.0 (2018-05-2)
 * Add `OccamsRecord::Query#first!`
 * Don't include associations in `#to_h` by default.
