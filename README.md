@@ -214,10 +214,11 @@ orders = OccamsRecord.
 
 The following ActiveRecord features are under consideration, but not high priority. Pull requests welcome!
 
-* `:through` associations.
+* Eager loading `through` associations that involve a `has_and_belongs_to_many`.
 
 The following ActiveRecord features are not supported, and likely never will be. Pull requests are still welcome, though.
 
+* Eager loading `through` associations that involve a polymorphic association.
 * ActiveRecord enum types
 * ActiveRecord serialized types
 
