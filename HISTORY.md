@@ -1,5 +1,5 @@
-### 0.30.0 (?)
-* Support for `:through` associations!
+### 0.30.0 (2018-08-06)
+* Support for `:through` associations! `has_and_belongs_to_many` are temporarily not supported. Polymorphic associations probably will never be.
 
 ### 0.29.0 (2018-05-2)
 * Add `OccamsRecord::Query#first!`
