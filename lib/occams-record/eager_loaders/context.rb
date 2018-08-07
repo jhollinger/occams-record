@@ -91,7 +91,7 @@ module OccamsRecord
       # @param query_logger [Array] optional query logger
       #
       def run!(rows, query_logger: nil)
-        raise "Cannot run eager loaders when @model has not been set!" if @model.nil?
+        raise "Cannot run eager loaders when @model has not been set!" if @dynamic_loaders.any? and @model.nil?
         @loaders.each { |loader|
           loader.run(rows, query_logger: query_logger)
         }
