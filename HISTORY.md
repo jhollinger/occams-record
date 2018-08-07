@@ -1,3 +1,6 @@
+### 0.31.0 (2018-08-07)
+* Bugfix to `eager_load_one` and `eager_load_many`.
+
 ### 0.30.0 (2018-08-06)
 * Support for `:through` associations! `has_and_belongs_to_many` are temporarily not supported. Polymorphic associations probably will never be.
 
