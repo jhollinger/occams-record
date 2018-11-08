@@ -1,3 +1,6 @@
+### 0.32.0 (2018-10-08)
+* Bugfix to eager loading `has_one`s when there are really many.
+
 ### 0.31.0 (2018-08-07)
 * Bugfix to `eager_load_one` and `eager_load_many`.
 
