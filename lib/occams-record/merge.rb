@@ -35,7 +35,7 @@ module OccamsRecord
         rescue NoMethodError => e
           raise MissingColumnError.new(assoc_row, e.name)
         end
-        a[id] = assoc_row
+        a[id] ||= assoc_row
         a
       }
 

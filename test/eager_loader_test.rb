@@ -139,6 +139,26 @@ class EagerLoaderTest < Minitest::Test
     ], widgets
   end
 
+  def test_has_one_view_of_has_many
+    jane = customers :jane
+    Order.create!(customer_id: jane.id, date: "2019-01-01", amount: 100)
+
+    jon = customers :jon
+    Order.create!(customer_id: jon.id, date: "2019-02-01", amount: 120)
+
+    customers = OccamsRecord.
+      query(Customer.order("name")).
+      eager_load(:latest_order).
+      run
+
+    assert_equal [
+      "Jane 2019-01-01: 100",
+      "Jon 2019-02-01: 120",
+    ], customers.map { |c|
+      "#{c.name} #{c.latest_order.date.iso8601}: #{c.latest_order.amount.to_i}"
+    }
+  end
+
   def test_has_many_query
     ref = Order.reflections.fetch 'line_items'
     loader = OccamsRecord::EagerLoaders::HasMany.new(ref)

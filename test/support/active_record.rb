@@ -82,6 +82,7 @@ end
 
 class Customer < ActiveRecord::Base
   has_many :orders
+  has_one :latest_order, -> { order "date DESC" }, class_name: "Order"
   has_many :line_items, through: :orders
   has_many :items, through: :line_items
   has_many :categories, through: :line_items
