@@ -1,3 +1,6 @@
+### 0.33.0 (2018-11-13)
+* Generate `widget_ids` methods if `widgets` is eager loaded. NOTE will not work with `OccamsRecord.sql` unless the model is provided!
+
 ### 0.32.0 (2018-10-08)
 * Bugfix to eager loading `has_one`s when there are really many.
 

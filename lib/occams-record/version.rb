@@ -3,5 +3,5 @@
 #
 module OccamsRecord
   # Library version
-  VERSION = '0.32.0'.freeze
+  VERSION = '0.33.0'.freeze
 end
