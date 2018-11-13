@@ -51,6 +51,7 @@ module OccamsRecord
       def query(rows)
         rows_by_type = rows.group_by(&@foreign_type)
         rows_by_type.each do |type, rows_of_type|
+          next if type.nil? or type == ""
           model = type.constantize
           ids = rows_of_type.map(&@foreign_key).uniq
           q = base_scope(model).where(model.primary_key => ids)
