@@ -273,7 +273,9 @@ class QueryTest < Minitest::Test
 
     assert_equal Widget.count, results.size
     results.each do |widget|
-      assert_equal LineItem.where(item_id: widget.id, item_type: 'Widget').count, widget.line_items.size
+      count = LineItem.where(item_id: widget.id, item_type: 'Widget').count
+      assert_equal count, widget.line_items.size
+      assert_equal count, widget.line_item_ids.size
     end
   end
 
@@ -289,6 +291,7 @@ class QueryTest < Minitest::Test
     craig = users.detect { |u| u.username == 'craig' }
 
     assert_equal %w(Bar Foo), bob.offices.map(&:name).sort
+    assert_equal 2, bob.office_ids.size
     assert_equal %w(Bar Zorp), sue.offices.map(&:name).sort
     assert_equal %w(Foo), craig.offices.map(&:name).sort
   end
