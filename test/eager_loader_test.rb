@@ -77,6 +77,27 @@ class EagerLoaderTest < Minitest::Test
     ], line_items
   end
 
+  def test_eager_load_nested_under_polymorphic
+    line_items = OccamsRecord.
+      query(LineItem.order(:amount)).
+      eager_load(:item) {
+        eager_load(:category)
+        eager_load(:detail) # Widgets only
+      }.
+      run
+
+      assert_equal [
+        "Spline C (Bar) - N/A",
+        "Widget A (Foo) - All about Widget A",
+        "Spline A (Foo) - N/A",
+        "Widget C (Foo) - All about Widget C",
+        "Widget D (Bar) - All about Widget D",
+      ], line_items.map { |x|
+        details = x.item.respond_to?(:detail) ? x.item.detail.text : "N/A"
+        "#{x.item.name} (#{x.item.category.name}) - #{details}"
+      }
+  end
+
   def test_belongs_to_query
     ref = Widget.reflections.fetch 'category'
     loader = OccamsRecord::EagerLoaders::BelongsTo.new(ref, ->(q) { q.where(name: 'Foo') })

@@ -21,7 +21,7 @@ module OccamsRecord
         @name = (as || ref.name).to_s
         @foreign_type = @ref.foreign_type.to_sym
         @foreign_key = @ref.foreign_key.to_sym
-        @eager_loaders = EagerLoaders::Context.new
+        @eager_loaders = EagerLoaders::Context.new(nil, polymorphic: true)
         instance_eval(&builder) if builder
       end
 

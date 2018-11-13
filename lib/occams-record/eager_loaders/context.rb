@@ -18,9 +18,11 @@ module OccamsRecord
       # Initialize a new eager loading context.
       #
       # @param mode [ActiveRecord::Base] the model that contains the associations that will be referenced.
+      # @param polymorphic [Boolean] When true, model is allowed to change, and it's assumed that not every loader
+      # is applicable to every model.
       #
-      def initialize(model = nil)
-        @model = model
+      def initialize(model = nil, polymorphic: false)
+        @model, @polymorphic = model, polymorphic
         @loaders = []
         @dynamic_loaders = []
       end
@@ -33,8 +35,8 @@ module OccamsRecord
       def model=(model)
         @model = model
         @loaders = @loaders + @dynamic_loaders.map { |args|
-          build_loader(*args)
-        }
+          @polymorphic ? build_loader(*args) : build_loader!(*args)
+        }.compact
         @dynamic_loaders = []
       end
 
@@ -75,7 +77,7 @@ module OccamsRecord
       #
       def add(assoc, scope = nil, select: nil, use: nil, as: nil, optimizer: :select, &builder)
         if @model
-          loader = build_loader(assoc, scope, select, use, as, optimizer, builder)
+          loader = build_loader!(assoc, scope, select, use, as, optimizer, builder)
           @loaders << loader
           loader
         else
@@ -100,10 +102,16 @@ module OccamsRecord
 
       private
 
+      def build_loader!(assoc, scope, select, use, as, optimizer, builder)
+        build_loader(assoc, scope, select, use, as, optimizer, builder) ||
+          raise("OccamsRecord: No assocation `:#{assoc}` on `#{@model.name}` or subclasses")
+      end
+
       def build_loader(assoc, scope, select, use, as, optimizer, builder)
-        ref = @model.reflections[assoc.to_s]
-        ref ||= @model.subclasses.map(&:reflections).detect { |x| x.has_key? assoc.to_s }&.[](assoc.to_s)
-        raise "OccamsRecord: No assocation `:#{assoc}` on `#{@model.name}` or subclasses" if ref.nil?
+        ref = @model.reflections[assoc.to_s] ||
+          @model.subclasses.map(&:reflections).detect { |x| x.has_key? assoc.to_s }&.[](assoc.to_s)
+        return nil if ref.nil?
+
         scope ||= ->(q) { q.select select } if select
         loader_class = !!ref.through_reflection ? EagerLoaders::Through : EagerLoaders.fetch!(ref)
         loader_class.new(ref, scope, use: use, as: as, optimizer: optimizer, &builder)
