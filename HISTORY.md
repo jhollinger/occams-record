@@ -1,3 +1,6 @@
+### 0.35.0 (2018-11-13)
+* Bugfix to eager loading polymorphic associations when a record has a blank "type" column.
+
 ### 0.34.0 (2018-11-13)
 * When eager loading under a polymorphic association, allow associations that only exist on some types.
 
