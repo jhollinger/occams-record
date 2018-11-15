@@ -57,6 +57,16 @@ module OccamsRecord
     end
 
     #
+    # Returns a new Query object with a modified scope.
+    #
+    # @yield [ActiveRecord::Relation] the current scope which you may modify and return
+    # @return [OccamsRecord::Query]
+    def query
+      scope = block_given? ? yield(@scope) : @scope
+      Query.new(scope, use: @use, eager_loaders: @eager_loaders, query_logger: @query_logger)
+    end
+
+    #
     # Run the query and return the results.
     #
     # You may optionally pass a block to modify the query just before it's run (the change will NOT persist).
