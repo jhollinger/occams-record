@@ -1,3 +1,6 @@
+### 0.36.0 (2018-11-14)
+* Add `OccamsRecord::Query#query` to return a modified query.
+
 ### 0.35.0 (2018-11-13)
 * Bugfix to eager loading polymorphic associations when a record has a blank "type" column.
 
