@@ -37,7 +37,7 @@ module OccamsRecord
       # @param use [Array<Module>] optional Module to include in the result class (single or array)
       # @param as [Symbol] Load the association usign a different attribute name
       # @param optimizer [Symbol] Only used for `through` associations. Options are :none (load all intermediate records) | :select (load all intermediate records but only SELECT the necessary columns)
-      # @return [OccamsRecord::EagerLoaders::Base] returns self
+      # @return [OccamsRecord::EagerLoaders::Base]
       #
       #
       def nest(assoc, scope = nil, select: nil, use: nil, as: nil, optimizer: :select)
