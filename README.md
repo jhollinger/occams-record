@@ -110,7 +110,7 @@ To use `find_each`/`find_in_batches` you must provide the limit and offset state
 
 ```ruby
 OccamsRecord.
-  sql(%(
+  sql("
     SELECT * FROM orders
     WHERE order_date > %{date}
     ORDER BY order_date DESC, id
@@ -130,11 +130,11 @@ To use `eager_load` with a raw SQL query you must tell Occams what the base mode
 
 ```ruby
 orders = OccamsRecord.
-  sql(%(
+  sql("
     SELECT * FROM orders
     WHERE order_date > %{date}
     ORDER BY order_date DESC, id
-  ), {
+  ", {
     date: 30.days.ago
   }).
   model(Order).

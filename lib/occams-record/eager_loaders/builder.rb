@@ -57,9 +57,9 @@ module OccamsRecord
       #
       #   res = OccamsRecord.
       #     query(Widget.order("name")).
-      #     eager_load_one(:category, {:id => :category_id}, %(
+      #     eager_load_one(:category, {:id => :category_id}, "
       #       SELECT * FROM categories WHERE id IN (%{ids}) AND name != %{bad_name}
-      #     ), binds: {
+      #     ", binds: {
       #       bad_name: "Bad Category"
       #     }).
       #     run
@@ -88,9 +88,9 @@ module OccamsRecord
       #
       #   res = OccamsRecord.
       #     query(Widget.order("name")).
-      #     eager_load_many(:parts, {:widget_id => :id}, %(
+      #     eager_load_many(:parts, {:widget_id => :id}, "
       #       SELECT * FROM parts WHERE widget_id IN (%{ids}) AND sku NOT IN (%{bad_skus})
-      #     ), binds: {
+      #     ", binds: {
       #       bad_skus: ["G90023ASDf0"]
       #     }).
       #     run

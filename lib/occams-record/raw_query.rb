@@ -4,10 +4,10 @@ module OccamsRecord
   # a Hash of binds. While this doesn't offer an additional performance boost, it's a nice way to
   # write safe, complicated SQL by hand while also supporting eager loading.
   #
-  #   results = OccamsRecord.sql(%(
+  #   results = OccamsRecord.sql(
   #     SELECT * FROM widgets
   #     WHERE category_id = %{cat_id}
-  #   ), {
+  #   ", {
   #     cat_id: 5
   #   }).run
   #
@@ -16,10 +16,10 @@ module OccamsRecord
   # NOTE If you're using SQLite, you must *always* specify the model.
   #
   #   results = OccamsRecord.
-  #     sql(%(
+  #     sql("
   #       SELECT * FROM widgets
   #       WHERE category_id IN (%{cat_ids})
-  #     ), {
+  #     ", {
   #       cat_ids: [5, 10]
   #     }).
   #     model(Widget).
