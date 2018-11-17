@@ -116,7 +116,7 @@ OccamsRecord.
     ORDER BY order_date DESC, id
     LIMIT %{batch_limit}
     OFFSET %{batch_offset}
-  ), {
+  ", {
     date: 30.days.ago
   }).
   find_each(batch_size: 1000) do |order|
