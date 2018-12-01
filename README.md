@@ -4,10 +4,6 @@
 
 Occam's Record is a high-efficiency, advanced query library for ActiveRecord apps. It is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app. Occams Record gives you two things:
 
-**Breaking change in 1.0.0 RC-1**
-
-In `eager_load_one` and `eager_load_many` the keys and values of the mapping argument have swapped places. For example if you had `eager_load_many(:categories, {:id => :category_id}, ...)` it would now be `eager_load_many(:categories, {:category_id => :id}, ...)`.
-
 **Performance**
 
 * 3x-5x faster than ActiveRecord queries.
@@ -27,6 +23,10 @@ In `eager_load_one` and `eager_load_many` the keys and values of the mapping arg
 * OccamsRecord results are *read-only*.
 * OccamsRecord results are *purely database rows* - they don't have any instance methods from your Rails models.
 * You *must eager load* each assocation you intend to use. If you forget one, an exception will be raised.
+
+**Breaking change in 1.0.0 RC-1**
+
+In `eager_load_one` and `eager_load_many` the keys and values of the mapping argument have swapped places. For example if you had `eager_load_many(:categories, {:id => :category_id}, ...)` it would now be `eager_load_many(:categories, {:category_id => :id}, ...)`.
 
 ---
 
