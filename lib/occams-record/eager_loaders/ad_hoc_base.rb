@@ -15,7 +15,7 @@ module OccamsRecord
       # Initialize a new add hoc association.
       #
       # @param name [Symbol] name of attribute to load records into
-      # @param mapping [Hash] a one element Hash with the key being the parent id and the value being fkey in the child
+      # @param mapping [Hash] a Hash with the key being the parent id and the value being fkey in the child
       # @param sql [String] the SQL to query the associated records. Include a bind params called '%{ids}' for the foreign/parent ids.
       # @param binds [Hash] any additional binds for your query.
       # @param model [ActiveRecord::Base] optional - ActiveRecord model that represents what you're loading. required when using Sqlite.
