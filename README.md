@@ -6,7 +6,7 @@ Occam's Record is a high-efficiency, advanced query library for ActiveRecord app
 
 **Breaking change in 1.0.0 RC-1**
 
-* In `eager_load_one` and `eager_load_many` the keys and values of the mapping argument have swapped places.
+In `eager_load_one` and `eager_load_many` the keys and values of the mapping argument have swapped places. For example if you had `eager_load_many(:categories, {:id => :category_id}, ...)` it would now be `eager_load_many(:categories, {:category_id => :id}, ...)`.
 
 **Performance**
 
