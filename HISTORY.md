@@ -1,6 +1,6 @@
 ### 1.0.0-rc1 (2018-12-01)
 
-* Swapped places of keys/values of the mapping argument in `eager_load_one`/`eager_load_many`.
+* Swapped places of keys/values of the mapping argument in `eager_load_one`/`eager_load_many`. For example if you had `eager_load_many(:categories, {:id => :category_id}, ...)` it would now be `eager_load_many(:categories, {:category_id => :id}, ...)`.
 * Allowed the mapping argument of `eager_load_one`/`eager_load_many` to take multiple pairs.
 
 ### 0.36.0 (2018-11-14)
