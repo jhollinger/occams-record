@@ -4,6 +4,10 @@
 
 Occam's Record is a high-efficiency, advanced query library for ActiveRecord apps. It is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app. Occams Record gives you two things:
 
+**Breaking change in 1.0.0 RC-1**
+
+* In `eager_load_one` and `eager_load_many` the keys and values of the mapping argument have swapped places.
+
 **Performance**
 
 * 3x-5x faster than ActiveRecord queries.
@@ -165,7 +169,7 @@ But that's very wasteful. Occams gives us better options: `eager_load_many` and 
 ```ruby
 products = OccamsRecord.
   query(Product.all).
-  eager_load_many(:customers, {:product_id => :id}, %w(
+  eager_load_many(:customers, {:id => :product_id}, %w(
     SELECT DISTINCT product_id, customers.*
     FROM line_items
       INNER JOIN orders ON line_items.order_id = orders.id
@@ -177,7 +181,9 @@ products = OccamsRecord.
   run
 ```
 
-`eager_load_many` allows us to declare an ad hoc *has_many* association called *customers*. The `{:product_id => :id}` Hash defines the mapping: *product_id* in these results maps to *id* in the parent Product. The SQL string and binds should be familiar by now. The `%{ids}` value will be provided for you - just stick it in the right place.
+`eager_load_many` allows us to declare an ad hoc *has_many* association called *customers*. The `{:id => :product_id}` Hash defines the mapping: *id* in the parent record maps to *product_id* in the child records.
+
+The SQL string and binds should be familiar by now. `%{ids}` will be provided for you - just stick it in the right place. Note that it won't always be called *ids*; the name will be the plural version of the key in your mapping.
 
 `eager_load_one` defines an ad hoc `has_one`/`belongs_to` association.
 

@@ -25,49 +25,60 @@ module OccamsRecord
     # target_attr and assoc_attr are the matching keys on target_rows and assoc_rows, respectively.
     #
     # @param assoc_rows [Array<OccamsRecord::Results::Row>] rows to merge into target_rows
-    # @param target_attr [String|Symbol] name of the matching key on the target records
-    # @param assoc_attr [String] name of the matching key on the associated records
+    # @param mapping [Hash] The fields that should match up. The keys are for the target rows and the values
+    # for the associated rows.
     #
-    def single!(assoc_rows, target_attr, assoc_attr)
-      assoc_rows_by_id = assoc_rows.reduce({}) { |a, assoc_row|
+    def single!(assoc_rows, mapping)
+      target_attrs = mapping.keys.map
+      assoc_attrs = mapping.values
+
+      assoc_rows_by_ids = assoc_rows.reduce({}) { |a, assoc_row|
         begin
-          id = assoc_row.send assoc_attr
+          ids = assoc_attrs.map { |attr| assoc_row.send attr }
         rescue NoMethodError => e
           raise MissingColumnError.new(assoc_row, e.name)
         end
-        a[id] ||= assoc_row
+        a[ids] ||= assoc_row
         a
       }
 
       target_rows.each do |row|
         begin
-          attr = row.send target_attr
+          attrs = target_attrs.map { |attr| row.send attr }
         rescue NoMethodError => e
           raise MissingColumnError.new(row, e.name)
         end
-        row.send @assign, attr ? assoc_rows_by_id[attr] : nil
+        row.send @assign, attrs.any? ? assoc_rows_by_ids[attrs] : nil
       end
     end
 
     #
     # Merge an array of assoc_rows into the target_rows. Some target_rows may end up with 0 matching
     # associations, and they'll be assigned empty arrays.
-    # target_attr and assoc_attr are the matching keys on target_rows and assoc_rows, respectively.
     #
-    def many!(assoc_rows, target_attr, assoc_attr)
+    # @param assoc_rows [Array<OccamsRecord::Results::Row>] rows to merge into target_rows
+    # @param mapping [Hash] The fields that should match up. The keys are for the target rows and the values
+    # for the associated rows.
+    #
+    def many!(assoc_rows, mapping)
+      target_attrs = mapping.keys
+      assoc_attrs = mapping.values
+
       begin
-        assoc_rows_by_attr = assoc_rows.group_by(&assoc_attr.to_sym)
+        assoc_rows_by_attrs = assoc_rows.group_by { |r|
+          assoc_attrs.map { |attr| r.send attr }
+        }
       rescue NoMethodError => e
         raise MissingColumnError.new(assoc_rows[0], e.name)
       end
 
       target_rows.each do |row|
         begin
-          pkey = row.send target_attr
+          pkeys = target_attrs.map { |attr| row.send attr }
         rescue NoMethodError => e
           raise MissingColumnError.new(row, e.name)
         end
-        row.send @assign, assoc_rows_by_attr[pkey] || []
+        row.send @assign, assoc_rows_by_attrs[pkeys] || []
       end
     end
   end

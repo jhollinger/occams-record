@@ -300,8 +300,8 @@ class EagerLoaderTest < Minitest::Test
       OpenStruct.new(id: 101, name: "Widget 2", category_id: foo.id),
       OpenStruct.new(id: 102, name: "Widget 3", category_id: bar.id),
     ]
-    loader = OccamsRecord::EagerLoaders::AdHocOne.new(:category, {:id => :category_id},
-      "SELECT * FROM categories WHERE id IN (%{ids})", model: Category)
+    loader = OccamsRecord::EagerLoaders::AdHocOne.new(:category, {:category_id => :id},
+      "SELECT * FROM categories WHERE id IN (%{category_ids})", model: Category)
     loader.run(widgets)
 
     assert_equal [
@@ -319,7 +319,7 @@ class EagerLoaderTest < Minitest::Test
       OpenStruct.new(widgets(:b).attributes),
       OpenStruct.new(widgets(:c).attributes),
     ]
-    loader = OccamsRecord::EagerLoaders::AdHocOne.new(:deets, {:widget_id => :id},
+    loader = OccamsRecord::EagerLoaders::AdHocOne.new(:deets, {:id => :widget_id},
       "SELECT * FROM widget_details WHERE widget_id IN (%{ids})", model: WidgetDetail)
     loader.run(widgets)
 
@@ -337,7 +337,7 @@ class EagerLoaderTest < Minitest::Test
       OpenStruct.new(orders(:a).attributes),
       OpenStruct.new(orders(:b).attributes),
     ]
-    loader = OccamsRecord::EagerLoaders::AdHocMany.new(:line_items, {:order_id => :id},
+    loader = OccamsRecord::EagerLoaders::AdHocMany.new(:line_items, {:id => :order_id},
       "SELECT * FROM line_items WHERE order_id IN (%{ids})", model: LineItem)
     loader.run(orders)
 

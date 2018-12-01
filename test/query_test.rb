@@ -63,12 +63,12 @@ class QueryTest < Minitest::Test
   def test_eager_load_one_and_many
     widgets = OccamsRecord.
       query(Widget.order("name").limit(4)).
-      eager_load_one(:category, {:id => :category_id}, %(
-        SELECT * FROM categories WHERE id IN (%{ids}) AND name != %{bad_name}
+      eager_load_one(:category, {:category_id => :id}, %(
+        SELECT * FROM categories WHERE id IN (%{category_ids}) AND name != %{bad_name}
       ), binds: {
         bad_name: "Bad category"
       }, model: Category) {
-        eager_load_many(:splines, {:category_id => :id},
+        eager_load_many(:splines, {:id => :category_id},
           "SELECT * FROM splines WHERE category_id IN (%{ids})", model: Spline)
       }.
       run

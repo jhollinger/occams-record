@@ -1,3 +1,8 @@
+### 1.0.0-rc1 (2018-12-01)
+
+* Swapped places of keys/values of the mapping argument in `eager_load_one`/`eager_load_many`.
+* Allowed the mapping argument of `eager_load_one`/`eager_load_many` to take multiple pairs.
+
 ### 0.36.0 (2018-11-14)
 * Add `OccamsRecord::Query#query` to return a modified query.
 

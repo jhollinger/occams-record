@@ -12,7 +12,7 @@ module OccamsRecord
       #
       def merge!(assoc_rows, rows)
         Merge.new(rows, name).
-          many!(assoc_rows, @ref.active_record_primary_key, @ref.foreign_key)
+          many!(assoc_rows, {@ref.active_record_primary_key => @ref.foreign_key})
       end
     end
   end

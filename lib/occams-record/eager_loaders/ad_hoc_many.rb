@@ -14,7 +14,7 @@ module OccamsRecord
       #
       def merge!(assoc_rows, rows)
         Merge.new(rows, name).
-          many!(assoc_rows, @foreign_key.to_s, @local_key.to_s)
+          many!(assoc_rows, @mapping)
       end
     end
   end
