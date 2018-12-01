@@ -65,7 +65,7 @@ module OccamsRecord
       #     run
       #
       # @param name [Symbol] name of attribute to load records into
-      # @param mapping [Hash] a Hash with the keys being the parent keys and the values being the keys in the child
+      # @param mapping [Hash] a Hash that defines the key mapping of the parent (widgets.category_id) to the child (categories.id).
       # @param sql [String] the SQL to query the associated records. Include a bind params called '%{ids}' for the foreign/parent ids.
       # @param binds [Hash] any additional binds for your query.
       # @param model [ActiveRecord::Base] optional - ActiveRecord model that represents what you're loading. required when using Sqlite.
@@ -97,7 +97,7 @@ module OccamsRecord
       #     run
       #
       # @param name [Symbol] name of attribute to load records into
-      # @param mapping [Hash] a Hash with the keys being the parent keys and the values being the keys in the children
+      # @param mapping [Hash] a Hash that defines the key mapping of the parent (widgets.id) to the children (parts.widget_id).
       # @param sql [String] the SQL to query the associated records. Include a bind params called '%{ids}' for the foreign/parent ids.
       # @param use [Array<Module>] optional - Ruby modules to include in the result objects (single or array)
       # @param binds [Hash] any additional binds for your query.
