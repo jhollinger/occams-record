@@ -37,7 +37,7 @@ module OccamsRecord
       #
       def run(rows, query_logger: nil)
         fkey_binds = calc_fkey_binds rows
-        assoc = if fkey_binds.any?(&:any?)
+        assoc = if fkey_binds.any? { |_, vals| vals.any? }
                   binds = @binds.merge(fkey_binds)
                   RawQuery.new(@sql, binds, use: @use, eager_loaders: @eager_loaders, query_logger: query_logger).run
                 else

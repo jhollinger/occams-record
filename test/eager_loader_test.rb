@@ -349,4 +349,46 @@ class EagerLoaderTest < Minitest::Test
       "#{o.amount.to_i} = #{sum.to_i}"
     }
   end
+
+  def test_eager_load_one_and_many
+    widgets = OccamsRecord.
+      query(Widget.order("name").limit(4)).
+      eager_load_one(:category, {:category_id => :id}, %(
+        SELECT * FROM categories WHERE id IN (%{category_ids}) AND name != %{bad_name}
+      ), binds: {
+        bad_name: "Bad category"
+      }, model: Category) {
+        eager_load_many(:splines, {:id => :category_id},
+          "SELECT * FROM splines WHERE category_id IN (%{ids})", model: Spline)
+      }.
+      run
+
+      assert_equal [
+        "Widget A: Foo (2 splines in category)",
+        "Widget B: Foo (2 splines in category)",
+        "Widget C: Foo (2 splines in category)",
+        "Widget D: Bar (1 splines in category)",
+      ], widgets.map { |w|
+        "#{w.name}: #{w.category&.name} (#{w.category&.splines&.size} splines in category)"
+      }
+  end
+
+  def test_eager_load_one_and_many_with_zero_parents
+    widgets = OccamsRecord.
+      query(Widget.where(name: "Does Not Exist")).
+      eager_load_one(:category, {:category_id => :id}, %(
+        SELECT * FROM categories WHERE id IN (%{category_ids}) AND name != %{bad_name}
+      ), binds: {
+        bad_name: "Bad category"
+      }, model: Category).
+      eager_load_many(:line_items, {:id => :item_id},
+        "SELECT * FROM line_items WHERE item_id IN (%{ids}) AND item_type = 'Widget'", model: LineItem
+      ).
+      run
+
+      assert_equal [
+      ], widgets.map { |w|
+        "#{w.name}: #{w.category&.name} (#{w.category&.line_items&.size} line_items in category)"
+      }
+  end
 end
