@@ -1,3 +1,7 @@
+### 1.0.0.rc2 (2018-12-02)
+
+* Bugfix to ad hoc eager loaders.
+
 ### 1.0.0.rc1 (2018-12-01)
 
 * **BREAKING CHANGE** Swapped place of keys and values in the mapping argument for `eager_load_one`/`eager_load_many`. E.g. if you had `eager_load_many(:categories, {:id => :category_id}, ...)` it would now be `eager_load_many(:categories, {:category_id => :id}, ...)`.
