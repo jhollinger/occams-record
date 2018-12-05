@@ -18,7 +18,7 @@ module OccamsRecord
             raise MissingColumnError.new(row, e.name)
           end
         }.compact.uniq
-        yield base_scope.where(@ref.active_record_primary_key => ids) if ids.any?
+        yield base_scope.where(@ref.association_primary_key => ids) if ids.any?
       end
 
       #
