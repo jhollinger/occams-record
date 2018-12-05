@@ -1,3 +1,7 @@
+### 1.0.0.rc3 (2018-12-05)
+
+* Bugfix to eager loading `belongs_to` associations when the two models have different primary key names.
+
 ### 1.0.0.rc2 (2018-12-02)
 
 * Bugfix to ad hoc eager loaders.
