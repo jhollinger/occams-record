@@ -50,6 +50,7 @@ module OccamsRecord
         end
         row.send @assign, attrs.any? ? assoc_rows_by_ids[attrs] : nil
       end
+      nil
     end
 
     #
@@ -80,6 +81,7 @@ module OccamsRecord
         end
         row.send @assign, assoc_rows_by_attrs[pkeys] || []
       end
+      nil
     end
   end
 end

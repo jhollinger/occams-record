@@ -44,6 +44,7 @@ module OccamsRecord
                   []
                 end
         merge! assoc, rows
+        nil
       end
 
       private

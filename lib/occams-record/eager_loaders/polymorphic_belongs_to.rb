@@ -38,6 +38,7 @@ module OccamsRecord
           assoc_rows = Query.new(scope, use: @use, eager_loaders: eager_loaders, query_logger: query_logger).run
           merge! assoc_rows, rows
         }
+        nil
       end
 
       private
