@@ -23,12 +23,13 @@ class OccamsBench
 
   def run
     results = @examples.map(&:run)
-    gain = (results[0].time / results[-1].time) * 100
+    incr = results[1].time - results[0].time
+    p_incr = (incr / results[1].time) * 100 * -1
 
     "#{@title}\n" + results.map { |result|
       "  #{result.label}\t#{result.time.round 8}"
     }.join("\n") +
-    "\n  #{gain.round}% gain" +
+    "\n  #{p_incr.round}% improvement" +
     "\n\n"
   end
 end
