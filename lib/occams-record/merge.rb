@@ -29,7 +29,7 @@ module OccamsRecord
     # for the associated rows.
     #
     def single!(assoc_rows, mapping)
-      target_attrs = mapping.keys.map
+      target_attrs = mapping.keys
       assoc_attrs = mapping.values
 
       assoc_rows_by_ids = assoc_rows.reduce({}) { |a, assoc_row|
