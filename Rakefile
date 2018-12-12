@@ -8,7 +8,7 @@ task :bench do
   $:.unshift File.join(File.dirname(__FILE__), "lib")
   require 'occams-record'
 
-  puts OccamsBench.new("belongs_to").
+  puts OccamsBench.new("belongs_to (many to one)").
     measure("ActiveRecord") {
       Widget.all.preload(:category).find_each(batch_size: 1000) { |w|
         w.name
@@ -24,10 +24,26 @@ task :bench do
     }.
     run
 
-  puts OccamsBench.new("has_one").
+  puts OccamsBench.new("belongs_to (one to one)").
+    measure("ActiveRecord") {
+      WidgetDetail.all.preload(:widget).find_each(batch_size: 1000) { |d|
+        d.widget.name
+      }
+    }.
+    measure("OccamsRecord") {
+      OccamsRecord.
+        query(WidgetDetail.all).
+        eager_load(:widget).
+        find_each(batch_size: 1000) { |w|
+          w.widget.name
+        }
+    }.
+    run
+
+  puts OccamsBench.new("has_one (one to one)").
     measure("ActiveRecord") {
       Widget.all.preload(:detail).find_each(batch_size: 1000) { |w|
-        w.name
+        w.detail.text
       }
     }.
     measure("OccamsRecord") {
@@ -35,7 +51,7 @@ task :bench do
         query(Widget.all).
         eager_load(:detail).
         find_each(batch_size: 1000) { |w|
-          w.name
+          w.detail.text
         }
     }.
     run

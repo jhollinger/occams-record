@@ -12,6 +12,7 @@ module OccamsRecord
       #
       def query(rows)
         return if rows.empty?
+
         ids = rows.map { |row|
           begin
             row.send @ref.active_record_primary_key
@@ -19,9 +20,10 @@ module OccamsRecord
             raise MissingColumnError.new(row, e.name)
           end
         }.compact.uniq
+
         q = base_scope.where(@ref.foreign_key => ids)
         q.where!(@ref.type => rows[0].class&.model_name) if @ref.options[:as]
-        yield ids.any? ? q : nil
+        yield q if ids.any?
       end
 
       #

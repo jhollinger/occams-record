@@ -32,24 +32,50 @@ module OccamsRecord
       target_attrs = mapping.keys
       assoc_attrs = mapping.values
 
-      assoc_rows_by_ids = assoc_rows.reduce({}) { |a, assoc_row|
-        begin
-          ids = assoc_attrs.map { |attr| assoc_row.send attr }
-        rescue NoMethodError => e
-          raise MissingColumnError.new(assoc_row, e.name)
-        end
-        a[ids] ||= assoc_row
-        a
-      }
+      # Optimized for merges where there's a single mapping key pair (which is the vast majority)
+      if mapping.size == 1
+        target_attr, assoc_attr = target_attrs[0], assoc_attrs[0]
+        assoc_rows_by_ids = assoc_rows.reduce({}) { |a, assoc_row|
+          #begin
+            id = assoc_row.send assoc_attr
+          #rescue NoMethodError => e
+          #  raise MissingColumnError.new(assoc_row, e.name)
+          #end
+          a[id] ||= assoc_row
+          a
+        }
 
-      target_rows.each do |row|
-        begin
-          attrs = target_attrs.map { |attr| row.send attr }
-        rescue NoMethodError => e
-          raise MissingColumnError.new(row, e.name)
+        target_rows.each do |row|
+          begin
+            attr = row.send target_attr
+          rescue NoMethodError => e
+            raise MissingColumnError.new(row, e.name)
+          end
+          row.send @assign, attr ? assoc_rows_by_ids[attr] : nil
         end
-        row.send @assign, attrs.any? ? assoc_rows_by_ids[attrs] : nil
+
+      # Slower but works with any number of mapping key pairs
+      else
+        assoc_rows_by_ids = assoc_rows.reduce({}) { |a, assoc_row|
+          begin
+            ids = assoc_attrs.map { |attr| assoc_row.send attr }
+          rescue NoMethodError => e
+            raise MissingColumnError.new(assoc_row, e.name)
+          end
+          a[ids] ||= assoc_row
+          a
+        }
+
+        target_rows.each do |row|
+          begin
+            attrs = target_attrs.map { |attr| row.send attr }
+          rescue NoMethodError => e
+            raise MissingColumnError.new(row, e.name)
+          end
+          row.send @assign, attrs.any? ? assoc_rows_by_ids[attrs] : nil
+        end
       end
+
       nil
     end
 
@@ -65,22 +91,46 @@ module OccamsRecord
       target_attrs = mapping.keys
       assoc_attrs = mapping.values
 
-      begin
-        assoc_rows_by_attrs = assoc_rows.group_by { |r|
-          assoc_attrs.map { |attr| r.send attr }
-        }
-      rescue NoMethodError => e
-        raise MissingColumnError.new(assoc_rows[0], e.name)
+      # Optimized for merges where there's a single mapping key pair (which is the vast majority)
+      if mapping.size == 1
+        target_attr, assoc_attr = target_attrs[0], assoc_attrs[0]
+        begin
+          assoc_rows_by_attr = assoc_rows.group_by { |r|
+            r.send assoc_attr
+          }
+        rescue NoMethodError => e
+          raise MissingColumnError.new(assoc_rows[0], e.name)
+        end
+
+        target_rows.each do |row|
+          begin
+            pkey = row.send target_attr
+          rescue NoMethodError => e
+            raise MissingColumnError.new(row, e.name)
+          end
+          row.send @assign, assoc_rows_by_attr[pkey] || []
+        end
+
+      # Slower but works with any number of mapping key pairs
+      else
+        begin
+          assoc_rows_by_attrs = assoc_rows.group_by { |r|
+            assoc_attrs.map { |attr| r.send attr }
+          }
+        rescue NoMethodError => e
+          raise MissingColumnError.new(assoc_rows[0], e.name)
+        end
+
+        target_rows.each do |row|
+          begin
+            pkeys = target_attrs.map { |attr| row.send attr }
+          rescue NoMethodError => e
+            raise MissingColumnError.new(row, e.name)
+          end
+          row.send @assign, assoc_rows_by_attrs[pkeys] || []
+        end
       end
 
-      target_rows.each do |row|
-        begin
-          pkeys = target_attrs.map { |attr| row.send attr }
-        rescue NoMethodError => e
-          raise MissingColumnError.new(row, e.name)
-        end
-        row.send @assign, assoc_rows_by_attrs[pkeys] || []
-      end
       nil
     end
   end
