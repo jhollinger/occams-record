@@ -1,3 +1,7 @@
+### 1.0.0.rc5 (2018-12-12)
+* Performance improvements!
+* Added `rake bench` to measure performance improvements/regressions.
+
 ### 1.0.0.rc4 (2018-12-07)
 * Bugfix to eager_load through associations.
 
