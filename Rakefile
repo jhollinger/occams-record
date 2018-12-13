@@ -11,16 +11,16 @@ namespace :bench do
   desc "Run performance benchmarks"
   task :speed => :environment do
     puts "OccamsRecord Speed Test\n\n"
-    Benchmarks.each do |t|
-      puts t.speed
+    Benchmarks.each do |benchmark|
+      puts benchmark.speed
     end
   end
 
   desc "Run memory benchmarks"
   task :memory => :environment do
     puts "OccamsRecord Memory Test\n\n"
-    Benchmarks.each do |t|
-      puts t.memory
+    Benchmarks.each do |benchmark|
+      puts benchmark.memory
     end
   end
 
