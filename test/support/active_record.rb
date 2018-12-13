@@ -13,16 +13,19 @@ ActiveRecord::Base.connection.instance_eval do
     t.string :name, null: false
     t.integer :category_id
   end
+  add_index :widgets, :category_id
 
   create_table :widget_details do |t|
     t.integer :widget_id
     t.text :text
   end
+  add_index :widget_details, :widget_id
 
   create_table :splines do |t|
     t.string :name, null: false
     t.integer :category_id
   end
+  add_index :splines, :category_id
 
   create_table :customers do |t|
     t.string :name
@@ -33,6 +36,7 @@ ActiveRecord::Base.connection.instance_eval do
     t.decimal :amount, precision: 10, scale: 2
     t.integer :customer_id
   end
+  add_index :orders, :customer_Id
 
   create_table :line_items do |t|
     t.integer :order_id, null: false
@@ -41,12 +45,14 @@ ActiveRecord::Base.connection.instance_eval do
     t.integer :category_id, null: false
     t.decimal :amount, precision: 10, scale: 2
   end
+  add_index :line_items, :item_id
 
   create_table :users do |t|
     t.integer :customer_id
     t.string :username
     t.timestamps null: false
   end
+  add_index :users, :customer_id
 
   create_table :offices do |t|
     t.string :name
