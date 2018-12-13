@@ -1,35 +1,51 @@
 require 'benchmark'
+require 'memory_profiler'
 
 class OccamsBench
-  Example = Struct.new(:label, :proc) do
-    def run
-      self.proc.call # warm-up run
-      time = Benchmark.realtime { self.proc.call }
-      Result.new(self.label, time)
-    end
-  end
-
-  Result = Struct.new(:label, :time)
+  Result = Struct.new(:label, :measurement)
 
   def initialize(title)
     @title = title
-    @examples = []
   end
 
-  def measure(label, &example)
-    @examples << Example.new(label, example)
+  def active_record(&example)
+    @active_record = example
     self
   end
 
-  def run
-    results = @examples.map(&:run)
-    incr = results[1].time - results[0].time
-    p_incr = (incr / results[1].time) * 100 * -1
+  def occams_record(&example)
+    @occams_record = example
+    self
+  end
 
-    "#{@title}\n" + results.map { |result|
-      "  #{result.label}\t#{result.time.round 8}"
-    }.join("\n") +
-    "\n  #{p_incr.round}% improvement" +
-    "\n\n"
+  def speed
+    run "sec" do |ex|
+      ex.call # warm-up run
+      Benchmark.realtime { ex.call }
+    end
+  end
+
+  def memory
+    run "bytes" do |ex|
+      report = MemoryProfiler.report { ex.call }
+      report.total_allocated_memsize
+    end
+  end
+
+  private
+
+  def run(units)
+    ar_result = yield @active_record
+    or_result = yield @occams_record
+
+    incr = or_result - ar_result
+    p_incr = (incr / or_result.to_f) * 100 * -1
+
+    %(
+#{@title}
+  ActiveRecord #{ar_result.round 8} #{units}
+  OccamsRecord #{or_result.round 8} #{units}
+  #{p_incr.round}% improvement
+    ).strip + "\n\n"
   end
 end

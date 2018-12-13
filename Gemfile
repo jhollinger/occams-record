@@ -11,9 +11,16 @@ gem 'activerecord', {
   '5.2' => '~> 5.2.0',
 }[ENV['AR']]
 
+group :development do
+  gem 'memory_profiler'
+end
+
 group :test do
   gem 'minitest'
+  gem 'database_cleaner'
+end
+
+group :development, :test do
   gem 'otr-activerecord', '~> 1.2.5'
   gem 'sqlite3'
-  gem 'database_cleaner'
 end

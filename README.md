@@ -230,9 +230,9 @@ The following ActiveRecord features are not supported, and likely never will be.
 
 # Benchmarking
 
-`bundle exec rake bench` will run a suite of performance benchmarks comparing Occams Record with Active Record. These are primarily used during development to prevent performance regressions. An in-memory Sqlite database is used.
+`bundle exec rake bench` will run a suite of speed and memory benchmarks comparing Occams Record to Active Record. [You can find an example of a typical run here.](https://github.com/jhollinger/occams-record/wiki/Measurements). These are primarily used during development to prevent performance regressions. An in-memory Sqlite database is used.
 
-If you run your own benchmarks, keep in mind exactly what you're measuring. For example if you're benchmarking a report written in AR vs OR, there are many constants in that measurement: the time spent in the database, the time spent transfering the database results back to your Ruby process, any calculations you're doing on your results, and the time spent building your html/json/csv/etc. So if OR is 3x fastr than AR, the total runtime of said report *won't* improve by 3x.
+If you run your own benchmarks, keep in mind exactly what you're measuring. For example if you're benchmarking a report written in AR vs OR, there are many constants in that measurement: the time spent in the database, the time spent sending the database results over the network, any calculations you're doing in Ruby, and the time spent building your html/json/csv/etc. So if OR is 3x fastr than AR, the total runtime of said report *won't* improve by 3x.
 
 On the other hand, Active Record makes it *very* easy to forget to eager load associations (the N+1 query problem). Occams Record fixes that. So if your report was missing some associations you could see easily see performance improvements well over 3x.
 

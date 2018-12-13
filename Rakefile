@@ -1,76 +1,35 @@
 require 'bundler/setup'
 require 'rake/testtask'
 
-desc "Run performance benchmarks"
+desc "Run all benchmarks"
 task :bench do
-  require_relative './bench/seeds'
-  require_relative './bench/occams_bench'
-  $:.unshift File.join(File.dirname(__FILE__), "lib")
-  require 'occams-record'
+  Rake::Task["bench:speed"].invoke
+  Rake::Task["bench:memory"].invoke
+end
 
-  puts OccamsBench.new("belongs_to (many to one)").
-    measure("ActiveRecord") {
-      Widget.all.preload(:category).find_each(batch_size: 1000) { |w|
-        w.name
-      }
-    }.
-    measure("OccamsRecord") {
-      OccamsRecord.
-        query(Widget.all).
-        eager_load(:category).
-        find_each(batch_size: 1000) { |w|
-          w.name
-        }
-    }.
-    run
+namespace :bench do
+  desc "Run performance benchmarks"
+  task :speed => :environment do
+    puts "OccamsRecord Speed Test\n\n"
+    Benchmarks.each do |t|
+      puts t.speed
+    end
+  end
 
-  puts OccamsBench.new("belongs_to (one to one)").
-    measure("ActiveRecord") {
-      WidgetDetail.all.preload(:widget).find_each(batch_size: 1000) { |d|
-        d.widget.name
-      }
-    }.
-    measure("OccamsRecord") {
-      OccamsRecord.
-        query(WidgetDetail.all).
-        eager_load(:widget).
-        find_each(batch_size: 1000) { |w|
-          w.widget.name
-        }
-    }.
-    run
+  desc "Run memory benchmarks"
+  task :memory => :environment do
+    puts "OccamsRecord Memory Test\n\n"
+    Benchmarks.each do |t|
+      puts t.memory
+    end
+  end
 
-  puts OccamsBench.new("has_one (one to one)").
-    measure("ActiveRecord") {
-      Widget.all.preload(:detail).find_each(batch_size: 1000) { |w|
-        w.detail.text
-      }
-    }.
-    measure("OccamsRecord") {
-      OccamsRecord.
-        query(Widget.all).
-        eager_load(:detail).
-        find_each(batch_size: 1000) { |w|
-          w.detail.text
-        }
-    }.
-    run
-
-  puts OccamsBench.new("has_many").
-    measure("ActiveRecord") {
-      Category.all.preload(:widgets).each { |cat|
-        cat.widgets.size
-      }
-    }.
-    measure("OccamsRecord") {
-      OccamsRecord.
-        query(Category.all).
-        eager_load(:widgets).
-        each { |cat|
-          cat.widgets.size
-        }
-    }.
-    run
+  task :environment do
+    $:.unshift File.join(File.dirname(__FILE__), "lib")
+    require 'occams-record'
+    require_relative './bench/seeds'
+    require_relative './bench/marks'
+  end
 end
 
 Rake::TestTask.new do |t|
