@@ -173,7 +173,7 @@ module OccamsRecord
       end
 
       def method_missing(name, *args, &block)
-        return super if args.any? or !block.nil?
+        return super if args.any? or !block.nil? or self.class.model_name.nil?
         model = self.class.model_name.constantize
 
         if model.reflections.has_key? name.to_s
