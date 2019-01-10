@@ -1,3 +1,6 @@
+### 1.0.0.rc6 (2019-01-10)
+* Add `from` option to `eager_load` (an opposite alternative to `as`).
+
 ### 1.0.0.rc5 (2018-12-12)
 * Performance improvements!
 * Added `rake bench` to measure performance improvements/regressions.

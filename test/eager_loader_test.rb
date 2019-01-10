@@ -391,4 +391,40 @@ class EagerLoaderTest < Minitest::Test
         "#{w.name}: #{w.category&.name} (#{w.category&.line_items&.size} line_items in category)"
       }
   end
+
+  def test_eager_load_as_a_custom_name
+    widgets = OccamsRecord.
+      query(Widget.order(:name)).
+      eager_load(:category, as: :cat).
+      run
+
+    assert_equal [
+      "Widget A: Foo",
+      "Widget B: Foo",
+      "Widget C: Foo",
+      "Widget D: Bar",
+      "Widget E: Bar",
+      "Widget F: Bar",
+    ], widgets.map { |w|
+      "#{w.name}: #{w.cat.name}"
+    }
+  end
+
+  def test_eager_load_a_custom_name_from_a_real_assoc
+    widgets = OccamsRecord.
+      query(Widget.order(:name)).
+      eager_load(:cat, from: :category).
+      run
+
+    assert_equal [
+      "Widget A: Foo",
+      "Widget B: Foo",
+      "Widget C: Foo",
+      "Widget D: Bar",
+      "Widget E: Bar",
+      "Widget F: Bar",
+    ], widgets.map { |w|
+      "#{w.name}: #{w.cat.name}"
+    }
+  end
 end

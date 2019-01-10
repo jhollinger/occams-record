@@ -111,13 +111,13 @@ class QueryTest < Minitest::Test
   def test_belongs_to_with_alt_name
     results = OccamsRecord.
       query(Widget.all).
-      eager_load(:category, as: :cat).
+      eager_load(:category).
       run
 
     assert_equal Widget.all.map { |w|
       "#{w.name}: #{w.category.name}"
     }.sort, results.map { |w|
-      "#{w.name}: #{w.cat.name}"
+      "#{w.name}: #{w.category.name}"
     }.sort
   end
 

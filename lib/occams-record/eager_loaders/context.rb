@@ -71,17 +71,29 @@ module OccamsRecord
       # @param select [String] a custom SELECT statement, minus the SELECT (optional)
       # @param use [Array<Module>] optional Module to include in the result class (single or array)
       # @param as [Symbol] Load the association usign a different attribute name
+      # @param from [Symbol] Opposite of `as`. `assoc` is the custom name and `from` is the name of association on the ActiveRecord model.
       # @param optimizer [Symbol] Only used for `through` associations. Options are :none (load all intermediate records) | :select (load all intermediate records but only SELECT the necessary columns)
       # @yield a block where you may perform eager loading on *this* association (optional)
       # @return [OccamsRecord::EagerLoaders::Base] the new loader. if @model is nil, nil will be returned.
       #
-      def add(assoc, scope = nil, select: nil, use: nil, as: nil, optimizer: :select, &builder)
+      def add(assoc, scope = nil, select: nil, use: nil, as: nil, from: nil, optimizer: :select, &builder)
+        if from
+          real_assoc = from
+          custom_name = assoc
+        elsif as
+          real_assoc = assoc
+          custom_name = as
+        else
+          real_assoc = assoc
+          custom_name = nil
+        end
+
         if @model
-          loader = build_loader!(assoc, scope, select, use, as, optimizer, builder)
+          loader = build_loader!(real_assoc, custom_name, scope, select, use, optimizer, builder)
           @loaders << loader
           loader
         else
-          @dynamic_loaders << [assoc, scope, select, use, as, optimizer, builder]
+          @dynamic_loaders << [real_assoc, custom_name, scope, select, use, optimizer, builder]
           nil
         end
       end
@@ -102,19 +114,19 @@ module OccamsRecord
 
       private
 
-      def build_loader!(assoc, scope, select, use, as, optimizer, builder)
-        build_loader(assoc, scope, select, use, as, optimizer, builder) ||
+      def build_loader!(assoc, custom_name, scope, select, use, optimizer, builder)
+        build_loader(assoc, custom_name, scope, select, use, optimizer, builder) ||
           raise("OccamsRecord: No assocation `:#{assoc}` on `#{@model.name}` or subclasses")
       end
 
-      def build_loader(assoc, scope, select, use, as, optimizer, builder)
+      def build_loader(assoc, custom_name, scope, select, use, optimizer, builder)
         ref = @model.reflections[assoc.to_s] ||
           @model.subclasses.map(&:reflections).detect { |x| x.has_key? assoc.to_s }&.[](assoc.to_s)
         return nil if ref.nil?
 
         scope ||= ->(q) { q.select select } if select
         loader_class = !!ref.through_reflection ? EagerLoaders::Through : EagerLoaders.fetch!(ref)
-        loader_class.new(ref, scope, use: use, as: as, optimizer: optimizer, &builder)
+        loader_class.new(ref, scope, use: use, as: custom_name, optimizer: optimizer, &builder)
       end
     end
   end
