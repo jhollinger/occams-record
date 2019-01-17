@@ -18,8 +18,7 @@ module OccamsRecord
       # Initialize a new eager loading context.
       #
       # @param mode [ActiveRecord::Base] the model that contains the associations that will be referenced.
-      # @param polymorphic [Boolean] When true, model is allowed to change, and it's assumed that not every loader
-      # is applicable to every model.
+      # @param polymorphic [Boolean] When true, model is allowed to change, and it's assumed that not every loader is applicable to every model.
       #
       def initialize(model = nil, polymorphic: false)
         @model, @polymorphic = model, polymorphic

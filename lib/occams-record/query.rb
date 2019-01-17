@@ -3,9 +3,9 @@ require 'occams-record/batches'
 module OccamsRecord
   #
   # Starts building a OccamsRecord::Query. Pass it a scope from any of ActiveRecord's query builder
-  # methods or associations. If you want to eager loaded associations, do NOT us ActiveRecord for it.
-  # Instead, use OccamsRecord::Query#eager_load. Finally, call `run` to run the query and get back an
-  # array of objects.
+  # methods or associations. If you want to eager loaded associations, do NOT use ActiveRecord for it.
+  # Instead use OccamsRecord::Query#eager_load. Finally, call `run` (or any Enumerable method) to run
+  # the query and get back an array of objects.
   #
   #  results = OccamsRecord.
   #    query(Widget.order("name")).
@@ -61,6 +61,7 @@ module OccamsRecord
     #
     # @yield [ActiveRecord::Relation] the current scope which you may modify and return
     # @return [OccamsRecord::Query]
+    #
     def query
       scope = block_given? ? yield(@scope) : @scope
       Query.new(scope, use: @use, eager_loaders: @eager_loaders, query_logger: @query_logger)
@@ -83,8 +84,11 @@ module OccamsRecord
     #   # returns ALL rows
     #   occams.run
     #
-    # @return [Array<OccamsRecord::Results::Row>]
+    # Any Enumerable method (e.g. each, to_a, map, reduce, etc.) may be used instead. Additionally,
+    # `find_each` and `find_in_batches` are available.
+    #
     # @yield [ActiveRecord::Relation] You may use this to return and run a modified relation
+    # @return [Array<OccamsRecord::Results::Row>]
     #
     def run
       sql = block_given? ? yield(scope).to_sql : scope.to_sql
