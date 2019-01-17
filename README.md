@@ -167,13 +167,13 @@ But that's very wasteful. Occams gives us better options: `eager_load_many` and 
 ```ruby
 products = OccamsRecord.
   query(Product.all).
-  eager_load_many(:customers, {:id => :product_id}, %w(
+  eager_load_many(:customers, {:id => :product_id}, "
     SELECT DISTINCT product_id, customers.*
     FROM line_items
       INNER JOIN orders ON line_items.order_id = orders.id
       INNER JOIN customers on orders.customer_id = customers.id
     WHERE line_items.product_id IN (%{ids})
-  ), binds: {
+  ", binds: {
     # additional bind values (ids will be passed in for you)
   }).
   run
@@ -230,9 +230,9 @@ The following ActiveRecord features are not supported, and likely never will be.
 
 # Benchmarking
 
-`bundle exec rake bench` will run a suite of speed and memory benchmarks comparing Occams Record to Active Record. [You can find an example of a typical run here.](https://github.com/jhollinger/occams-record/wiki/Measurements). These are primarily used during development to prevent performance regressions. An in-memory Sqlite database is used.
+`bundle exec rake bench` will run a suite of speed and memory benchmarks comparing Occams Record to Active Record. [You can find an example of a typical run here.](https://github.com/jhollinger/occams-record/wiki/Measurements) These are primarily used during development to prevent performance regressions. An in-memory Sqlite database is used.
 
-If you run your own benchmarks, keep in mind exactly what you're measuring. For example if you're benchmarking a report written in AR vs OR, there are many constants in that measurement: the time spent in the database, the time spent sending the database results over the network, any calculations you're doing in Ruby, and the time spent building your html/json/csv/etc. So if OR is 3x fastr than AR, the total runtime of said report *won't* improve by 3x.
+If you run your own benchmarks, keep in mind exactly what you're measuring. For example if you're benchmarking a report written in AR vs OR, there are many constants in that measurement: the time spent in the database, the time spent sending the database results over the network, any calculations you're doing in Ruby, and the time spent building your html/json/csv/etc. So if OR is 3x faster than AR, the total runtime of said report *won't* improve by 3x.
 
 On the other hand, Active Record makes it *very* easy to forget to eager load associations (the N+1 query problem). Occams Record fixes that. So if your report was missing some associations you could see easily see performance improvements well over 3x.
 
