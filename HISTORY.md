@@ -1,3 +1,6 @@
+### 1.0.0.rc7 (2019-01-18)
+* Bugfix to `eager_load` "through" associations when using a custom name.
+
 ### 1.0.0.rc6 (2019-01-10)
 * Add `from` option to `eager_load` (an opposite alternative to `as`).
 
