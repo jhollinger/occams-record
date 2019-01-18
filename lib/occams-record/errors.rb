@@ -14,6 +14,11 @@ module OccamsRecord
       @record, @name = record, name
       @model_name = record.class.model_name
     end
+
+    # @return [String]
+    def to_s
+      message
+    end
   end
 
   # Exception when an unselected column is called on a result row
@@ -43,6 +48,11 @@ module OccamsRecord
     # @param attrs [Hash]
     def initialize(model_name, attrs)
       @model_name, @attrs = model_name, attrs
+    end
+
+    # @return [String]
+    def to_s
+      message
     end
 
     # @return [String]
