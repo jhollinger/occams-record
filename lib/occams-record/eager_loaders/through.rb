@@ -27,6 +27,7 @@ module OccamsRecord
         @chain = chain.each_with_index.map { |x, i|
           Link.new(x.source_reflection.name, x.source_reflection.macro, x, chain[i + 1])
         }
+        @chain[-1].name = @as if @as and @chain.any?
         @loader = build_loader
       end
 
