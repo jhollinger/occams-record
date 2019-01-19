@@ -147,4 +147,19 @@ class EagerLoadThroughTest < Minitest::Test
       "#{c.name}: #{cats.join(', ')}"
     }
   end
+
+  def test_eager_load_using_custom_name
+    customers = OccamsRecord.
+      query(Customer.order(:name)).
+      eager_load(:categories, as: :cats).
+      run
+
+    assert_equal [
+      "Jane: Bar, Foo",
+      "Jon: Foo",
+    ], customers.map { |c|
+      cats = c.cats.map(&:name).sort
+      "#{c.name}: #{cats.join(', ')}"
+    }
+  end
 end
