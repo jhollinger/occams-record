@@ -7,8 +7,11 @@ module OccamsRecord
     # Load records in batches of N and yield each record to a block if given.
     # If no block is given, returns an Enumerator.
     #
-    # NOTE Unlike ActiveRecord's find_each, order IS respected. The primary key will be appended
-    # to the ORDER BY clause to help ensure consistent batches.
+    # NOTE Unlike ActiveRecord's find_each, order is respected. The primary key will be appended
+    # to the ORDER BY clause to help ensure consistent batches. HOWEVER, it's still possible for
+    # batches to be "corrupted" (miss records or repeat records) if table data changes out from
+    # enderneath them. To prevent this, it's strongly recomended to always run find_each inside
+    # of a transaction.
     #
     # @param batch_size [Integer]
     # @yield [OccamsRecord::Results::Row]
@@ -31,8 +34,11 @@ module OccamsRecord
     # Load records in batches of N and yield each batch to a block if given.
     # If no block is given, returns an Enumerator.
     #
-    # NOTE Unlike ActiveRecord's find_in_batches, order IS respected. The primary key will be appended
-    # to the ORDER BY clause to help ensure consistent batches.
+    # NOTE Unlike ActiveRecord's find_in_batches, order is respected. The primary key will be appended
+    # to the ORDER BY clause to help ensure consistent batches. HOWEVER, it's still possible for
+    # batches to be "corrupted" (miss records or repeat records) if table data changes out from
+    # enderneath them. To prevent this, it's strongly recomended to always run find_in_batches inside
+    # of a transaction.
     #
     # @param batch_size [Integer]
     # @yield [OccamsRecord::Results::Row]
@@ -59,6 +65,10 @@ module OccamsRecord
     # @return [Enumerator] yields batches
     #
     def batches(of:)
+      if model.connection.open_transactions == 0
+        $stderr.puts "Occams Record Warning: find_each or find_in_batches is being run outside of transaction. Batch consistency can only be ensured within a transaction."
+      end
+
       limit = scope.limit_value
       batch_size = limit && limit < of ? limit : of
       Enumerator.new do |y|
