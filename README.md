@@ -214,6 +214,10 @@ orders = OccamsRecord.
   run
 ```
 
+## Ugly Module
+
+`OccamsRecord::Ugly` contains helpers for things that shouldn't, but sometimes must, be done in legacy codebases. See the docs.
+
 ---
 
 # Unsupported features

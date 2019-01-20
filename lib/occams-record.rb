@@ -6,3 +6,7 @@ require 'occams-record/results'
 require 'occams-record/query'
 require 'occams-record/raw_query'
 require 'occams-record/errors'
+
+module OccamsRecord
+  autoload :Ugly, 'occams-record/ugly'
+end
