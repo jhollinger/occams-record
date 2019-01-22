@@ -56,13 +56,14 @@ module OccamsRecord
           node.send(link.name).reduce(Set.new) { |a, child|
             result = reduce(child, depth + 1)
             case result
+            when nil then a
             when Array then a + result
             else a << result
             end
           }.to_a
         when :has_one, :belongs_to
           child = node.send(link.name)
-          reduce(child, depth + 1)
+          child ? reduce(child, depth + 1) : nil
         else
           raise "Unsupported through chain link type '#{link.macro}'"
         end
