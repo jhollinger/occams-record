@@ -1,3 +1,6 @@
+### 1.0.0.rc9 (2018-01-22)
+* Bugfix to eager loading "through" associations when something in the chain is `nil`.
+
 ### 1.0.0.rc8 (2019-01-20)
 * Added `OccamsRecord::Ugly.active_record` to convert records back into Active Record objects. It removes all the performance benefits, buts allows for Occams's improved eager loading and find_each/find_in_batches.
 
