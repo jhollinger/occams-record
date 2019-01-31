@@ -55,9 +55,9 @@ orders = OccamsRecord.
   run
 ````
 
-`each`, `map`, `reduce`, and other Enumerable methods may be used instead of *run*. `find_each` and `find_in_batches` are also supported. Occams Record has great support for raw SQL queries too, but we'll get to those later.
+`each`, `map`, `reduce`, and other Enumerable methods may be used instead of *run*. `find_each` and `find_in_batches` are also supported, and unlike in ActiveRecord, `ORDER BY` works as you'd expect.
 
-NOTE Unlike in Active Record, `find_each` and `find_in_batches` respect *ORDER BY*. However, to ensure consistency, it's strongly recomended to use `find_each`/`find_in_batches` inside of a transaction.
+Occams Record has great support for raw SQL queries too, but we'll get to those later.
 
 ## Basic eager loading
 

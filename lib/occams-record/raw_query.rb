@@ -139,25 +139,36 @@ module OccamsRecord
     # The bind values will be provided by OccamsRecord.
     #
     # @param of [Integer] batch size
+    # @param use_transaction [Boolean] Ensure it runs inside of a database transaction
     # @return [Enumerator] yields batches
     #
-    def batches(of:)
+    def batches(of:, use_transaction: true)
       unless @sql =~ /LIMIT\s+%\{batch_limit\}/i and @sql =~ /OFFSET\s+%\{batch_offset\}/i
         raise ArgumentError, "When using find_each/find_in_batches you must specify 'LIMIT %{batch_limit} OFFSET %{batch_offset}'. SQL statement: #{@sql}"
       end
 
       Enumerator.new do |y|
-        offset = 0
-        loop do
-          results = RawQuery.new(@sql, @binds.merge({
-            batch_limit: of,
-            batch_offset: offset,
-          }), use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders).run
-
-          y.yield results if results.any?
-          break if results.size < of
-          offset += results.size
+        if use_transaction and @conn.open_transactions == 0
+          @conn.transaction {
+            run_batches y, of
+          }
+        else
+          run_batches y, of
         end
+      end
+    end
+
+    def run_batches(y, of)
+      offset = 0
+      loop do
+        results = RawQuery.new(@sql, @binds.merge({
+          batch_limit: of,
+          batch_offset: offset,
+        }), use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders).run
+
+        y.yield results if results.any?
+        break if results.size < of
+        offset += results.size
       end
     end
   end
