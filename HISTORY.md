@@ -1,4 +1,7 @@
-### 1.0.0.rc9 (2018-01-22)
+### 1.0.0.rc10 (2019-01-31)
+* Wrap `find_each`/`find_in_batches` in transactions to guarantee batch integrity. This can be opted out of if desired.
+
+### 1.0.0.rc9 (2019-01-22)
 * Bugfix to eager loading "through" associations when something in the chain is `nil`.
 
 ### 1.0.0.rc8 (2019-01-20)
