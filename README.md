@@ -259,3 +259,11 @@ bundle exec rake test
 ```
 
 Look inside `Gemfile` to see all testable versions.
+
+# License
+
+MIT License. See LICENSE for details.
+
+# Copyright
+
+Copywrite (c) 2019 Jordan Hollinger.
