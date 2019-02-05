@@ -22,5 +22,5 @@ end
 
 group :development, :test do
   gem 'otr-activerecord', '~> 1.2.5'
-  gem 'sqlite3'
+  gem 'sqlite3', '~> 1.3.6'
 end
