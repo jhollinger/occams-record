@@ -36,8 +36,8 @@ module OccamsRecord
         @loader.name
       end
 
-      def run(rows, query_logger: nil)
-        @loader.run(rows, query_logger: query_logger)
+      def run(rows, query_logger: nil, measurements: nil)
+        @loader.run(rows, query_logger: query_logger, measurements: measurements)
         attr_set = "#{name}="
         rows.each do |row|
           row.send(attr_set, reduce(row))

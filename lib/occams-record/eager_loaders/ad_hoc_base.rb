@@ -35,11 +35,11 @@ module OccamsRecord
       # @param rows [Array<OccamsRecord::Results::Row>] Array of rows used to calculate the query.
       # @param query_logger [Array<String>]
       #
-      def run(rows, query_logger: nil)
+      def run(rows, query_logger: nil, measurements: nil)
         fkey_binds = calc_fkey_binds rows
         assoc = if fkey_binds.any? { |_, vals| vals.any? }
                   binds = @binds.merge(fkey_binds)
-                  RawQuery.new(@sql, binds, use: @use, eager_loaders: @eager_loaders, query_logger: query_logger).run
+                  RawQuery.new(@sql, binds, use: @use, eager_loaders: @eager_loaders, query_logger: query_logger, measurements: measurements).run
                 else
                   []
                 end

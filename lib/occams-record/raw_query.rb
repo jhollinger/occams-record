@@ -53,6 +53,7 @@ module OccamsRecord
     include Batches
     include EagerLoaders::Builder
     include Enumerable
+    include Measureable
 
     #
     # Initialize a new query.
@@ -62,13 +63,14 @@ module OccamsRecord
     # @param use [Array<Module>] optional Module to include in the result class (single or array)
     # @param eager_loaders [OccamsRecord::EagerLoaders::Context]
     # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
+    # @param measurements [Array]
     #
-    def initialize(sql, binds, use: nil, eager_loaders: nil, query_logger: nil)
+    def initialize(sql, binds, use: nil, eager_loaders: nil, query_logger: nil, measurements: nil)
       @sql = sql
       @binds = binds
       @use = use
       @eager_loaders = eager_loaders || EagerLoaders::Context.new
-      @query_logger = query_logger
+      @query_logger, @measurements = query_logger, measurements
       @conn = @eager_loaders.model&.connection || ActiveRecord::Base.connection
     end
 
@@ -95,10 +97,18 @@ module OccamsRecord
     def run
       _escaped_sql = escaped_sql
       @query_logger << _escaped_sql if @query_logger
-      result = @conn.exec_query _escaped_sql
+      result = if measure?
+                 record_start_time!
+                 measure!(table_name, _escaped_sql) {
+                   @conn.exec_query _escaped_sql
+                 }
+               else
+                 @conn.exec_query _escaped_sql
+               end
       row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: @eager_loaders.model, modules: @use)
       rows = result.rows.map { |row| row_class.new row }
-      @eager_loaders.run!(rows, query_logger: @query_logger)
+      @eager_loaders.run!(rows, query_logger: @query_logger, measurements: @measurements)
+      yield_measurements!
       rows
     end
 
@@ -123,6 +133,7 @@ module OccamsRecord
 
     # Returns the SQL as a String with all variables escaped
     def escaped_sql
+      return sql if binds.empty?
       sql % binds.reduce({}) { |a, (col, val)|
         a[col.to_sym] = if val.is_a? Array
                           val.map { |x| @conn.quote x }.join(', ')
@@ -131,6 +142,10 @@ module OccamsRecord
                         end
         a
       }
+    end
+
+    def table_name
+      @sql.match(/\s+FROM\s+"?(\w+)"?/i)&.captures&.first
     end
 
     #

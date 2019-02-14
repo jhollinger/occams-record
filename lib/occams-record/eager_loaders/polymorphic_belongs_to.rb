@@ -31,11 +31,11 @@ module OccamsRecord
       # @param rows [Array<OccamsRecord::Results::Row>] Array of rows used to calculate the query.
       # @param query_logger [Array<String>]
       #
-      def run(rows, query_logger: nil)
+      def run(rows, query_logger: nil, measurements: nil)
         query(rows) { |scope|
           eager_loaders = @eager_loaders.dup
           eager_loaders.model = scope.klass
-          assoc_rows = Query.new(scope, use: @use, eager_loaders: eager_loaders, query_logger: query_logger).run
+          assoc_rows = Query.new(scope, use: @use, eager_loaders: eager_loaders, query_logger: query_logger, measurements: measurements).run
           merge! assoc_rows, rows
         }
         nil

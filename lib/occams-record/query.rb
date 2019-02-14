@@ -39,6 +39,7 @@ module OccamsRecord
     include Batches
     include EagerLoaders::Builder
     include Enumerable
+    include Measureable
 
     #
     # Initialize a new query.
@@ -47,13 +48,14 @@ module OccamsRecord
     # @param use [Array<Module>] optional Module to include in the result class (single or array)
     # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
     # @param eager_loaders [OccamsRecord::EagerLoaders::Context]
+    # @param measurements [Array]
     #
-    def initialize(scope, use: nil, eager_loaders: nil, query_logger: nil)
+    def initialize(scope, use: nil, eager_loaders: nil, query_logger: nil, measurements: nil)
       @model = scope.klass
       @scope = scope
       @eager_loaders = eager_loaders || EagerLoaders::Context.new(@model)
       @use = use
-      @query_logger = query_logger
+      @query_logger, @measurements = query_logger, measurements
     end
 
     #
@@ -93,10 +95,18 @@ module OccamsRecord
     def run
       sql = block_given? ? yield(scope).to_sql : scope.to_sql
       @query_logger << sql if @query_logger
-      result = model.connection.exec_query sql
+      result = if measure?
+                 record_start_time!
+                 measure!(model.table_name, sql) {
+                   model.connection.exec_query sql
+                 }
+               else
+                 model.connection.exec_query sql
+               end
       row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: model, modules: @use)
       rows = result.rows.map { |row| row_class.new row }
-      @eager_loaders.run!(rows, query_logger: @query_logger)
+      @eager_loaders.run!(rows, query_logger: @query_logger, measurements: @measurements)
+      yield_measurements!
       rows
     end
 
