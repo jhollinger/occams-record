@@ -1,3 +1,6 @@
+### 1.0.0 (2019-02-14)
+* No changes.
+
 ### 1.0.0.rc11 (2019-02-13)
 * Add `measureable` to find the slow query or queries.
 
