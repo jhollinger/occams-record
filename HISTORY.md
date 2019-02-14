@@ -1,3 +1,6 @@
+### 1.0.0.rc11 (2019-02-13)
+* Add `measureable` to find the slow query or queries.
+
 ### 1.0.0.rc10 (2019-01-31)
 * Wrap `find_each`/`find_in_batches` in transactions to guarantee batch integrity. This can be opted out of if desired.
 
