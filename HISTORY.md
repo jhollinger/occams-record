@@ -1,3 +1,6 @@
+### 1.0.2 (2019-03-28)
+* Bugfix to `eager_load` on `belongs_to` associations when the `primary_key:` option is used.
+
 ### 1.0.1 (2019-03-27)
 * Allow a proc to be passed to `eager_load` and friends, e.g. `eager_load(:category, &nested_eager_loading)`.
 
