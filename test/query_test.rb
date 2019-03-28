@@ -178,6 +178,7 @@ class QueryTest < Minitest::Test
     assert_equal Category.all.map { |c|
       {
         id: c.id,
+        type_code: c.type_code,
         name: c.name,
         widgets: c.widgets.map { |w|
           {

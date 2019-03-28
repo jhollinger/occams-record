@@ -6,7 +6,13 @@ OTR::ActiveRecord.configure_from_hash!(adapter: 'sqlite3', database: ':memory:',
 
 ActiveRecord::Base.connection.instance_eval do
   create_table :categories do |t|
+    t.string :type_code
     t.string :name, null: false
+  end
+
+  create_table :category_types do |t|
+    t.string :code, null: false
+    t.string :description, null: false
   end
 
   create_table :widgets do |t|
@@ -65,7 +71,12 @@ ActiveRecord::Base.connection.instance_eval do
   end
 end
 
+class CategoryType < ActiveRecord::Base
+  has_many :categories, primary_key: "code", foreign_key: "type_code"
+end
+
 class Category < ActiveRecord::Base
+  belongs_to :category_type, foreign_key: "type_code", primary_key: "code"
   has_many :widgets
   has_many :splines
 end

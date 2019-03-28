@@ -73,9 +73,8 @@ module OccamsRecord
             raise MissingColumnError.new(row, e.name)
           end
         }
-        model = type.constantize
         Merge.new(rows_of_type, name).
-          single!(assoc_rows_of_type, {@ref.foreign_key.to_s => model.primary_key.to_s})
+          single!(assoc_rows_of_type, {@ref.foreign_key.to_s => @ref.active_record_primary_key.to_s})
       end
 
       private

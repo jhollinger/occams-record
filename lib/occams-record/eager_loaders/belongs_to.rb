@@ -33,7 +33,7 @@ module OccamsRecord
       #
       def merge!(assoc_rows, rows)
         Merge.new(rows, name).
-          single!(assoc_rows, {@ref.foreign_key.to_s => @model.primary_key.to_s})
+          single!(assoc_rows, {@ref.foreign_key.to_s => @ref.active_record_primary_key.to_s})
       end
     end
   end

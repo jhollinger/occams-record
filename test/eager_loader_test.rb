@@ -129,6 +129,26 @@ class EagerLoaderTest < Minitest::Test
     ], widgets
   end
 
+  def test_belongs_to_merge_with_key_overrides
+    ref = Category.reflections.fetch "category_type"
+    loader = OccamsRecord::EagerLoaders::BelongsTo.new(ref)
+    cats = [
+      OpenStruct.new(id: 1, type_code: "a", name: "Foo"),
+      OpenStruct.new(id: 2, type_code: "b", name: "Bar"),
+    ]
+
+    loader.send(:merge!, [
+      OpenStruct.new(id: 1234, code: "a", description: "Type A"),
+      OpenStruct.new(id: 5678, code: "b", description: "Type B"),
+      OpenStruct.new(id: 9123, code: "c", description: "Type C"),
+    ], cats)
+
+    assert_equal [
+      OpenStruct.new(id: 1, type_code: "a", name: "Foo", category_type: OpenStruct.new(id: 1234, code: "a", description: "Type A")),
+      OpenStruct.new(id: 2, type_code: "b", name: "Bar", category_type: OpenStruct.new(id: 5678, code: "b", description: "Type B")),
+    ], cats
+  end
+
   def test_has_one_query
     ref = Widget.reflections.fetch 'detail'
     loader = OccamsRecord::EagerLoaders::HasOne.new(ref)
