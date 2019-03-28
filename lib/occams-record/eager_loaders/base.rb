@@ -24,7 +24,7 @@ module OccamsRecord
         @name = (as || ref.name).to_s
         @eager_loaders = EagerLoaders::Context.new(@model)
         @optimizer = optimizer
-        instance_eval(&builder) if builder
+        instance_exec(&builder) if builder
       end
 
       #

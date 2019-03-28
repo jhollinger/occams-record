@@ -22,7 +22,7 @@ module OccamsRecord
         @foreign_type = @ref.foreign_type.to_sym
         @foreign_key = @ref.foreign_key.to_sym
         @eager_loaders = EagerLoaders::Context.new(nil, polymorphic: true)
-        instance_eval(&builder) if builder
+        instance_exec(&builder) if builder
       end
 
       #

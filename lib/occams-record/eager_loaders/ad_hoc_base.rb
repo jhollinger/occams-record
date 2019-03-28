@@ -26,7 +26,7 @@ module OccamsRecord
         @name, @mapping = name.to_s, mapping
         @sql, @binds, @use, @model = sql, binds, use, model
         @eager_loaders = EagerLoaders::Context.new(@model)
-        instance_eval(&builder) if builder
+        instance_exec(&builder) if builder
       end
 
       #
