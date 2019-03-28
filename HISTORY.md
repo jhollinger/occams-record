@@ -1,3 +1,6 @@
+### 1.0.1 (2019-03-27)
+* Allow a proc to be passed to `eager_load` and friends, e.g. `eager_load(:category, &nested_eager_loading)`.
+
 ### 1.0.0 (2019-02-14)
 * No changes.
 
