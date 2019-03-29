@@ -36,11 +36,11 @@ module OccamsRecord
       if mapping.size == 1
         target_attr, assoc_attr = target_attrs[0], assoc_attrs[0]
         assoc_rows_by_ids = assoc_rows.reduce({}) { |a, assoc_row|
-          #begin
+          begin
             id = assoc_row.send assoc_attr
-          #rescue NoMethodError => e
-          #  raise MissingColumnError.new(assoc_row, e.name)
-          #end
+          rescue NoMethodError => e
+            raise MissingColumnError.new(assoc_row, e.name)
+          end
           a[id] ||= assoc_row
           a
         }
