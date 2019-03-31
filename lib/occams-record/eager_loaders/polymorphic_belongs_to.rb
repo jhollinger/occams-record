@@ -55,7 +55,7 @@ module OccamsRecord
           next if type.nil? or type == ""
           model = type.constantize
           ids = rows_of_type.map(&@foreign_key).uniq
-          q = base_scope(model).where(model.primary_key => ids)
+          q = base_scope(model).where(@ref.active_record_primary_key => ids)
           yield q if ids.any?
         end
       end

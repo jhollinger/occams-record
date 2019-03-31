@@ -1,3 +1,6 @@
+### NEXT (?)
+* Bugfix to `eager_load` on polymorphic `belongs_to` associations when the `primary_key:` option is used.
+
 ### 1.0.2 (2019-03-28)
 * Bugfix to `eager_load` on `belongs_to` associations when the `primary_key:` option is used.
 
