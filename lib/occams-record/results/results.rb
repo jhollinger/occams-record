@@ -26,7 +26,9 @@ module OccamsRecord
         self.associations = association_names.map(&:to_s)
         self.model_name = model ? model.name : nil
         self.table_name = model ? model.table_name : nil
-        self.primary_key = model&.primary_key&.to_s
+        self.primary_key = if model&.primary_key and (pkey = model.primary_key.to_s) and columns.include?(pkey)
+                             pkey
+                           end
 
         # Build getters & setters for associations. (We need setters b/c they're set AFTER the row is initialized
         attr_accessor(*association_names)
