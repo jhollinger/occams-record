@@ -1,4 +1,4 @@
-### NEXT (?)
+### 1.0.3 (2019-04-08)
 * Bugfix to `eager_load` on polymorphic `belongs_to` associations when the `primary_key:` option is used.
 * Bugfix to results when primary key isn't in the SELECT.
 
