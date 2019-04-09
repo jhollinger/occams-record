@@ -4,7 +4,8 @@ module OccamsRecord
     # ActiveRecord's internal type casting API changes from version to version.
     CASTER = case ActiveRecord::VERSION::MAJOR
              when 4 then :type_cast_from_database
-             when 5 then :deserialize
+             when 5, 6 then :deserialize
+             else raise "OccamsRecord::Results::CASTER does yet support this version of ActiveRecord"
              end
 
     #
