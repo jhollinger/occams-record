@@ -61,7 +61,7 @@ Occams Record has great support for raw SQL queries too, but we'll get to those 
 
 ## Basic eager loading
 
-Eager loading is similiar to ActiveRecord's `preload` (each association is loaded in a separate query). Nested associations use blocks instead of Hashes. If you try to use an association you didn't eager load an exception will be raised.
+Eager loading is similiar to ActiveRecord's `preload` (each association is loaded in a separate query). Nested associations use blocks instead of Hashes. If you try to use an association you didn't eager load *an exception will be raised*. The N+1 query problem simply doesn't exist.
 
 ```ruby
 orders = OccamsRecord.
@@ -85,7 +85,7 @@ order.line_items.each { |line_item|
 
 ## Advanced eager loading
 
-Occams Record allows you to customize each eager load query using the full power of ActiveRecord's query builder.
+Occams Record allows you to tweak the SQL of any eager load. Pull back only the columns you need, change the order, add a `WHERE` clause, etc.
 
 ```ruby
 orders = OccamsRecord.
@@ -93,8 +93,8 @@ orders = OccamsRecord.
   # Only SELECT the columns you need. Your DBA will thank you.
   eager_load(:customer, select: "id, name").
   
-  # A Proc can customize the query using any of ActiveRecord's query
-  # builders and any scopes you've defined on the LineItem model.
+  # A Proc can customize the query using ActiveRecord's standard query
+  # builder, including any scopes you've defined on the LineItem model.
   eager_load(:line_items, ->(q) { q.active.order("created_at") }) {
     eager_load(:product)
     eager_load(:something_else)
@@ -130,7 +130,7 @@ OccamsRecord.
 
 **Eager loading**
 
-To use `eager_load` with a raw SQL query you must tell Occams what the base model is. (That doesn't apply if you're loading an ad hoc, raw SQL association. We'll get to those later.)
+To use `eager_load` with a raw SQL query you must tell Occams what the base model is. (That doesn't apply if you're loading an ad hoc, raw SQL association. We'll get to those next.)
 
 ```ruby
 orders = OccamsRecord.
@@ -213,10 +213,6 @@ orders = OccamsRecord.
   }.
   run
 ```
-
-## Ugly Module
-
-`OccamsRecord::Ugly` contains helpers for things that shouldn't, but sometimes must, be done in legacy codebases. See the docs.
 
 ---
 
