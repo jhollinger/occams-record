@@ -61,7 +61,7 @@ Occams Record has great support for raw SQL queries too, but we'll get to those 
 
 ## Basic eager loading
 
-Eager loading is similiar to ActiveRecord's `preload` (each association is loaded in a separate query). Nested associations use blocks instead of Hashes. If you try to use an association you didn't eager load *an exception will be raised*. The N+1 query problem simply doesn't exist.
+Eager loading is similiar to ActiveRecord's `preload`: each association is loaded in a separate query. Unlike ActiveRcord, nested associations use blocks instead of Hashes. More importantly, if you try to use an association you didn't eager load *an exception will be raised*. In other words, the N+1 query problem simply doesn't exist.
 
 ```ruby
 orders = OccamsRecord.
@@ -93,8 +93,7 @@ orders = OccamsRecord.
   # Only SELECT the columns you need. Your DBA will thank you.
   eager_load(:customer, select: "id, name").
   
-  # A Proc can customize the query using ActiveRecord's standard query
-  # builder, including any scopes you've defined on the LineItem model.
+  # A Proc can use ActiveRecord's query builder
   eager_load(:line_items, ->(q) { q.active.order("created_at") }) {
     eager_load(:product)
     eager_load(:something_else)
@@ -181,13 +180,11 @@ products = OccamsRecord.
   run
 ```
 
-`eager_load_many` allows us to declare an ad hoc *has_many* association called *customers*. The `{:id => :product_id}` Hash defines the mapping: *id* in the parent record maps to *product_id* in the child records.
+`eager_load_many` is declaring an ad hoc *has_many* association called *customers*. The `{:id => :product_id}` Hash defines the mapping: *id* in the parent record maps to *product_id* in the child records.
 
-The SQL string and binds should be familiar by now. `%{ids}` will be provided for you - just stick it in the right place. Note that it won't always be called *ids*; the name will be the plural version of the key in your mapping.
+The SQL string and binds should be familiar. `%{ids}` will be provided for you - just stick it in the right place. Note that it won't always be called *ids*; the name will be the plural version of the key in your mapping.
 
-`eager_load_one` defines an ad hoc `has_one`/`belongs_to` association.
-
-These ad hoc eager loaders are available on both `OccamsRecord.query` and `OccamsRecord.sql`. While eager loading with `OccamsRecord.sql` normallly requires you to declare the model, that isn't necessary when using these methods.
+`eager_load_one` defines an ad hoc `has_one`/`belongs_to` association. It and `eager_load_many` are available with both `OccamsRecord.query` and `OccamsRecord.sql`.
 
 ## Injecting instance methods
 
