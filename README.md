@@ -61,7 +61,7 @@ Occams Record has great support for raw SQL queries too, but we'll get to those 
 
 ## Basic eager loading
 
-Eager loading is similiar to ActiveRecord's `preload`: each association is loaded in a separate query. Unlike ActiveRcord, nested associations use blocks instead of Hashes. More importantly, if you try to use an association you didn't eager load *an exception will be raised*. In other words, the N+1 query problem simply doesn't exist.
+Eager loading is similiar to ActiveRecord's `preload`: each association is loaded in a separate query. Unlike ActiveRecord, nested associations use blocks instead of Hashes. More importantly, if you try to use an association you didn't eager load *an exception will be raised*. In other words, the N+1 query problem simply doesn't exist.
 
 ```ruby
 orders = OccamsRecord.
