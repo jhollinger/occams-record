@@ -64,23 +64,21 @@ Occams Record has great support for raw SQL queries too, but we'll get to those 
 Eager loading is similiar to ActiveRecord's `preload` (each association is loaded in a separate query). Nested associations use blocks instead of Hashes. If you try to use an association you didn't eager load an exception will be raised.
 
 ```ruby
-orders = OccamsRecord.
+OccamsRecord.
   query(q).
   eager_load(:customer).
   eager_load(:line_items) {
     eager_load(:product)
     eager_load(:something_else)
   }.
-  run
-  
-order = orders[0]
-puts order.customer.name
-
-order.line_items.each { |line_item|
-  puts line_item.product.name
-  puts line_item.product.category.name
-  OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded!
-}
+  find_each { |order|
+    puts order.customer.name
+    order.line_items.each { |line_item|
+      puts line_item.product.name
+      puts line_item.product.category.name
+      OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded!
+    }
+  }
 ```
 
 ## Advanced eager loading
