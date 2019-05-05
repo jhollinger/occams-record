@@ -9,7 +9,7 @@ gem 'activerecord', {
   '5.0' => '~> 5.0.5',
   '5.1' => '~> 5.1.3',
   '5.2' => '~> 5.2.0',
-  '6.0' => '~> 6.0.0.beta3',
+  '6.0' => '~> 6.0.0.rc1',
 }[ENV['AR']]
 
 group :development do
@@ -22,6 +22,6 @@ group :test do
 end
 
 group :development, :test do
-  gem 'otr-activerecord', '~> 1.3.0'
-  gem 'sqlite3', '~> 1.3.6'
+  gem 'otr-activerecord', '~> 1.3.1'
+  gem 'sqlite3', '~> 1.4.1'
 end
