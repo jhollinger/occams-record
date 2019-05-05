@@ -2,8 +2,6 @@
 
 > Do not multiply entities beyond necessity. -- Occam's Razor
 
-**Breaking change since pre-1.0** See [HISTORY.md](https://github.com/jhollinger/occams-record/blob/master/HISTORY.md#100rc1-2018-12-01).
-
 Occam's Record is a high-efficiency, advanced query library for ActiveRecord apps. It is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app. Occams Record gives you two things:
 
 **Performance**
