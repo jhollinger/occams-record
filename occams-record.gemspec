@@ -6,12 +6,12 @@ Gem::Specification.new do |s|
   s.licenses = ['MIT']
   s.summary = 'The missing high-efficiency query API for ActiveRecord'
   s.description = 'A faster, lower-memory querying API for ActiveRecord that returns results as unadorned, read-only objects.'
-  s.date = '2019-04-08'
+  s.date = '2019-04-13'
   s.authors = ['Jordan Hollinger']
   s.email = 'jordan.hollinger@gmail.com'
   s.homepage = 'https://jhollinger.github.io/occams-record/'
   s.require_paths = ['lib']
   s.files = [Dir.glob('lib/**/*'), 'README.md'].flatten
   s.required_ruby_version = '>= 2.3.0'
-  s.add_runtime_dependency 'activerecord', ['>= 4.2', '< 5.3']
+  s.add_runtime_dependency 'activerecord', ['>= 4.2', '< 6.1']
 end

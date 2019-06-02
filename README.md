@@ -2,8 +2,6 @@
 
 > Do not multiply entities beyond necessity. -- Occam's Razor
 
-**Breaking change since pre-1.0** See [HISTORY.md](https://github.com/jhollinger/occams-record/blob/master/HISTORY.md#100rc1-2018-12-01).
-
 Occam's Record is a high-efficiency, advanced query library for ActiveRecord apps. It is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app. Occams Record gives you two things:
 
 **Performance**
@@ -64,23 +62,21 @@ Occams Record has great support for raw SQL queries too, but we'll get to those 
 Eager loading is similiar to ActiveRecord's `preload`: each association is loaded in a separate query. Unlike ActiveRecord, nested associations use blocks instead of Hashes. More importantly, if you try to use an association you didn't eager load *an exception will be raised*. In other words, the N+1 query problem simply doesn't exist.
 
 ```ruby
-orders = OccamsRecord.
+OccamsRecord.
   query(q).
   eager_load(:customer).
   eager_load(:line_items) {
     eager_load(:product)
     eager_load(:something_else)
   }.
-  run
-  
-order = orders[0]
-puts order.customer.name
-
-order.line_items.each { |line_item|
-  puts line_item.product.name
-  puts line_item.product.category.name
-  OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded!
-}
+  find_each { |order|
+    puts order.customer.name
+    order.line_items.each { |line_item|
+      puts line_item.product.name
+      puts line_item.product.category.name
+      OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded!
+    }
+  }
 ```
 
 ## Advanced eager loading

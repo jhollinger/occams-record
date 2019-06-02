@@ -344,7 +344,9 @@ class QueryTest < Minitest::Test
     log = []
     bob = OccamsRecord.query(User.where(username: "bob"), query_logger: log).first
     assert_equal "bob", bob.username
-    assert_includes log, %q|SELECT  "users".* FROM "users" WHERE "users"."username" = 'bob' LIMIT 1|
+    assert_includes log.map { |x|
+      x.gsub(/\s+/, " ")
+    }, %q|SELECT "users".* FROM "users" WHERE "users"."username" = 'bob' LIMIT 1|
   end
 
   def test_loading_just_first_raises_exception
@@ -353,7 +355,9 @@ class QueryTest < Minitest::Test
     assert_raises OccamsRecord::NotFound do
       q.first!
     end
-    assert_includes log, %q|SELECT  "users".* FROM "users" WHERE "users"."username" = 'nobody' LIMIT 1|
+    assert_includes log.map { |x|
+      x.gsub(/\s+/, " ")
+    }, %q|SELECT "users".* FROM "users" WHERE "users"."username" = 'nobody' LIMIT 1|
   end
 
   def test_boolean_aliases
