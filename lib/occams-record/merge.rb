@@ -51,7 +51,7 @@ module OccamsRecord
           rescue NoMethodError => e
             raise MissingColumnError.new(row, e.name)
           end
-          row.send @assign, attr ? assoc_rows_by_ids[attr] : nil
+          row.send(@assign, attr ? assoc_rows_by_ids[attr] : nil)
         end
 
       # Slower but works with any number of mapping key pairs
@@ -72,7 +72,7 @@ module OccamsRecord
           rescue NoMethodError => e
             raise MissingColumnError.new(row, e.name)
           end
-          row.send @assign, attrs.any? ? assoc_rows_by_ids[attrs] : nil
+          row.send(@assign, attrs.any? ? assoc_rows_by_ids[attrs] : nil)
         end
       end
 
@@ -108,7 +108,7 @@ module OccamsRecord
           rescue NoMethodError => e
             raise MissingColumnError.new(row, e.name)
           end
-          row.send @assign, assoc_rows_by_attr[pkey] || []
+          row.send(@assign, assoc_rows_by_attr[pkey] || [])
         end
 
       # Slower but works with any number of mapping key pairs
@@ -127,7 +127,7 @@ module OccamsRecord
           rescue NoMethodError => e
             raise MissingColumnError.new(row, e.name)
           end
-          row.send @assign, assoc_rows_by_attrs[pkeys] || []
+          row.send(@assign, assoc_rows_by_attrs[pkeys] || [])
         end
       end
 

@@ -162,4 +162,30 @@ class EagerLoadThroughTest < Minitest::Test
       "#{c.name}: #{cats.join(', ')}"
     }
   end
+
+  def test_eager_load_through_name_collision_a
+    widget_details = OccamsRecord.
+      query(WidgetDetail.all).
+      # explicity load :widget (with all fields)
+      eager_load(:widget).
+      # :widget is implicitly loaded b/c :category is :through :widget (but only fkeys are loaded)
+      eager_load(:category).
+      first
+
+    widget = widget_details.widget
+    refute widget.respond_to?(:name)
+  end
+
+  def test_eager_load_through_name_collision_b
+    widget_details = OccamsRecord.
+      query(WidgetDetail.all).
+      # :widget is implicitly loaded b/c :category is :through :widget (but only fkeys are loaded)
+      eager_load(:category).
+      # explicity load :widget (with all fields)
+      eager_load(:widget).
+      first
+
+    widget = widget_details.widget
+    assert widget.respond_to?(:name)
+  end
 end

@@ -45,7 +45,7 @@ module OccamsRecord
       # @return [Array<String>]
       #
       def names
-        @loaders.map(&:name) +
+        @loaders.map(&:name) |
           @loaders.select { |l| l.respond_to? :through_name }.map(&:through_name) # TODO make not hacky
       end
 
