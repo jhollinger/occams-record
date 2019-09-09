@@ -28,7 +28,7 @@ OccamsRecord.
 
 **Use `ORDER BY` with `find_each`/`find_in_batches`**
 
-Yeah, did you know you can't do this with ActiveRecord?
+Yeah, did you know that ActiveRecord can't do this? I mean it *could*, they just chose not to.
 
 ```ruby
 OccamsRecord.
