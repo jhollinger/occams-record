@@ -4,19 +4,13 @@
 
 Occam's Record is a high-efficiency, advanced query library for ActiveRecord apps. It is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app. Occams Record gives you two things:
 
-### Performance
+### 1) Performance
 
 * 3x-5x faster than ActiveRecord queries, *minimum*.
 * Uses 1/3 the memory of ActiveRecord query results.
 * Eliminates the N+1 query problem.
 
-[Look over the speed and memory measurements yourself!](https://github.com/jhollinger/occams-record/wiki/Measurements) OccamsRecord achieves all of this by making some very specific trade-offs:
-
-* OccamsRecord results are *read-only*.
-* OccamsRecord results are *purely database rows* - they don't have any instance methods from your Rails models.
-* You *must eager load* each assocation you intend to use. If you forget one, an exception will be raised.
-
-### More powerful queries & eager loading
+### 2) More powerful queries & eager loading
 
 **Customize the SQL used to eager load associations**
 
@@ -76,6 +70,12 @@ OccamsRecord.
     WHERE user_id IN (%{ids})
   ")
 ```
+
+[Look over the speed and memory measurements yourself!](https://github.com/jhollinger/occams-record/wiki/Measurements) OccamsRecord achieves all of this by making some very specific trade-offs:
+
+* OccamsRecord results are *read-only*.
+* OccamsRecord results are *purely database rows* - they don't have any instance methods from your Rails models.
+* You *must eager load* each assocation you intend to use. If you forget one, an exception will be raised.
 
 ---
 
