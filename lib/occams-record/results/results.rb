@@ -25,6 +25,7 @@ module OccamsRecord
 
         self.columns = column_names.map(&:to_s)
         self.associations = association_names.map(&:to_s)
+        self._model = model
         self.model_name = model ? model.name : nil
         self.table_name = model ? model.table_name : nil
         self.primary_key = if model&.primary_key and (pkey = model.primary_key.to_s) and columns.include?(pkey)
@@ -33,20 +34,6 @@ module OccamsRecord
 
         # Build getters & setters for associations. (We need setters b/c they're set AFTER the row is initialized
         attr_accessor(*association_names)
-
-        # Build id getters for associations, e.g. "widget_ids" for "widgets"
-        self.associations.each do |assoc|
-          if (ref = model.reflections[assoc]) and !ref.polymorphic? and (ref.macro == :has_many or ref.macro == :has_and_belongs_to_many)
-            pkey = ref.association_primary_key.to_sym
-            define_method "#{assoc.singularize}_ids" do
-              begin
-                self.send(assoc).map(&pkey).uniq
-              rescue NoMethodError => e
-                raise MissingColumnError.new(self, e.name)
-              end
-            end
-          end
-        end if model
 
         # Build a getter for each attribute returned by the query. The values will be type converted on demand.
         model_column_types = model ? model.attributes_builder.types : {}

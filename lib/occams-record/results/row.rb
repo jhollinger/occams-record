@@ -12,6 +12,7 @@ module OccamsRecord
         attr_accessor :columns
         # Array of associations names
         attr_accessor :associations
+        attr_accessor :_model
         # Name of Rails model
         attr_accessor :model_name
         # Name of originating database table
@@ -106,16 +107,48 @@ module OccamsRecord
         "#<#{self.class.model_name || "Anonymous"} #{self.class.primary_key}: #{id}>"
       end
 
+      IDS_SUFFIX = /_ids$/
       def method_missing(name, *args, &block)
-        return super if args.any? or !block.nil? or self.class.model_name.nil?
-        model = self.class.model_name.constantize
+        model = self.class._model
+        return super if args.any? or !block.nil? or model.nil?
 
-        if model.reflections.has_key? name.to_s
+        name_str = name.to_s
+        assoc = name_str.sub(IDS_SUFFIX, "").pluralize
+        if name_str =~ IDS_SUFFIX and can_define_ids_reader? assoc
+          define_ids_reader! assoc
+          send name
+        elsif model.reflections.has_key? name_str
           raise MissingEagerLoadError.new(self, name)
-        elsif model.columns_hash.has_key? name.to_s
+        elsif model.columns_hash.has_key? name_str
           raise MissingColumnError.new(self, name)
         else
           super
+        end
+      end
+
+      private
+
+      def can_define_ids_reader?(assoc)
+        model = self.class._model
+        self.class.associations.include?(assoc) &&
+         (ref = model.reflections[assoc]) &&
+         !ref.polymorphic? &&
+         (ref.macro == :has_many || ref.macro == :has_and_belongs_to_many)
+      end
+
+      def define_ids_reader!(assoc)
+        model = self.class._model
+        ref = model.reflections[assoc]
+        pkey = ref.association_primary_key.to_sym
+
+        self.class.class_eval do
+          define_method "#{assoc.singularize}_ids" do
+            begin
+              self.send(assoc).map(&pkey).uniq
+            rescue NoMethodError => e
+              raise MissingColumnError.new(self, e.name)
+            end
+          end
         end
       end
     end
