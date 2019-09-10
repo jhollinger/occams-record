@@ -9,8 +9,8 @@ module OccamsRecord
              end
 
     #
-    # Dynamically build a class for a specific set of result rows. It inherits from OccamsRecord::Results::Row, and optionall includes
-    # a user-defined module.
+    # Dynamically build a class for a specific set of result rows. It inherits from OccamsRecord::Results::Row, and optionall prepends
+    # user-defined modules.
     #
     # @param column_names [Array<String>] the column names in the result set. The order MUST match the order returned by the query.
     # @param column_types [Hash] Column name => type from an ActiveRecord::Result
