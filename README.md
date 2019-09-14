@@ -2,15 +2,17 @@
 
 > Do not multiply entities beyond necessity. -- Occam's Razor
 
-Occam's Record is a high-efficiency, advanced query library for ActiveRecord apps. It is **not** an ORM or an ActiveRecord replacement. Use it to solve pain points in your existing ActiveRecord app. Occams Record gives you two things:
+OccamsRecord is a high-efficiency, advanced query library for use alongside ActiveRecord. It is **not** an ORM or an ActiveRecord replacement. OccamsRecord can breathe fresh life into your ActiveRecord app by giving it two things:
 
-### 1) Performance
+### 1) Huge performance gains
 
 * 3x-5x faster than ActiveRecord queries, *minimum*.
 * Uses 1/3 the memory of ActiveRecord query results.
-* Eliminates the N+1 query problem.
+* Eliminates the N+1 query problem. (This often exceeds the baseline 3x-5x gain.)
 
-### 2) More powerful queries & eager loading
+### 2) Supercharged querying & eager loading
+
+Continue using ActiveRecord's query builder, but let Occams take over eager loading and raw SQL calls. None of the examples below are possible with ActiveRecord, but OccamsRecord won't limit you.
 
 **Customize the SQL used to eager load associations**
 
@@ -21,8 +23,6 @@ OccamsRecord.
 ```
 
 **Use `ORDER BY` with `find_each`/`find_in_batches`**
-
-Yeah, did you know that ActiveRecord can't do this? I mean it *could*, they just chose not to.
 
 ```ruby
 OccamsRecord.
@@ -52,14 +52,18 @@ OccamsRecord.
 
 ```ruby
 OccamsRecord.
-  sql("SELECT * FROM users").
+  sql("
+    SELECT * FROM users
+    LEFT OUTER JOIN ...
+  ").
   model(User).
   eager_load(:orders)
 ```
 
 **Eager load "ad hoc associations" using raw SQL**
 
-This one's pretty complicated; there's full explanation further down.
+Relationships are complicated, and sometimes they can't be expressed in ActiveRecord models. Define your relationship on the fly!
+(Don't worry, there's full explanation later on.)
 
 ```ruby
 OccamsRecord.
@@ -71,7 +75,7 @@ OccamsRecord.
   ")
 ```
 
-[Look over the speed and memory measurements yourself!](https://github.com/jhollinger/occams-record/wiki/Measurements) OccamsRecord achieves all of this by making some very specific trade-offs:
+[Look over the speed and memory measurements yourself!](https://github.com/jhollinger/occams-record/wiki/Measurements) OccamsRecord achieves all of this by making some **very specific trade-offs:**
 
 * OccamsRecord results are *read-only*.
 * OccamsRecord results are *purely database rows* - they don't have any instance methods from your Rails models.
