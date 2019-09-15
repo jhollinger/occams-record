@@ -63,7 +63,7 @@ OccamsRecord.
 **Eager load "ad hoc associations" using raw SQL**
 
 Relationships are complicated, and sometimes they can't be expressed in ActiveRecord models. Define your relationship on the fly!
-(Don't worry, there's full explanation later on.)
+(Don't worry, there's a full explanation later on.)
 
 ```ruby
 OccamsRecord.
@@ -173,7 +173,7 @@ OccamsRecord.
     LIMIT %{batch_limit}
     OFFSET %{batch_offset}
   ", {
-    date: 30.days.ago
+    date: 10.years.ago
   }).
   find_each(batch_size: 1000) do |order|
     ...
