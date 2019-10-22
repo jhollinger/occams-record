@@ -1,3 +1,6 @@
+### 1.1.1 (2019-10-22)
+* Bugfix to raw sql: when model is set, it should change the connection
+
 ### 1.1.0 (2019-06-29)
 * Support for Active Record 6
 
