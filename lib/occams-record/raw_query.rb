@@ -71,7 +71,6 @@ module OccamsRecord
       @use = use
       @eager_loaders = eager_loaders || EagerLoaders::Context.new
       @query_logger, @measurements = query_logger, measurements
-      @conn = @eager_loaders.model&.connection || ActiveRecord::Base.connection
     end
 
     #
@@ -100,10 +99,10 @@ module OccamsRecord
       result = if measure?
                  record_start_time!
                  measure!(table_name, _escaped_sql) {
-                   @conn.exec_query _escaped_sql
+                   conn.exec_query _escaped_sql
                  }
                else
-                 @conn.exec_query _escaped_sql
+                 conn.exec_query _escaped_sql
                end
       row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: @eager_loaders.model, modules: @use)
       rows = result.rows.map { |row| row_class.new row }
@@ -136,9 +135,9 @@ module OccamsRecord
       return sql if binds.empty?
       sql % binds.reduce({}) { |a, (col, val)|
         a[col.to_sym] = if val.is_a? Array
-                          val.map { |x| @conn.quote x }.join(', ')
+                          val.map { |x| conn.quote x }.join(', ')
                         else
-                          @conn.quote val
+                          conn.quote val
                         end
         a
       }
@@ -163,8 +162,8 @@ module OccamsRecord
       end
 
       Enumerator.new do |y|
-        if use_transaction and @conn.open_transactions == 0
-          @conn.transaction {
+        if use_transaction and conn.open_transactions == 0
+          conn.transaction {
             run_batches y, of
           }
         else
@@ -185,6 +184,10 @@ module OccamsRecord
         break if results.size < of
         offset += results.size
       end
+    end
+
+    def conn
+      @conn ||= @eager_loaders.model&.connection || ActiveRecord::Base.connection
     end
   end
 end
