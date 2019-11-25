@@ -1,3 +1,6 @@
+### 1.1.2 (2019-11-25)
+* Bugfix to `eager_load_one` and `eager_load_many` when any of the binds from the parent are empty.
+
 ### 1.1.1 (2019-10-22)
 * Bugfix to raw sql: when model is set, it should change the connection
 
