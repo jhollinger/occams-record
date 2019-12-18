@@ -126,6 +126,19 @@ module OccamsRecord
         end
       end
 
+      def respond_to_missing?(name, _include_private = false)
+        model = self.class._model
+        return super if model.nil?
+
+        name_str = name.to_s
+        assoc = name_str.sub(IDS_SUFFIX, "").pluralize
+        if name_str =~ IDS_SUFFIX and can_define_ids_reader? assoc
+          true
+        else
+          super
+        end
+      end
+
       private
 
       def can_define_ids_reader?(assoc)
