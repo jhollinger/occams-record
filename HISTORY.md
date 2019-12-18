@@ -1,3 +1,6 @@
+### 1.1.3 (2019-12-17)
+* Bugfix when asking if a result `respond_to?` an `*_ids` method.
+
 ### 1.1.2 (2019-11-25)
 * Bugfix to `eager_load_one` and `eager_load_many` when any of the binds from the parent are empty.
 
