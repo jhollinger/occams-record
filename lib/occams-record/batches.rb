@@ -7,9 +7,8 @@ module OccamsRecord
     # Load records in batches of N and yield each record to a block if given. If no block is given,
     # returns an Enumerator.
     #
-    # NOTE Unlike ActiveRecord's find_each, ORDER BY is respected. The primary key will be appended
-    # to the ORDER BY clause to help ensure consistent batches. Additionally, it will be run inside
-    # of a transaction.
+    # NOTE Unlike ActiveRecord's find_each, ORDER BY is respected. It will be run inside
+    # of a transaction to ensure batch integrity.
     #
     # @param batch_size [Integer]
     # @param use_transaction [Boolean] Ensure it runs inside of a database transaction
@@ -84,7 +83,7 @@ module OccamsRecord
 
       until out_of_records
         l = limit && batch_size > limit - count ? limit - count : batch_size
-        q = scope.order(model.primary_key.to_sym).offset(offset).limit(l)
+        q = scope.offset(offset).limit(l)
         results = Query.new(q, use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders).run
 
         y.yield results if results.any?
