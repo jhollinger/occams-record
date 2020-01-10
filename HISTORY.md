@@ -1,3 +1,6 @@
+### 1.1.4 (2020-01-10)
+* Don't append the primary key to ORDER BY when using `find_each`. There's no guarnatee it's included in the SELECT.
+
 ### 1.1.3 (2019-12-17)
 * Bugfix when asking if a result `respond_to?` an `*_ids` method.
 
