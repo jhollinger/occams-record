@@ -15,8 +15,8 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(SELECT "widget_details".* FROM "widget_details" ORDER BY "widget_details"."text" ASC),
-      %(SELECT "widgets".* FROM "widgets" WHERE "widgets"."id" IN (683130438, 834596858, 112844655, 417155790, 802847325, 919808993)),
-      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (208889123, 922717355)),
+      %(SELECT "widgets".* FROM "widgets" WHERE "widgets"."id" IN (683130438, 834596858, 112844655, 417155790, 802847325, 919808993, 30677878)),
+      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (922717355, 208889123)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -26,6 +26,7 @@ class EagerLoadThroughTest < Minitest::Test
       "All about Widget D: Bar",
       "All about Widget E: Bar",
       "All about Widget F: Bar",
+      "Make it an uneven number: Bar",
     ], widget_details.map { |d|
       "#{d.text}: #{d.category.name}"
     }
@@ -88,8 +89,8 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(SELECT "widget_details".* FROM "widget_details" ORDER BY "widget_details"."text" ASC),
-      %(SELECT id, category_id FROM "widgets" WHERE "widgets"."id" IN (683130438, 834596858, 112844655, 417155790, 802847325, 919808993)),
-      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (208889123, 922717355)),
+      %(SELECT id, category_id FROM "widgets" WHERE "widgets"."id" IN (683130438, 834596858, 112844655, 417155790, 802847325, 919808993, 30677878)),
+      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (922717355, 208889123)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -99,6 +100,7 @@ class EagerLoadThroughTest < Minitest::Test
       "All about Widget D: Bar",
       "All about Widget E: Bar",
       "All about Widget F: Bar",
+      "Make it an uneven number: Bar",
     ], widget_details.map { |d|
       "#{d.text}: #{d.category.name}"
     }

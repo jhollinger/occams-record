@@ -172,7 +172,7 @@ class QueryTest < Minitest::Test
     assert_equal [
       %q(SELECT "categories".* FROM "categories"),
       %q(SELECT "widgets".* FROM "widgets" WHERE "widgets"."category_id" IN (208889123, 922717355)),
-      %q(SELECT "widget_details".* FROM "widget_details" WHERE "widget_details"."widget_id" IN (112844655, 683130438, 834596858, 417155790, 802847325, 919808993)),
+      %q(SELECT "widget_details".* FROM "widget_details" WHERE "widget_details"."widget_id" IN (112844655, 683130438, 834596858, 30677878, 417155790, 802847325, 919808993)),
     ], log
 
     assert_equal Category.all.map { |c|
@@ -398,7 +398,7 @@ class QueryTest < Minitest::Test
 
   def test_to_s
     widget1 = OccamsRecord.query(Widget.all).first
-    assert_equal %q(Widget{:id=>112844655, :name=>"Widget C", :category_id=>208889123}), widget1.to_s
+    assert_equal %q(Widget{:id=>30677878, :name=>"Widget G", :category_id=>922717355}), widget1.to_s
   end
 
   def test_object_equality

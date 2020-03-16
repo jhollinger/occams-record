@@ -18,8 +18,8 @@ class BatchTest < Minitest::Test
       num_calls += 1
       batch.each { |widget| widgets << widget.name }
     end
-    assert_equal 2, num_calls
-    assert_equal ['Widget A', 'Widget B', 'Widget C', 'Widget D', 'Widget E', 'Widget F'], widgets
+    assert_equal 3, num_calls
+    assert_equal ['Widget A', 'Widget B', 'Widget C', 'Widget D', 'Widget E', 'Widget F', 'Widget G'], widgets
   end
 
   def test_find_each_with_block
@@ -27,7 +27,19 @@ class BatchTest < Minitest::Test
     OccamsRecord.query(Widget.order('name')).find_each(batch_size: 3) do |widget|
       widgets << widget.name
     end
-    assert_equal ['Widget A', 'Widget B', 'Widget C', 'Widget D', 'Widget E', 'Widget F'], widgets
+    assert_equal ['Widget A', 'Widget B', 'Widget C', 'Widget D', 'Widget E', 'Widget F', 'Widget G'], widgets
+  end
+
+  def test_find_each_with_block_and_large_number
+    Widget.delete_all
+    Widget.connection.execute "INSERT INTO widgets (name) VALUES " + 3338.times.map { |i| "('Widget #{i}')" }.join(", ")
+    assert_equal 3338, Widget.count
+
+    n = 0
+    OccamsRecord.query(Widget.order('name').where("1=1")).find_each do |widget|
+      n += 1
+    end
+    assert_equal 3338, n
   end
 
   def test_find_in_batches_with_enum
@@ -37,7 +49,7 @@ class BatchTest < Minitest::Test
       reduce([]) { |a, batch|
         a + batch.map(&:name)
       }
-    assert_equal ['Widget A', 'Widget B', 'Widget C', 'Widget D', 'Widget E', 'Widget F'], widgets
+    assert_equal ['Widget A', 'Widget B', 'Widget C', 'Widget D', 'Widget E', 'Widget F', 'Widget G'], widgets
   end
 
   def test_find_each_with_enum
@@ -45,7 +57,7 @@ class BatchTest < Minitest::Test
       query(Widget.order('name')).
       find_each.
       map(&:name)
-    assert_equal ['Widget A', 'Widget B', 'Widget C', 'Widget D', 'Widget E', 'Widget F'], widgets
+    assert_equal ['Widget A', 'Widget B', 'Widget C', 'Widget D', 'Widget E', 'Widget F', 'Widget G'], widgets
   end
 
   def test_batches_with_offset
@@ -53,7 +65,7 @@ class BatchTest < Minitest::Test
       query(Widget.order('name').offset(3)).
       find_each.
       map(&:name)
-    assert_equal ['Widget D', 'Widget E', 'Widget F'], widgets
+    assert_equal ['Widget D', 'Widget E', 'Widget F', 'Widget G'], widgets
   end
 
   def test_batches_with_limit

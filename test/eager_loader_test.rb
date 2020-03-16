@@ -425,6 +425,7 @@ class EagerLoaderTest < Minitest::Test
       "Widget D: Bar",
       "Widget E: Bar",
       "Widget F: Bar",
+      "Widget G: Bar",
     ], widgets.map { |w|
       "#{w.name}: #{w.cat.name}"
     }
@@ -443,6 +444,7 @@ class EagerLoaderTest < Minitest::Test
       "Widget D: Bar",
       "Widget E: Bar",
       "Widget F: Bar",
+      "Widget G: Bar",
     ], widgets.map { |w|
       "#{w.name}: #{w.cat.name}"
     }

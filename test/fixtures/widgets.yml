@@ -21,3 +21,7 @@ e:
 f:
   category: bar
   name: Widget F
+
+g:
+  category: bar
+  name: Widget G

@@ -40,7 +40,7 @@ class RawQueryTest < Minitest::Test
       ).
       model(Widget). # NOTE this is only necessary with SQLite
       run
-    assert_equal ["Widget A", "Widget B", "Widget C", "Widget D", "Widget E", "Widget F"], results.map(&:name)
+    assert_equal ["Widget A", "Widget B", "Widget C", "Widget D", "Widget E", "Widget F", "Widget G"], results.map(&:name)
   end
 
   def test_eager_load
