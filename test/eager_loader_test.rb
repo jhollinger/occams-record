@@ -458,7 +458,7 @@ class EagerLoaderTest < Minitest::Test
     c1 = Category.create!(type_code: "a", name: "Foo")
     c2 = Category.create!(type_code: "a", name: "Bar")
 
-    t2 = CategoryType.create!(code: "b", description: "B")
+    _t2 = CategoryType.create!(code: "b", description: "B")
     c3 = Category.create!(type_code: "b", name: "Zorp")
     c4 = Category.create!(type_code: "b", name: "Gulb")
 
