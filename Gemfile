@@ -24,4 +24,5 @@ end
 group :development, :test do
   gem 'otr-activerecord', '~> 1.3.1'
   gem 'sqlite3', '~> 1.4.1'
+  gem 'pg', '~> 1.0'
 end

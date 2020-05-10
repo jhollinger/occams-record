@@ -172,7 +172,7 @@ class QueryTest < Minitest::Test
     assert_equal [
       %q(SELECT "categories".* FROM "categories"),
       %q(SELECT "widgets".* FROM "widgets" WHERE "widgets"."category_id" IN (208889123, 922717355)),
-      %q(SELECT "widget_details".* FROM "widget_details" WHERE "widget_details"."widget_id" IN (112844655, 683130438, 834596858, 30677878, 417155790, 802847325, 919808993)),
+      %q(SELECT "widget_details".* FROM "widget_details" WHERE "widget_details"."widget_id" IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
     ], log
 
     assert_equal Category.all.map { |c|
@@ -210,8 +210,8 @@ class QueryTest < Minitest::Test
       %q(SELECT "orders".* FROM "orders"),
       %q(SELECT "customers".* FROM "customers" WHERE "customers"."id" IN (846114006, 980204181)),
       %q(SELECT "line_items".* FROM "line_items" WHERE "line_items"."order_id" IN (683130438, 834596858)),
-      %q(SELECT "widgets".* FROM "widgets" WHERE "widgets"."id" IN (417155790, 112844655, 683130438)),
-      %q(SELECT "splines".* FROM "splines" WHERE "splines"."id" IN (683130438, 112844655)),
+      %q(SELECT "widgets".* FROM "widgets" WHERE "widgets"."id" IN (112844655, 417155790, 683130438)),
+      %q(SELECT "splines".* FROM "splines" WHERE "splines"."id" IN (112844655, 683130438)),
     ], log
 
     assert_equal Order.all.map { |o|
@@ -397,8 +397,8 @@ class QueryTest < Minitest::Test
   end
 
   def test_to_s
-    widget1 = OccamsRecord.query(Widget.all).first
-    assert_equal %q(Widget{:id=>30677878, :name=>"Widget G", :category_id=>922717355}), widget1.to_s
+    widget1 = OccamsRecord.query(Widget.order(:name)).first
+    assert_equal %q(Widget{:id=>683130438, :name=>"Widget A", :category_id=>208889123}), widget1.to_s
   end
 
   def test_object_equality

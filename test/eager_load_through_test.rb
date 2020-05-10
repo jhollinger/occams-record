@@ -15,8 +15,8 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(SELECT "widget_details".* FROM "widget_details" ORDER BY "widget_details"."text" ASC),
-      %(SELECT "widgets".* FROM "widgets" WHERE "widgets"."id" IN (683130438, 834596858, 112844655, 417155790, 802847325, 919808993, 30677878)),
-      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (922717355, 208889123)),
+      %(SELECT "widgets".* FROM "widgets" WHERE "widgets"."id" IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
+      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -41,7 +41,7 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(SELECT "customers".* FROM "customers" ORDER BY "customers"."name" ASC),
-      %(SELECT "orders".* FROM "orders" WHERE "orders"."customer_id" IN (980204181, 846114006)),
+      %(SELECT "orders".* FROM "orders" WHERE "orders"."customer_id" IN (846114006, 980204181)),
       %(SELECT "line_items".* FROM "line_items" WHERE "line_items"."order_id" IN (683130438, 834596858)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
@@ -62,9 +62,9 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(SELECT "customers".* FROM "customers" ORDER BY "customers"."name" ASC),
-      %(SELECT "orders".* FROM "orders" WHERE "orders"."customer_id" IN (980204181, 846114006)),
+      %(SELECT "orders".* FROM "orders" WHERE "orders"."customer_id" IN (846114006, 980204181)),
       %(SELECT "line_items".* FROM "line_items" WHERE "line_items"."order_id" IN (683130438, 834596858)),
-      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (922717355, 208889123)),
+      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -89,8 +89,8 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(SELECT "widget_details".* FROM "widget_details" ORDER BY "widget_details"."text" ASC),
-      %(SELECT id, category_id FROM "widgets" WHERE "widgets"."id" IN (683130438, 834596858, 112844655, 417155790, 802847325, 919808993, 30677878)),
-      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (922717355, 208889123)),
+      %(SELECT id, category_id FROM "widgets" WHERE "widgets"."id" IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
+      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -115,7 +115,7 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(SELECT "customers".* FROM "customers" ORDER BY "customers"."name" ASC),
-      %(SELECT id, customer_id FROM "orders" WHERE "orders"."customer_id" IN (980204181, 846114006)),
+      %(SELECT id, customer_id FROM "orders" WHERE "orders"."customer_id" IN (846114006, 980204181)),
       %(SELECT "line_items".* FROM "line_items" WHERE "line_items"."order_id" IN (683130438, 834596858)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
@@ -136,9 +136,9 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(SELECT "customers".* FROM "customers" ORDER BY "customers"."name" ASC),
-      %(SELECT id, customer_id FROM "orders" WHERE "orders"."customer_id" IN (980204181, 846114006)),
+      %(SELECT id, customer_id FROM "orders" WHERE "orders"."customer_id" IN (846114006, 980204181)),
       %(SELECT id, order_id, category_id FROM "line_items" WHERE "line_items"."order_id" IN (683130438, 834596858)),
-      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (922717355, 208889123)),
+      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [

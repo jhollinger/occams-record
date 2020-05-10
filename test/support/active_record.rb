@@ -2,48 +2,60 @@ require 'otr-activerecord'
 require 'active_record/fixtures'
 ActiveRecord::Base.logger = nil
 
-OTR::ActiveRecord.configure_from_hash!(adapter: 'sqlite3', database: ':memory:', encoding: 'utf8', pool: 5, timeout: 5000)
+if ENV["TEST_DATABASE_URL"].to_s != ""
+  OTR::ActiveRecord.configure_from_url!(ENV["TEST_DATABASE_URL"])
+else
+  OTR::ActiveRecord.configure_from_hash!(adapter: 'sqlite3', database: ':memory:', encoding: 'utf8', pool: 5, timeout: 5000)
+end
 
 ActiveRecord::Base.connection.instance_eval do
+  drop_table :categories if table_exists? :categories
   create_table :categories do |t|
     t.string :type_code
     t.string :name, null: false
   end
 
+  drop_table :category_types if table_exists? :category_types
   create_table :category_types do |t|
     t.string :code, null: false
     t.string :description, null: false
   end
 
+  drop_table :widgets if table_exists? :widgets
   create_table :widgets do |t|
     t.string :name, null: false
     t.integer :category_id
   end
   add_index :widgets, :category_id
 
+  drop_table :widget_details if table_exists? :widget_details
   create_table :widget_details do |t|
     t.integer :widget_id
     t.text :text
   end
   add_index :widget_details, :widget_id
 
+  drop_table :splines if table_exists? :splines
   create_table :splines do |t|
     t.string :name, null: false
     t.integer :category_id
   end
   add_index :splines, :category_id
 
+  drop_table :customers if table_exists? :customers
   create_table :customers do |t|
     t.string :name
   end
 
+  drop_table :orders if table_exists? :orders
   create_table :orders do |t|
     t.date :date, null: false
     t.decimal :amount, precision: 10, scale: 2
     t.integer :customer_id
   end
-  add_index :orders, :customer_Id
+  add_index :orders, :customer_id
 
+  drop_table :line_items if table_exists? :line_items
   create_table :line_items do |t|
     t.integer :order_id, null: false
     t.integer :item_id
@@ -53,6 +65,7 @@ ActiveRecord::Base.connection.instance_eval do
   end
   add_index :line_items, :item_id
 
+  drop_table :users if table_exists? :users
   create_table :users do |t|
     t.integer :customer_id
     t.string :username
@@ -60,11 +73,13 @@ ActiveRecord::Base.connection.instance_eval do
   end
   add_index :users, :customer_id
 
+  drop_table :offices if table_exists? :offices
   create_table :offices do |t|
     t.string :name
     t.boolean :active
   end
 
+  drop_table :offices_users if table_exists? :offices_users
   create_table :offices_users, id: false do |t|
     t.integer :user_id, null: false
     t.integer :office_id, null: false

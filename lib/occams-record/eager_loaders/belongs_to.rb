@@ -20,6 +20,7 @@ module OccamsRecord
             raise MissingColumnError.new(row, e.name)
           end
         }.compact.uniq
+        ids.sort! if $occams_record_test
 
         q = base_scope.where(@ref.association_primary_key => ids)
         yield q if ids.any?
