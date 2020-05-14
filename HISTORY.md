@@ -1,3 +1,6 @@
+### 1.1.5 (2020-05-13)
+* Append the primary key to ORDER BY when using `find_each` if the primary key is likely to be included in the SELECT.
+
 ### 1.1.4 (2020-01-10)
 * Don't append the primary key to ORDER BY when using `find_each`. There's no guarnatee it's included in the SELECT.
 
