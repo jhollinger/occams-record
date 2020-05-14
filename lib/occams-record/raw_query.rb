@@ -156,7 +156,7 @@ module OccamsRecord
     # @param use_transaction [Boolean] Ensure it runs inside of a database transaction
     # @return [Enumerator] yields batches
     #
-    def batches(of:, use_transaction: true)
+    def batches(of:, use_transaction: true, append_order_by: nil)
       unless @sql =~ /LIMIT\s+%\{batch_limit\}/i and @sql =~ /OFFSET\s+%\{batch_offset\}/i
         raise ArgumentError, "When using find_each/find_in_batches you must specify 'LIMIT %{batch_limit} OFFSET %{batch_offset}'. SQL statement: #{@sql}"
       end

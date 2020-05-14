@@ -132,47 +132,47 @@ class BatchTest < Minitest::Test
     }, %(SELECT "widgets".* FROM "widgets" ORDER BY "widgets"."name" ASC, "widgets"."id" ASC LIMIT 1000 OFFSET 0)
   end
 
-  def test_batches_orders_by_pkey_with_select_star
+  def test_batches_orders_by_sym_pkey
     log = []
     OccamsRecord.
       query(Widget.select("widgets.*, 1 AS one"), query_logger: log).
-      find_each(batch_size: 1000).
+      find_each(batch_size: 1000, append_order_by: :id).
       to_a
     assert_includes log.map { |x|
       x.gsub(/\s+/, " ")
     }, %(SELECT widgets.*, 1 AS one FROM "widgets" ORDER BY "widgets"."id" ASC LIMIT 1000 OFFSET 0)
   end
 
-  def test_batches_orders_by_pkey_with_select_pkey_str
+  def test_batches_orders_by_str_pkey
     log = []
     OccamsRecord.
       query(Widget.select("widgets.id"), query_logger: log).
-      find_each(batch_size: 1000).
+      find_each(batch_size: 1000, append_order_by: "id").
       to_a
     assert_includes log.map { |x|
       x.gsub(/\s+/, " ")
     }, %(SELECT widgets.id FROM "widgets" ORDER BY "widgets"."id" ASC LIMIT 1000 OFFSET 0)
   end
 
-  def test_batches_orders_by_pkey_with_select_pkey_sym
+  def test_batches_orders_by_str_col
     log = []
     OccamsRecord.
-      query(Widget.select(:id), query_logger: log).
-      find_each(batch_size: 1000).
+      query(Widget.select("widgets.id"), query_logger: log).
+      find_each(batch_size: 1000, append_order_by: "name").
       to_a
     assert_includes log.map { |x|
       x.gsub(/\s+/, " ")
-    }, %(SELECT "widgets"."id" FROM "widgets" ORDER BY "widgets"."id" ASC LIMIT 1000 OFFSET 0)
+    }, %(SELECT widgets.id FROM "widgets" ORDER BY name LIMIT 1000 OFFSET 0)
   end
 
-  def test_batches_doesnt_order_by_pkey_without_pkey_in_select
+  def test_batches_orders_without_append_order_by
     log = []
     OccamsRecord.
-      query(Widget.select(:name), query_logger: log).
-      find_each(batch_size: 1000).
+      query(Widget.select("widgets.id"), query_logger: log).
+      find_each(batch_size: 1000, append_order_by: false).
       to_a
     assert_includes log.map { |x|
       x.gsub(/\s+/, " ")
-    }, %(SELECT "widgets"."name" FROM "widgets" LIMIT 1000 OFFSET 0)
+    }, %(SELECT widgets.id FROM "widgets" LIMIT 1000 OFFSET 0)
   end
 end
