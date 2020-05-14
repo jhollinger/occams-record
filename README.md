@@ -297,14 +297,24 @@ bundle install
 bundle exec rake test
 ```
 
+**Specify ActiveRecord version**
+
 By default, bundler will install the latest (supported) version of ActiveRecord. To specify a version to test against, run:
 
 ```bash
 AR=5.2 bundle update activerecord
-bundle exec rake test
+AR=5.2 bundle exec rake test
 ```
 
 Look inside `Gemfile` to see all testable versions.
+
+**Run against Postgres**
+
+By default the tests run against an in-memory Sqlite3 database. Use the following env var to force running against a Postgres database:
+
+```bash
+TEST_DATABASE_URL=postgres://postgres@localhost:5432/occams_record bundle exec rake test
+```
 
 # License
 

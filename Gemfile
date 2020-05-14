@@ -23,6 +23,11 @@ end
 
 group :development, :test do
   gem 'otr-activerecord', '~> 1.3.1'
-  gem 'sqlite3', '~> 1.4.1'
+  gem 'sqlite3', {
+    '4.2' => '~> 1.3.6',
+    '5.0' => '~> 1.3.6',
+    '5.1' => '~> 1.3.6',
+    '5.2' => '~> 1.3.6',
+  }[ENV['AR']] || '~> 1.4.1'
   gem 'pg', '~> 1.0'
 end
