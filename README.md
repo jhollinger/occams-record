@@ -12,7 +12,7 @@ OccamsRecord is a high-efficiency, advanced query library for use alongside Acti
 
 ### 2) Supercharged querying & eager loading
 
-Continue using ActiveRecord's query builder, but let Occams take over eager loading and raw SQL calls. None of the examples below are possible with ActiveRecord, but OccamsRecord won't limit you. (More complete examples are shown later, but these should whet your appetite.)
+Continue using ActiveRecord's query builder, but let Occams take over running them, eager loading, and raw SQL calls. None of the examples below are possible with ActiveRecord, but OccamsRecord makes them trivial. (More complete examples are shown later, but these should whet your appetite.)
 
 **Customize the SQL used to eager load associations**
 
