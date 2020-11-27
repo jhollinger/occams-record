@@ -19,7 +19,7 @@ Continue using ActiveRecord's query builder, but let Occams take over running th
 ```ruby
 OccamsRecord.
   query(User.active).
-  eager_load(:orders, ->(q) { q.where("created_at >= ?", date })
+  eager_load(:orders, ->(q) { q.where("created_at >= ?", date).order("created_at DESC") })
 ```
 
 **Use `ORDER BY` with `find_each`/`find_in_batches`**
