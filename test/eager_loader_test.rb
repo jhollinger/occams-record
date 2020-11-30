@@ -483,4 +483,20 @@ class EagerLoaderTest < Minitest::Test
 
     assert type.respond_to?(:category_ids)
   end
+
+  def test_non_standard_pkey_name
+    i1 = Icd10.create!(code: "W61.12XD", name: "Struck by macaw, subsequent encounter")
+    HealthCondition.create!(name: "Hurt by bird", icd10_id: i1.id)
+
+    res = OccamsRecord.
+      query(HealthCondition.all).
+      eager_load(:icd10).
+      run
+
+    assert_equal [
+      "W61.12XD Hurt by bird",
+    ], res.map { |x|
+      "#{x.icd10.code} #{x.name}"
+    }
+  end
 end

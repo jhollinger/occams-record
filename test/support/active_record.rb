@@ -84,6 +84,18 @@ ActiveRecord::Base.connection.instance_eval do
     t.integer :user_id, null: false
     t.integer :office_id, null: false
   end
+
+  drop_table :health_conditions if table_exists? :health_conditions
+  create_table :health_conditions, primary_key: "int_id" do |t|
+    t.string :name
+    t.integer :icd10_id, null: false
+  end
+
+  drop_table :icd10s if table_exists? :icd10s
+  create_table :icd10s do |t|
+    t.string :code, null: false
+    t.string :name, null: false
+  end
 end
 
 class CategoryType < ActiveRecord::Base
@@ -140,4 +152,13 @@ end
 class Office < ActiveRecord::Base
   has_and_belongs_to_many :users
   has_many :customers, through: :users
+end
+
+class HealthCondition < ActiveRecord::Base
+  self.primary_key = "int_id"
+  belongs_to :icd10
+end
+
+class Icd10 < ActiveRecord::Base
+  has_many :health_conditions
 end
