@@ -152,7 +152,7 @@ module OccamsRecord
       def define_ids_reader!(assoc)
         model = self.class._model
         ref = model.reflections[assoc]
-        pkey = ref.association_primary_key.to_sym
+        pkey = ref.klass.primary_key.to_sym
 
         self.class.class_eval do
           define_method "#{assoc.singularize}_ids" do
