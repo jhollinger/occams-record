@@ -1,3 +1,7 @@
+### 1.1.7 (2020-11-30)
+* Bugfix to the column used when merging belongs_to results. Use the primary key of the other table, not this one.
+* Bugfix to `*_ids` methods in AR 4.2 - always use the primary key of the other model.
+
 ### 1.1.6 (2020-05-14)
 * Append the primary key to ORDER BY when using `find_each` unless the user passes false or a different column  in `append_order_by`.
 
