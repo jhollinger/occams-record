@@ -12,4 +12,10 @@ module TestHelpers
       end
     end
   end
+
+  def normalize_sql(sql)
+    sql
+      .gsub(/\s+/, " ")
+      .gsub(/"/, "")
+  end
 end

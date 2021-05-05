@@ -117,8 +117,8 @@ class BatchTest < Minitest::Test
       find_each(batch_size: 1000).
       to_a
     assert_includes log.map { |x|
-      x.gsub(/\s+/, " ")
-    }, %(SELECT "widgets".* FROM "widgets" ORDER BY "widgets"."id" ASC LIMIT 1000 OFFSET 0)
+      normalize_sql x
+    }, %(SELECT widgets.* FROM widgets ORDER BY widgets.id ASC LIMIT 1000 OFFSET 0)
   end
 
   def test_batches_orders_by_custom_and_pkey
@@ -128,8 +128,8 @@ class BatchTest < Minitest::Test
       find_each(batch_size: 1000).
       to_a
     assert_includes log.map { |x|
-      x.gsub(/\s+/, " ")
-    }, %(SELECT "widgets".* FROM "widgets" ORDER BY "widgets"."name" ASC, "widgets"."id" ASC LIMIT 1000 OFFSET 0)
+      normalize_sql x
+    }, %(SELECT widgets.* FROM widgets ORDER BY widgets.name ASC, widgets.id ASC LIMIT 1000 OFFSET 0)
   end
 
   def test_batches_orders_by_sym_pkey
@@ -139,8 +139,8 @@ class BatchTest < Minitest::Test
       find_each(batch_size: 1000, append_order_by: :id).
       to_a
     assert_includes log.map { |x|
-      x.gsub(/\s+/, " ")
-    }, %(SELECT widgets.*, 1 AS one FROM "widgets" ORDER BY "widgets"."id" ASC LIMIT 1000 OFFSET 0)
+      normalize_sql x
+    }, %(SELECT widgets.*, 1 AS one FROM widgets ORDER BY widgets.id ASC LIMIT 1000 OFFSET 0)
   end
 
   def test_batches_orders_by_str_pkey
@@ -150,8 +150,8 @@ class BatchTest < Minitest::Test
       find_each(batch_size: 1000, append_order_by: "id").
       to_a
     assert_includes log.map { |x|
-      x.gsub(/\s+/, " ")
-    }, %(SELECT widgets.id FROM "widgets" ORDER BY "widgets"."id" ASC LIMIT 1000 OFFSET 0)
+      normalize_sql x
+    }, %(SELECT widgets.id FROM widgets ORDER BY widgets.id ASC LIMIT 1000 OFFSET 0)
   end
 
   def test_batches_orders_by_str_col
@@ -161,8 +161,8 @@ class BatchTest < Minitest::Test
       find_each(batch_size: 1000, append_order_by: "name").
       to_a
     assert_includes log.map { |x|
-      x.gsub(/\s+/, " ")
-    }, %(SELECT widgets.id FROM "widgets" ORDER BY name LIMIT 1000 OFFSET 0)
+      normalize_sql x
+    }, %(SELECT widgets.id FROM widgets ORDER BY name LIMIT 1000 OFFSET 0)
   end
 
   def test_batches_orders_without_append_order_by
@@ -172,7 +172,7 @@ class BatchTest < Minitest::Test
       find_each(batch_size: 1000, append_order_by: false).
       to_a
     assert_includes log.map { |x|
-      x.gsub(/\s+/, " ")
-    }, %(SELECT widgets.id FROM "widgets" LIMIT 1000 OFFSET 0)
+      normalize_sql x
+    }, %(SELECT widgets.id FROM widgets LIMIT 1000 OFFSET 0)
   end
 end
