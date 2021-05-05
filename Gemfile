@@ -22,7 +22,7 @@ group :test do
 end
 
 group :development, :test do
-  gem 'otr-activerecord', '~> 1.3.1'
+  gem 'otr-activerecord', '~> 1.4'
   gem 'sqlite3', {
     '4.2' => '~> 1.3.6',
     '5.0' => '~> 1.3.6',
