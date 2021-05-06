@@ -1,3 +1,6 @@
+### 1.2.0 (2021-05-06)
+* Support for Active Record 6.1
+
 ### 1.1.7 (2020-11-30)
 * Bugfix to the column used when merging belongs_to results. Use the primary key of the other table, not this one.
 * Bugfix to `*_ids` methods in AR 4.2 - always use the primary key of the other model.
