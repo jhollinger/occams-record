@@ -5,10 +5,12 @@ class RawQueryTest < Minitest::Test
 
   def setup
     DatabaseCleaner.start
+    @pg = !!(ActiveRecord::Base.connection.class.name =~ /postgres/i)
   end
 
   def teardown
     DatabaseCleaner.clean
+    @pg = false
   end
 
   def test_initializes_correctly
@@ -74,5 +76,37 @@ class RawQueryTest < Minitest::Test
     assert_equal [["Spline C", "Widget A"], ["Spline A", "Widget C"], ["Widget D"]], batches.map { |b|
       b.map(&:item).map(&:name)
     }
+  end
+
+  def test_common_types
+    widget =
+      OccamsRecord
+        .sql("SELECT * FROM widgets ORDER BY name", {})
+        .first
+
+    assert widget.name.is_a? String
+    assert widget.id.is_a? Integer
+    assert widget.category_id.is_a? Integer
+  end
+
+  def test_pg_exotic_types
+    if @pg
+      ExoticType.create!({
+        data1: {foo: "foo", num: 5, q: false},
+        data2: {foo: "foo", num: 5, q: false},
+        data3: {foo: "foo", num: 5, q: false},
+        tags: ["foo", "bar"],
+      })
+
+      et = OccamsRecord
+        .sql("SELECT * FROM exotic_types", {})
+        .first
+
+      assert et.id.is_a?(String)
+      assert_equal({"foo" => "foo", "num" => 5, "q" => false}, et.data1)
+      assert_equal({"foo" => "foo", "num" => 5, "q" => false}, et.data2)
+      assert_equal({"foo" => "foo", "num" => "5", "q" => "false"}, et.data3)
+      assert_equal ["foo", "bar"], et.tags
+    end
   end
 end

@@ -97,6 +97,19 @@ ActiveRecord::Base.connection.instance_eval do
     t.string :code, null: false
     t.string :name, null: false
   end
+
+  drop_table :exotic_types if table_exists? :exotic_types
+  if ActiveRecord::Base.connection.class.name =~ /postgres/i
+    enable_extension "hstore"
+    enable_extension "pgcrypto"
+
+    create_table :exotic_types, id: :uuid do |t|
+      t.json :data1
+      t.jsonb :data2
+      t.hstore :data3
+      t.string :tags, array: true
+    end
+  end
 end
 
 class CategoryType < ActiveRecord::Base
@@ -162,4 +175,7 @@ end
 
 class Icd10 < ActiveRecord::Base
   has_many :health_conditions
+end
+
+class ExoticType < ActiveRecord::Base
 end
