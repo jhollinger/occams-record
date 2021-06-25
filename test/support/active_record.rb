@@ -7,6 +7,7 @@ if ENV["TEST_DATABASE_URL"].to_s != ""
 else
   OTR::ActiveRecord.configure_from_hash!(adapter: 'sqlite3', database: ':memory:', encoding: 'utf8', pool: 5, timeout: 5000)
 end
+OTR::ActiveRecord.establish_connection!
 
 ActiveRecord::Base.connection.instance_eval do
   drop_table :categories if table_exists? :categories
