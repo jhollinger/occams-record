@@ -79,34 +79,51 @@ class RawQueryTest < Minitest::Test
   end
 
   def test_common_types
-    widget =
+    Common.create!({
+      name: "asdf",
+      desc: "sdiuj aispduhfa sdf",
+      int: 42,
+      flt: 4.2,
+      dec: 100.5,
+      day: Date.new(2020, 2, 3),
+      daytime: Time.local(2020, 2, 3, 10, 30, 0),
+      bool: true,
+    })
+
+    x =
       OccamsRecord
-        .sql("SELECT * FROM widgets ORDER BY name", {})
+        .sql("SELECT * FROM commons ORDER BY name", {})
         .first
 
-    assert widget.name.is_a? String
-    assert widget.id.is_a? Integer
-    assert widget.category_id.is_a? Integer
+    assert x.id.is_a? Integer
+    assert x.name.is_a? String
+    assert x.desc.is_a? String
+    assert x.int.is_a? Integer
+    assert x.flt.is_a? Float
+    assert x.dec.is_a?(@pg ? BigDecimal : Float)
+    assert x.day.is_a?(@pg ? Date : String)
+    assert x.daytime.is_a?(@pg ? Time : String)
+    assert x.bool.is_a?(@pg ? TrueClass : Integer)
   end
 
   def test_pg_exotic_types
     if @pg
-      ExoticType.create!({
+      Exotic.create!({
         data1: {foo: "foo", num: 5, q: false},
         data2: {foo: "foo", num: 5, q: false},
         data3: {foo: "foo", num: 5, q: false},
         tags: ["foo", "bar"],
       })
 
-      et = OccamsRecord
-        .sql("SELECT * FROM exotic_types", {})
+      x = OccamsRecord
+        .sql("SELECT * FROM exotics", {})
         .first
 
-      assert et.id.is_a?(String)
-      assert_equal({"foo" => "foo", "num" => 5, "q" => false}, et.data1)
-      assert_equal({"foo" => "foo", "num" => 5, "q" => false}, et.data2)
-      assert_equal({"foo" => "foo", "num" => "5", "q" => "false"}, et.data3)
-      assert_equal ["foo", "bar"], et.tags
+      assert x.id.is_a?(String)
+      assert_equal({"foo" => "foo", "num" => 5, "q" => false}, x.data1)
+      assert_equal({"foo" => "foo", "num" => 5, "q" => false}, x.data2)
+      assert_equal({"foo" => "foo", "num" => "5", "q" => "false"}, x.data3)
+      assert_equal ["foo", "bar"], x.tags
     end
   end
 end

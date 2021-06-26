@@ -98,12 +98,24 @@ ActiveRecord::Base.connection.instance_eval do
     t.string :name, null: false
   end
 
-  drop_table :exotic_types if table_exists? :exotic_types
+  drop_table :commons if table_exists? :commons
+  create_table :commons do |t|
+    t.string :name
+    t.text :desc
+    t.integer :int
+    t.float :flt
+    t.decimal :dec, precision: 10, scale: 3
+    t.date :day
+    t.datetime :daytime
+    t.boolean :bool
+  end
+
+  drop_table :exotics if table_exists? :exotics
   if ActiveRecord::Base.connection.class.name =~ /postgres/i
     enable_extension "hstore"
     enable_extension "pgcrypto"
 
-    create_table :exotic_types, id: :uuid do |t|
+    create_table :exotics, id: :uuid do |t|
       t.json :data1
       t.jsonb :data2
       t.hstore :data3
@@ -177,5 +189,8 @@ class Icd10 < ActiveRecord::Base
   has_many :health_conditions
 end
 
-class ExoticType < ActiveRecord::Base
+class Common < ActiveRecord::Base
+end
+
+class Exotic < ActiveRecord::Base
 end
