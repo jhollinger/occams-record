@@ -29,7 +29,6 @@ class RawQueryTest < Minitest::Test
         "SELECT * FROM widgets WHERE category_id = %{cat_id} ORDER BY name",
         {cat_id: categories(:foo).id}
       ).
-      model(Widget). # NOTE this is only necessary with SQLite
       run
     assert_equal ["Widget A", "Widget B", "Widget C"], results.map(&:name)
   end
@@ -40,7 +39,6 @@ class RawQueryTest < Minitest::Test
         "SELECT * FROM widgets WHERE category_id IN (%{cat_id}) ORDER BY name",
         {cat_id: Category.pluck(:id)}
       ).
-      model(Widget). # NOTE this is only necessary with SQLite
       run
     assert_equal ["Widget A", "Widget B", "Widget C", "Widget D", "Widget E", "Widget F", "Widget G"], results.map(&:name)
   end

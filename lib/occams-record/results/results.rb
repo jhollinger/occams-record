@@ -36,12 +36,17 @@ module OccamsRecord
         attr_accessor(*association_names)
 
         # Build a getter for each attribute returned by the query. The values will be type converted on demand.
-        model_column_types = model ? model.attributes_builder.types : {}
+        model_column_types = model ? model.attributes_builder.types : nil
         self.columns.each_with_index do |col, idx|
-          type =
-            column_types[col] ||
-            model_column_types[col]
-
+          #
+          # NOTE there's lots of variation between DB adapters and AR versions here. Some notes:
+          # * Postgres AR < 6.1 `column_types` will contain entries for every column.
+          # * Postgres AR >= 6.1 `column_types` only contains entries for "exotic" types. Columns with "common" types have already been converted by the PG adapter.
+          # * SQLite `column_types` will always be empty. Some types will have already been convered by the SQLite adapter, but others will depend on
+          #   `model_column_types` for converstion. See test/raw_query_test.rb#test_common_types for examples.
+          # * MySQL ?
+          #
+          type = column_types[col] || model_column_types&.[](col)
           case type&.type
           when :datetime
             define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx])&.in_time_zone }
