@@ -97,6 +97,8 @@ gem 'occams-record'
 
 Full documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record).
 
+Code lives at at [github.com/jhollinger/occams-record](https://github.com/jhollinger/occams-record). Contributions welcome!
+
 Build your queries like normal, using ActiveRecord's excellent query builder. Then pass them off to Occams Record.
 
 ```ruby
