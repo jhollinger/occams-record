@@ -48,13 +48,13 @@ module OccamsRecord
           #
           type = column_types[col] || model_column_types&.[](col)
           case type&.type
+          when nil
+            define_method(col) { @raw_values[idx] }
           when :datetime
             define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx])&.in_time_zone }
           when :boolean
             define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx]) }
             define_method("#{col}?") { !!send(col) }
-          when nil
-            define_method(col) { @raw_values[idx] }
           else
             define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx]) }
           end
