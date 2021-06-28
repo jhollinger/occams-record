@@ -1,4 +1,6 @@
 *.swp
 /*.gem
 /.bundle
+/gemfiles/.bundle/
 /Gemfile.lock
+/gemfiles/*.gemfile.lock

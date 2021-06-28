@@ -292,30 +292,26 @@ On the other hand, Active Record makes it *very* easy to forget to eager load as
 
 # Testing
 
-To run the tests, simply run:
-
 ```bash
 bundle install
+
+# test against SQLite
 bundle exec rake test
-```
 
-**Specify ActiveRecord version**
-
-By default, bundler will install the latest (supported) version of ActiveRecord. To specify a version to test against, run:
-
-```bash
-AR=5.2 bundle update activerecord
-AR=5.2 bundle exec rake test
-```
-
-Look inside `Gemfile` to see all testable versions.
-
-**Run against Postgres**
-
-By default the tests run against an in-memory Sqlite3 database. Use the following env var to force running against a Postgres database:
-
-```bash
+# test against Postgres
 TEST_DATABASE_URL=postgres://postgres@localhost:5432/occams_record bundle exec rake test
+```
+
+**Test against all supported ActiveRecord versions**
+
+```bash
+bundle exec appraisal install
+
+# test against SQLite
+bundle exec appraisal rake test
+
+# test against Postgres
+TEST_DATABASE_URL=postgres://postgres@localhost:5432/occams_record bundle exec appraisal rake test
 ```
 
 # License

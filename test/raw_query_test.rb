@@ -6,11 +6,13 @@ class RawQueryTest < Minitest::Test
   def setup
     DatabaseCleaner.start
     @pg = !!(ActiveRecord::Base.connection.class.name =~ /postgres/i)
+    @ar = ActiveRecord::VERSION::MAJOR
   end
 
   def teardown
     DatabaseCleaner.clean
     @pg = false
+    @ar = nil
   end
 
   def test_initializes_correctly
@@ -98,10 +100,37 @@ class RawQueryTest < Minitest::Test
     assert x.desc.is_a? String
     assert x.int.is_a? Integer
     assert x.flt.is_a? Float
+  end
+
+  def test_advanced_types
+    Common.create!({
+      name: "asdf",
+      desc: "sdiuj aispduhfa sdf",
+      int: 42,
+      flt: 4.2,
+      dec: 100.5,
+      day: Date.new(2020, 2, 3),
+      daytime: Time.local(2020, 2, 3, 10, 30, 0),
+      bool: true,
+    })
+
+    x =
+      OccamsRecord
+        .sql("SELECT * FROM commons ORDER BY name", {})
+        .first
+
     assert x.dec.is_a?(@pg ? BigDecimal : Float)
     assert x.day.is_a?(@pg ? Date : String)
     assert x.daytime.is_a?(@pg ? Time : String)
-    assert x.bool.is_a?(@pg ? TrueClass : Integer)
+    assert_equal((
+      if @pg
+        true
+      elsif @ar >= 6
+        1
+      else
+        "t"
+      end
+    ), x.bool)
   end
 
   def test_pg_exotic_types

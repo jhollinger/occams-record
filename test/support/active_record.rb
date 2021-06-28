@@ -114,6 +114,7 @@ ActiveRecord::Base.connection.instance_eval do
   if ActiveRecord::Base.connection.class.name =~ /postgres/i
     enable_extension "hstore"
     enable_extension "pgcrypto"
+    enable_extension "uuid-ossp"
 
     create_table :exotics, id: :uuid do |t|
       t.json :data1

@@ -5,10 +5,14 @@ class EagerLoaderTest < Minitest::Test
 
   def setup
     DatabaseCleaner.start
+    @ar = ActiveRecord::VERSION::MAJOR
+    @pg = !!(ActiveRecord::Base.connection.class.name =~ /postgres/i)
   end
 
   def teardown
     DatabaseCleaner.clean
+    @ar = nil
+    @pg = nil
   end
 
   def test_polymorphic_belongs_to_query
@@ -255,7 +259,9 @@ class EagerLoaderTest < Minitest::Test
 
     loader.send(:query, users) { |scope, join_rows|
       assert_equal %q(SELECT "offices".* FROM "offices" WHERE "offices"."id" IN (100, 101, 102) ORDER BY offices.name DESC), scope.to_sql.gsub(/\s+/, " ")
-      assert_equal [[1000, 100], [1000, 101], [1001, 101], [1001, 102]], join_rows
+      ids = [[1000, 100], [1000, 101], [1001, 101], [1001, 102]]
+      ids = ids.map { |x| x.map(&:to_s) } if @ar == 4 and @pg
+      assert_equal ids, join_rows
     }
   end
 
