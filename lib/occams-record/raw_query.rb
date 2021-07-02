@@ -4,7 +4,7 @@ module OccamsRecord
   # a Hash of binds. While this doesn't offer an additional performance boost, it's a nice way to
   # write safe, complicated SQL by hand while also supporting eager loading.
   #
-  #   results = OccamsRecord.sql(
+  #   results = OccamsRecord.sql("
   #     SELECT * FROM widgets
   #     WHERE category_id = %{cat_id}
   #   ", {
@@ -13,7 +13,6 @@ module OccamsRecord
   #
   # If you want to do eager loading, you must first the define a model to pull the associations from (unless
   # you're using the raw SQL eager loaders `eager_load_one` or `eager_load_many`).
-  # NOTE If you're using SQLite, you must *always* specify the model.
   #
   #   results = OccamsRecord.
   #     sql("
@@ -27,8 +26,20 @@ module OccamsRecord
   #     run
   #
   # NOTE To use find_each/find_in_batches, your SQL string must include 'LIMIT %{batch_limit} OFFSET %{batch_offset}',
-  # and an ORDER BY is strongly recomended.
-  # OccamsRecord will provide the bind values for you.
+  # and an ORDER BY is strongly recomended. OccamsRecord will provide the bind values for you.
+  #
+  # NOTE There is variation of the types of values returned (e.g. a Date object vs a date string) depending on the database
+  # and ActiveRecord version being used:
+  #
+  # Postgres always returns native Ruby types.
+  #
+  # SQLite will return native types for the following: integers, floats, string/text.
+  # For booleans it will return 0|1 for AR 6+, and "t|f" for AR 5-.
+  # Dates and times will be ISO8601 formatted strings.
+  # It is possible to coerce the SQLite adapter into returning native types for everything IF they're columns of a table
+  # that you have an AR model for. e.g. if you're selecting from the widgets, table: `OccamsRecord.sql("...").model(Widget)...`.
+  #
+  # MySQL ?
   #
   # @param sql [String] The SELECT statement to run. Binds should use Ruby's named string substitution.
   # @param binds [Hash] Bind values (Symbol keys)
