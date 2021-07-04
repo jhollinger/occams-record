@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.licenses = ['MIT']
   s.summary = 'The missing high-efficiency query API for ActiveRecord'
   s.description = 'A faster, lower-memory querying API for ActiveRecord that returns results as unadorned, read-only objects.'
-  s.date = '2021-05-06'
+  s.date = '2021-07-04'
   s.authors = ['Jordan Hollinger']
   s.email = 'jordan.hollinger@gmail.com'
   s.homepage = 'https://jhollinger.github.io/occams-record/'
