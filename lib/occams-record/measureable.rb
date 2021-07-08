@@ -5,18 +5,18 @@ module OccamsRecord
   #
   # Measure the time each query takes. Useful for figuring out which query is the slow one when you're doing a bunch of eager loads.
   #
-  # orders = OccamsRecord.
-  #   query(Order.all).
-  #   eager_load(:customer).
+  # orders = OccamsRecord
+  #   .query(Order.all)
+  #   .eager_load(:customer)
   #   ...
-  #   measure { |x|
+  #   .measure { |x|
   #     puts "Total time: #{x.total_time} sec"
   #     x.queries.each { |q|
   #       puts "Table: #{q.table_name} (#{q.time} sec)"
   #       puts q.sql
   #     }
-  #   }.
-  #   run
+  #   }
+  #   .run
   #
   module Measureable
     #

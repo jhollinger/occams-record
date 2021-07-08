@@ -7,15 +7,15 @@ module OccamsRecord
   # Instead use OccamsRecord::Query#eager_load. Finally, call `run` (or any Enumerable method) to run
   # the query and get back an array of objects.
   #
-  #  results = OccamsRecord.
-  #    query(Widget.order("name")).
-  #    eager_load(:category).
-  #    eager_load(:order_items, ->(q) { q.select("widget_id, order_id") }) {
+  #  results = OccamsRecord
+  #    .query(Widget.order("name"))
+  #    .eager_load(:category)
+  #    .eager_load(:order_items, ->(q) { q.select("widget_id, order_id") }) {
   #      eager_load(:orders) {
   #        eager_load(:customer, ->(q) { q.select("name") })
   #      }
-  #    }.
-  #    run
+  #    }
+  #    .run
   #
   # @param scope [ActiveRecord::Relation]
   # @param use [Module] optional Module to include in the result class

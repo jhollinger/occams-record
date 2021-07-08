@@ -56,14 +56,14 @@ module OccamsRecord
       #
       # The %{category_ids} bind param will be provided for you, and in this case will be all the category_id values from the Widget query.
       #
-      #   res = OccamsRecord.
-      #     query(Widget.order("name")).
-      #     eager_load_one(:category, {:category_id => :id}, "
+      #   res = OccamsRecord
+      #     .query(Widget.order("name"))
+      #     .eager_load_one(:category, {:category_id => :id}, "
       #       SELECT * FROM categories WHERE id IN (%{category_ids}) AND name != %{bad_name}
       #     ", binds: {
       #       bad_name: "Bad Category"
-      #     }).
-      #     run
+      #     })
+      #     .run
       #
       # @param name [Symbol] name of attribute to load records into
       # @param mapping [Hash] a Hash that defines the key mapping of the parent (widgets.category_id) to the child (categories.id).
@@ -89,14 +89,14 @@ module OccamsRecord
       # The %{ids} bind param will be provided for you, and in this case will be all the id values from the Widget
       # query.
       #
-      #   res = OccamsRecord.
-      #     query(Widget.order("name")).
-      #     eager_load_many(:parts, {:id => :widget_id}, "
+      #   res = OccamsRecord
+      #     .query(Widget.order("name"))
+      #     .eager_load_many(:parts, {:id => :widget_id}, "
       #       SELECT * FROM parts WHERE widget_id IN (%{ids}) AND sku NOT IN (%{bad_skus})
       #     ", binds: {
       #       bad_skus: ["G90023ASDf0"]
-      #     }).
-      #     run
+      #     })
+      #     .run
       #
       # @param name [Symbol] name of attribute to load records into
       # @param mapping [Hash] a Hash that defines the key mapping of the parent (widgets.id) to the children (parts.widget_id).

@@ -17,17 +17,17 @@ Continue using ActiveRecord's query builder, but let Occams take over running th
 **Customize the SQL used to eager load associations**
 
 ```ruby
-OccamsRecord.
-  query(User.active).
-  eager_load(:orders, ->(q) { q.where("created_at >= ?", date).order("created_at DESC") })
+OccamsRecord
+  .query(User.active)
+  .eager_load(:orders, ->(q) { q.where("created_at >= ?", date).order("created_at DESC") })
 ```
 
 **Use `ORDER BY` with `find_each`/`find_in_batches`**
 
 ```ruby
-OccamsRecord.
-  query(Order.order("created_at DESC")).
-  find_each { |order|
+OccamsRecord
+  .query(Order.order("created_at DESC"))
+  .find_each { |order|
     ...
   }
 ```
@@ -35,15 +35,15 @@ OccamsRecord.
 **Use `find_each`/`find_in_batches` with raw SQL**
 
 ```ruby
-OccamsRecord.
-  sql("
+OccamsRecord
+  .sql("
     SELECT * FROM orders
     WHERE created_at >= %{date}
     LIMIT %{batch_limit}
     OFFSET %{batch_offset}",
     {date: 10.years.ago}
-  ).
-  find_each { |order|
+  )
+  .find_each { |order|
     ...
   }
 ```
@@ -51,13 +51,13 @@ OccamsRecord.
 **Eager load associations when you're writing raw SQL**
 
 ```ruby
-OccamsRecord.
-  sql("
+OccamsRecord
+  .sql("
     SELECT * FROM users
     LEFT OUTER JOIN ...
-  ").
-  model(User).
-  eager_load(:orders)
+  ")
+  .model(User)
+  .eager_load(:orders)
 ```
 
 **Eager load "ad hoc associations" using raw SQL**
@@ -66,9 +66,9 @@ Relationships are complicated, and sometimes they can't be expressed in ActiveRe
 (Don't worry, there's a full explanation later on.)
 
 ```ruby
-OccamsRecord.
-  query(User.all).
-  eager_load_many(:orders, {:id => :user_id}, "
+OccamsRecord
+  .query(User.all)
+  .eager_load_many(:orders, {:id => :user_id}, "
     SELECT user_id, orders.*
     FROM orders INNER JOIN ...
     WHERE user_id IN (%{ids})
@@ -102,14 +102,14 @@ Code lives at at [github.com/jhollinger/occams-record](https://github.com/jholli
 Build your queries like normal, using ActiveRecord's excellent query builder. Then pass them off to Occams Record.
 
 ```ruby
-q = Order.
-  completed.
-  where("order_date > ?", 30.days.ago).
-  order("order_date DESC")
+q = Order
+  .completed
+  .where("order_date > ?", 30.days.ago)
+  .order("order_date DESC")
 
-orders = OccamsRecord.
-  query(q).
-  run
+orders = OccamsRecord
+  .query(q)
+  .run
 ````
 
 `each`, `map`, `reduce`, and other Enumerable methods may be used instead of *run*. `find_each` and `find_in_batches` are also supported, and unlike in ActiveRecord, `ORDER BY` works as you'd expect.
@@ -121,14 +121,14 @@ Occams Record has great support for raw SQL queries too, but we'll get to those 
 Eager loading is similiar to ActiveRecord's `preload`: each association is loaded in a separate query. Unlike ActiveRecord, nested associations use blocks instead of Hashes. More importantly, if you try to use an association you didn't eager load *an exception will be raised*. In other words, the N+1 query problem simply doesn't exist.
 
 ```ruby
-OccamsRecord.
-  query(q).
-  eager_load(:customer).
-  eager_load(:line_items) {
+OccamsRecord
+  .query(q)
+  .eager_load(:customer)
+  .eager_load(:line_items) {
     eager_load(:product)
     eager_load(:something_else)
-  }.
-  find_each { |order|
+  }
+  .find_each { |order|
     puts order.customer.name
     order.line_items.each { |line_item|
       puts line_item.product.name
@@ -143,17 +143,17 @@ OccamsRecord.
 Occams Record allows you to tweak the SQL of any eager load. Pull back only the columns you need, change the order, add a `WHERE` clause, etc.
 
 ```ruby
-orders = OccamsRecord.
-  query(q).
+orders = OccamsRecord
+  .query(q)
   # Only SELECT the columns you need. Your DBA will thank you.
-  eager_load(:customer, select: "id, name").
+  .eager_load(:customer, select: "id, name")
   
   # A Proc can use ActiveRecord's query builder
-  eager_load(:line_items, ->(q) { q.active.order("created_at") }) {
+  .eager_load(:line_items, ->(q) { q.active.order("created_at") }) {
     eager_load(:product)
     eager_load(:something_else)
-  }.
-  run
+  }
+  .run
 ```
 
 Occams Record also supports loading ad hoc associations using raw SQL. We'll get to that in the next section.
@@ -167,8 +167,8 @@ ActiveRecord has raw SQL escape hatches like `find_by_sql` and `exec_query`, but
 To use `find_each`/`find_in_batches` you must provide the limit and offset statements yourself; Occams will provide the values. Also, notice that the binding syntax is a bit different (it uses Ruby's built-in named string substitution).
 
 ```ruby
-OccamsRecord.
-  sql("
+OccamsRecord
+  .sql("
     SELECT * FROM orders
     WHERE order_date > %{date}
     ORDER BY order_date DESC, id
@@ -176,8 +176,8 @@ OccamsRecord.
     OFFSET %{batch_offset}
   ", {
     date: 10.years.ago
-  }).
-  find_each(batch_size: 1000) do |order|
+  })
+  .find_each(batch_size: 1000) do |order|
     ...
   end
 ```
@@ -187,17 +187,17 @@ OccamsRecord.
 To use `eager_load` with a raw SQL query you must tell Occams what the base model is. (That doesn't apply if you're loading an ad hoc, raw SQL association. We'll get to those next.)
 
 ```ruby
-orders = OccamsRecord.
-  sql("
+orders = OccamsRecord
+  .sql("
     SELECT * FROM orders
     WHERE order_date > %{date}
     ORDER BY order_date DESC, id
   ", {
     date: 30.days.ago
-  }).
-  model(Order).
-  eager_load(:customer).
-  run
+  })
+  .model(Order)
+  .eager_load(:customer)
+  .run
 ```
 
 ## Raw SQL eager loading
@@ -205,14 +205,14 @@ orders = OccamsRecord.
 Let's say we want to load each product with an array of all customers who've ordered it. We *could* do that by loading various nested associations:
 
 ```ruby
-products_with_orders = OccamsRecord.
-  query(Product.all).
-  eager_load(:line_items) {
+products_with_orders = OccamsRecord
+  .query(Product.all)
+  .eager_load(:line_items) {
     eager_load(:order) {
       eager_load(:customer)
     }
-  }.
-  map { |product|
+  }
+  .map { |product|
     customers = product.line_items.map(&:order).map(&:customer).uniq
     [product, customers]
   }
@@ -221,9 +221,9 @@ products_with_orders = OccamsRecord.
 But that's very wasteful. Occams gives us better options: `eager_load_many` and `eager_load_one`.
 
 ```ruby
-products = OccamsRecord.
-  query(Product.all).
-  eager_load_many(:customers, {:id => :product_id}, "
+products = OccamsRecord
+  .query(Product.all)
+  .eager_load_many(:customers, {:id => :product_id}, "
     SELECT DISTINCT product_id, customers.*
     FROM line_items
       INNER JOIN orders ON line_items.order_id = orders.id
@@ -231,8 +231,8 @@ products = OccamsRecord.
     WHERE line_items.product_id IN (%{ids})
   ", binds: {
     # additional bind values (ids will be passed in for you)
-  }).
-  run
+  })
+  .run
 ```
 
 `eager_load_many` is declaring an ad hoc *has_many* association called *customers*. The `{:id => :product_id}` Hash defines the mapping: *id* in the parent record maps to *product_id* in the child records.
@@ -258,12 +258,12 @@ module MyProductMethods
   end
 end
 
-orders = OccamsRecord.
-  query(Order.all, use: MyOrderMethods).
-  eager_load(:line_items) {
+orders = OccamsRecord
+  .query(Order.all, use: MyOrderMethods)
+  .eager_load(:line_items) {
     eager_load(:product, use: [MyProductMethods, OtherMethods])
-  }.
-  run
+  }
+  .run
 ```
 
 ---

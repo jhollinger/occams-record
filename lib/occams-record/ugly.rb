@@ -8,10 +8,10 @@ module OccamsRecord
     # The ONLY reason to use this is if you absolutely need ActiveRecord objects but still want to use Occams's
     # more advanced eager loading or find_each/find_in_batches features.
     #
-    #   OccamsRecord.
-    #     query(Order.order("created_at DESC")).
-    #     eager_load(:line_items, ->(q) { q.order("price") }).
-    #     find_each do |o|
+    #   OccamsRecord
+    #     .query(Order.order("created_at DESC"))
+    #     .eager_load(:line_items, ->(q) { q.order("price") })
+    #     .find_each do |o|
     #       order = OccamsRecord::Ugly.active_record(o)
     #       ...
     #     end

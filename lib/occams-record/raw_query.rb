@@ -14,16 +14,16 @@ module OccamsRecord
   # If you want to do eager loading, you must first the define a model to pull the associations from (unless
   # you're using the raw SQL eager loaders `eager_load_one` or `eager_load_many`).
   #
-  #   results = OccamsRecord.
-  #     sql("
+  #   results = OccamsRecord
+  #     .sql("
   #       SELECT * FROM widgets
   #       WHERE category_id IN (%{cat_ids})
   #     ", {
   #       cat_ids: [5, 10]
-  #     }).
-  #     model(Widget).
-  #     eager_load(:category).
-  #     run
+  #     })
+  #     .model(Widget)
+  #     .eager_load(:category)
+  #     .run
   #
   # NOTE To use find_each/find_in_batches, your SQL string must include 'LIMIT %{batch_limit} OFFSET %{batch_offset}',
   # and an ORDER BY is strongly recomended. OccamsRecord will provide the bind values for you.
