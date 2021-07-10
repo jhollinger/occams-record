@@ -1,6 +1,6 @@
 ### 1.2.1 (2021-07-04)
 * Bugfixes for Active Record 6.1 with `OccamsRecord.sql`.
-* Better support for other databases with `OccamsRecord.sql.
+* Better support for other databases with `OccamsRecord.sql`.
 
 ### 1.2.0 (2021-05-06)
 * Support for Active Record 6.1
