@@ -1,3 +1,6 @@
+### 1.3.0.rc1 (2021-10-22)
+* Preliminary support for ActiveRecord 7.0 (tested against 7.0.0.alpha2)
+
 ### 1.2.1 (2021-07-04)
 * Bugfixes for Active Record 6.1 with `OccamsRecord.sql`.
 * Better support for other databases with `OccamsRecord.sql`.
