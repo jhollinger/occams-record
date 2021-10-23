@@ -7,7 +7,7 @@ gem "activerecord", "~> 6.1.4"
 gem "sqlite3", "~> 1.4.1"
 gem "pg", "~> 1.0"
 gem "memory_profiler"
-gem "otr-activerecord", "~> 2.0"
+gem "otr-activerecord", "~> 2.0.3"
 
 group :test do
   gem "minitest"

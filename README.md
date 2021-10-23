@@ -307,8 +307,11 @@ TEST_DATABASE_URL=postgres://postgres@localhost:5432/occams_record bundle exec r
 ```bash
 bundle exec appraisal install
 
-# test against SQLite
+# test against all supported AR versions (defaults to SQLite)
 bundle exec appraisal rake test
+
+# test against a specific AR version
+bundle exec appraisal ar-7.0 rake test
 
 # test against Postgres
 TEST_DATABASE_URL=postgres://postgres@localhost:5432/occams_record bundle exec appraisal rake test
