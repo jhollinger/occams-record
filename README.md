@@ -314,7 +314,7 @@ bundle exec appraisal rake test
 bundle exec appraisal ar-7.0 rake test
 
 # test against Postgres
-TEST_DATABASE_URL=postgres://postgres@localhost:5432/occams_record bundle exec appraisal rake test
+TEST_DATABASE_URL=postgresql://postgres@localhost:5432/occams_record bundle exec appraisal rake test
 ```
 
 # License
