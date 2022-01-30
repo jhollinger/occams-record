@@ -1,3 +1,6 @@
+### 1.3.0 (2022-01-30)
+* Support for ActiveRecord 7.0
+
 ### 1.3.0.rc1 (2021-10-22)
 * Preliminary support for ActiveRecord 7.0 (tested against 7.0.0.alpha2)
 
