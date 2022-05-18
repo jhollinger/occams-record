@@ -1,4 +1,4 @@
-require 'occams-record/batches'
+require 'occams-record/batches/offset_limit/query'
 
 module OccamsRecord
   #
@@ -36,7 +36,7 @@ module OccamsRecord
     # @return [ActiveRecord::Relation] scope for building the main SQL query
     attr_reader :scope
 
-    include Batches
+    include Batches::OffsetLimit::Query
     include EagerLoaders::Builder
     include Enumerable
     include Measureable
