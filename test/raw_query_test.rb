@@ -61,6 +61,18 @@ class RawQueryTest < Minitest::Test
   def test_find_in_batches
     batches = []
     OccamsRecord.
+      sql("SELECT * FROM widgets ORDER BY name LIMIT %{batch_limit} OFFSET %{batch_offset}", {}).
+      find_in_batches(batch_size: 2) { |batch|
+        batches << batch
+      }
+    assert_equal [["Widget A", "Widget B"], ["Widget C", "Widget D"], ["Widget E", "Widget F"], ["Widget G"]], batches.map { |b|
+      b.map(&:name)
+    }
+  end
+
+  def test_find_in_batches_with_eager_load
+    batches = []
+    OccamsRecord.
       sql("SELECT * FROM line_items WHERE amount > %{amount} ORDER BY amount LIMIT %{batch_limit} OFFSET %{batch_offset}", {
         amount: 5,
       }).
