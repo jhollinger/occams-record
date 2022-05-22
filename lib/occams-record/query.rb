@@ -205,8 +205,19 @@ module OccamsRecord
       end
     end
 
+    #
+    # Returns a cursor you can open and perform operations on. A lower-level alternative to 
+    # find_each_with_cursor and find_in_batches_with_cursor.
+    #
+    # NOTE See the docs for OccamsRecord::Cursor for a list of supported databases.
+    #
+    # @param name [String] Specify a name for the cursor (defaults to a random name)
+    # @param scroll [Boolean] true = SCROLL, false = NO SCROLL, nil = default behavior of DB
+    # @param hold [Boolean] true = WITH HOLD, false = WITHOUT HOLD, nil = default behavior of DB
+    # @return [OccamsRecord::Cursor]
+    #
     def cursor(name: nil, scroll: nil, hold: nil)
-      Batches::Cursor.new(model.connection, scope.to_sql,
+      Cursor.new(model.connection, scope.to_sql,
         name: name, scroll: scroll, hold: hold,
         use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders,
       )
