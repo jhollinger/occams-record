@@ -1,6 +1,3 @@
-require 'occams-record/batches/offset_limit/scoped'
-require 'occams-record/batches/cursor'
-
 module OccamsRecord
   #
   # Starts building a OccamsRecord::Query. Pass it a scope from any of ActiveRecord's query builder
@@ -37,6 +34,7 @@ module OccamsRecord
     # @return [ActiveRecord::Relation] scope for building the main SQL query
     attr_reader :scope
 
+    include OccamsRecord::Batches::Cursor::QueryHelpers
     include EagerLoaders::Builder
     include Enumerable
     include Measureable
@@ -207,28 +205,11 @@ module OccamsRecord
       end
     end
 
-    def find_each_with_cursor(batch_size: 1000, use_transaction: true)
-      enum = Enumerator.new { |y|
-        find_in_batches_with_cursor(batch_size: batch_size, use_transaction: use_transaction).each { |batch|
-          batch.each { |record| y.yield record }
-        }
-      }
-      if block_given?
-        enum.each { |record| yield record }
-      else
-        enum
-      end
-    end
-
-    def find_in_batches_with_cursor(batch_size: 1000, use_transaction: true)
-      enum = Batches::Cursor
-        .new(model.connection, scope.to_sql, use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders)
-        .enum(batch_size: batch_size, use_transaction: use_transaction)
-      if block_given?
-        enum.each { |batch| yield batch }
-      else
-        enum
-      end
+    def cursor(name: nil, scroll: nil, hold: nil)
+      Batches::Cursor.new(model.connection, scope.to_sql,
+        name: name, scroll: scroll, hold: hold,
+        use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders,
+      )
     end
   end
 end

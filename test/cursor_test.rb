@@ -15,6 +15,17 @@ class CursorTest < Minitest::Test
     Time.zone = nil
   end
 
+  def test_cursor
+    return if @skip
+    widgets = OccamsRecord
+      .query(Widget.order("name"))
+      .cursor
+      .open do |cursor|
+        cursor.each(batch_size: 3).to_a
+      end
+    assert_equal Widget.pluck(:name).sort, widgets.map(&:name).sort
+  end
+
   def test_cursor_with_scope
     return if @skip
     widgets = OccamsRecord
