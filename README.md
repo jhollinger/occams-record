@@ -182,7 +182,7 @@ OccamsRecord.
   end
 ```
 
-The `order` method allows lower level access to cursor behavior. See `OccamsRecord::Cursor` for more info.
+The `cursor` method allows lower level access to cursor behavior. See `OccamsRecord::Cursor` for more info.
 
 ```ruby
 orders = OccamsRecord.
