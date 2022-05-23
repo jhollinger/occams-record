@@ -191,6 +191,7 @@ orders = OccamsRecord.
   cursor.
   open do |cursor|
     res = []
+    cursor.move(:forward, 300)
     res += cursor.fetch(:forward, 100)
     res
   end
