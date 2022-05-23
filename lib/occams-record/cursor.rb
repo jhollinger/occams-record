@@ -131,7 +131,7 @@ module OccamsRecord
     end
 
     #
-    # Fetch records in the given direction. Database support varies. Consult your database's documentation for supported operations.
+    # Fetch records in the given direction.
     #
     #   cursor.open do |c|
     #     c.fetch :forward, 100
@@ -151,7 +151,7 @@ module OccamsRecord
     end
 
     #
-    # Move the cursor the given direction. Database support varies. Consult your database's documentation for supported operations.
+    # Move the cursor the given direction.
     #
     #   cursor.open do |c|
     #     ...

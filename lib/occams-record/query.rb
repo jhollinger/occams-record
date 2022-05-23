@@ -209,7 +209,7 @@ module OccamsRecord
     # Returns a cursor you can open and perform operations on. A lower-level alternative to 
     # find_each_with_cursor and find_in_batches_with_cursor.
     #
-    # NOTE See the docs for OccamsRecord::Cursor for a list of supported databases.
+    # NOTE Postgres only. See the docs for OccamsRecord::Cursor for more details.
     #
     # @param name [String] Specify a name for the cursor (defaults to a random name)
     # @param scroll [Boolean] true = SCROLL, false = NO SCROLL, nil = default behavior of DB

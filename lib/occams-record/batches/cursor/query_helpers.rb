@@ -7,7 +7,7 @@ module OccamsRecord
         # returns an Enumerator.
         #
         # NOTE Unlike find_each, batches are loaded using a cursor, which offers better performance.
-        # See the docs for OccamsRecord::Cursor for a list of supported databases.
+        # Postgres only. See the docs for OccamsRecord::Cursor for more details.
         #
         # @param batch_size [Integer] fetch this many rows at once
         # @param use_transaction [Boolean] Ensure it runs inside of a database transaction
@@ -34,7 +34,7 @@ module OccamsRecord
         # returns an Enumerator.
         #
         # NOTE Unlike find_in_batches, batches are loaded using a cursor, which offers better performance.
-        # See the docs for OccamsRecord::Cursor for a list of supported databases.
+        # Postgres only. See the docs for OccamsRecord::Cursor for more details.
         #
         # @param batch_size [Integer] fetch this many rows at once
         # @param use_transaction [Boolean] Ensure it runs inside of a database transaction

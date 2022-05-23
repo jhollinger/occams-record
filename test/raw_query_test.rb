@@ -132,7 +132,7 @@ class RawQueryTest < Minitest::Test
         .sql("SELECT * FROM commons ORDER BY name", {})
         .first
 
-    assert x.dec.is_a?(@sqlite ? Floag : BigDecimal)
+    assert x.dec.is_a?(@sqlite ? Float : BigDecimal)
     assert x.day.is_a?(@sqlite ? String : Date)
     assert x.daytime.is_a?(@sqlite ? String : Time)
     assert_equal((
