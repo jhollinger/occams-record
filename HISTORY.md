@@ -1,3 +1,9 @@
+### 1.4.0 (?)
+* Support for cursors (Postgres only)
+  * `#find_each_with_cursor`
+  * `#find_in_batches_with_cursor`
+  * `#cursor`
+
 ### 1.3.0 (2022-01-30)
 * Support for ActiveRecord 7.0
 

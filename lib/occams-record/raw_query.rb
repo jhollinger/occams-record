@@ -61,7 +61,7 @@ module OccamsRecord
     # @return [Hash]
     attr_reader :binds
 
-    include OccamsRecord::Batches::Cursor::QueryHelpers
+    include OccamsRecord::Batches::CursorHelpers
     include EagerLoaders::Builder
     include Enumerable
     include Measureable

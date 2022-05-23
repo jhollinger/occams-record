@@ -6,18 +6,21 @@ module OccamsRecord
 #   * PostgreSQL
 #
   class Cursor
-    DECLARE = "DECLARE %{name} %{scroll} CURSOR %{hold} FOR %{query}".freeze
-    CLOSE = "CLOSE %{name}".freeze
+    # @private
     SCROLL = {
       true => "SCROLL",
       false => "NO SCROLL",
       nil => "",
     }.freeze
+
+    # @private
     HOLD = {
       true => "WITH HOLD",
       false => "WITHOUT HOLD",
       nil => "",
     }.freeze
+
+    # @private
     DIRECTIONS = {
       next: "NEXT",
       prior: "PRIOR",
@@ -29,7 +32,16 @@ module OccamsRecord
       backward: "BACKWARD",
     }.freeze
 
-    attr_reader :conn, :name, :quoted_name
+    # @return [ActiveRecord::Connection]
+    attr_reader :conn
+
+    # Name of the cursor
+    # @return [String]
+    attr_reader :name
+
+    # Name of the cursor (safely SQL-escaped)
+    # @return [String]
+    attr_reader :quoted_name
 
     #
     # Initializes a new Cursor. NOTE all operations must be performed within a block passed to #open.
@@ -201,7 +213,7 @@ module OccamsRecord
 
     def perform
       ex = nil
-      conn.execute DECLARE % {
+      conn.execute "DECLARE %{name} %{scroll} CURSOR %{hold} FOR %{query}".freeze % {
         name: @quoted_name,
         scroll: @scroll,
         hold: @hold,
@@ -213,7 +225,7 @@ module OccamsRecord
       raise ex
     ensure
       begin
-        conn.execute CLOSE % {name: @quoted_name}
+        conn.execute "CLOSE %{name}".freeze % {name: @quoted_name}
       rescue => e
         # Don't let an error from CLOSE (like a dead transaction) hide what lead to the error with CLOSE (like bad SQL that raised an error and aborted the transaction)
         raise ex || e

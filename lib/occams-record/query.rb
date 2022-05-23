@@ -34,7 +34,7 @@ module OccamsRecord
     # @return [ActiveRecord::Relation] scope for building the main SQL query
     attr_reader :scope
 
-    include OccamsRecord::Batches::Cursor::QueryHelpers
+    include OccamsRecord::Batches::CursorHelpers
     include EagerLoaders::Builder
     include Enumerable
     include Measureable
