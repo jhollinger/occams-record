@@ -9,6 +9,7 @@ OccamsRecord is a high-efficiency, advanced query library for use alongside Acti
 * 3x-5x faster than ActiveRecord queries, *minimum*.
 * Uses 1/3 the memory of ActiveRecord query results.
 * Eliminates the N+1 query problem. (This often exceeds the baseline 3x-5x gain.)
+* Support for cursors (Postgres only, new in v1.4.0-beta1)
 
 ### 2) Supercharged querying & eager loading
 
@@ -28,6 +29,16 @@ OccamsRecord
 OccamsRecord
   .query(Order.order("created_at DESC"))
   .find_each { |order|
+    ...
+  }
+```
+
+**Use cursors**
+
+```
+OccamsRecord.
+  query(Order.order("created_at DESC")).
+  find_each_with_cursor { |order|
     ...
   }
 ```
@@ -156,7 +167,34 @@ orders = OccamsRecord
   .run
 ```
 
-Occams Record also supports loading ad hoc associations using raw SQL. We'll get to that in the next section.
+Occams Record also supports loading ad hoc associations using raw SQL. We'll get to that in a later section.
+
+## Query with cursors
+
+`find_each_with_cursor`/`find_in_batches_with_cursor` work like `find_each`/`find_in_batches`, except they use cursors. For large data sets, cursors offer a noticible speed boost.
+
+```ruby
+OccamsRecord.
+  query(q).
+  eager_load(:customer)
+  .find_each_with_cursor do |order|
+    ...
+  end
+```
+
+The `order` method allows lower level access to cursor behavior. See `OccamsRecord::Cursor` for more info.
+
+```ruby
+orders = OccamsRecord.
+  query(q).
+  eager_load(:customer).
+  cursor.
+  open do |cursor|
+    res = []
+    res += cursor.fetch(:forward, 100)
+    res
+  end
+```
 
 ## Raw SQL queries
 
@@ -178,6 +216,24 @@ OccamsRecord
     date: 10.years.ago
   })
   .find_each(batch_size: 1000) do |order|
+    ...
+  end
+```
+
+**Batched loading with cursors**
+
+`find_each_with_cursor`, `find_in_batches_with_cursor`, and `cursor` also with with `sql`!
+
+```ruby
+OccamsRecord.
+  sql("
+    SELECT * FROM orders
+    WHERE order_date > %{date}
+    ORDER BY order_date DESC, id
+  ", {
+    date: 10.years.ago
+  }).
+  find_each_with_cursor(batch_size: 1000) do |order|
     ...
   end
 ```
