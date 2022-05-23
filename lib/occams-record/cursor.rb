@@ -1,10 +1,10 @@
 require 'securerandom'
 
 module OccamsRecord
-#
-# An interface to database cursors. Supported databases:
-#   * PostgreSQL
-#
+  #
+  # An interface to database cursors. Supported databases:
+  #   * PostgreSQL
+  #
   class Cursor
     # @private
     SCROLL = {
