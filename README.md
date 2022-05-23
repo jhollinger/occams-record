@@ -182,7 +182,7 @@ OccamsRecord
   end
 ```
 
-The `cursor` method allows lower level access to cursor behavior. See `OccamsRecord::Cursor` for more info.
+The `cursor.open` method allows lower level access to cursor behavior. See `OccamsRecord::Cursor` for more info.
 
 ```ruby
 orders = OccamsRecord
@@ -201,7 +201,7 @@ ActiveRecord has raw SQL escape hatches like `find_by_sql` and `exec_query`, but
 
 **Batched loading with cursors**
 
-`find_each_with_cursor`, `find_in_batches_with_cursor`, and `cursor` also with with `sql`!
+`find_each_with_cursor`, `find_in_batches_with_cursor`, and `cursor.open` are all available.
 
 ```ruby
 OccamsRecord
