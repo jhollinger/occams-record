@@ -171,7 +171,7 @@ Occams Record also supports loading ad hoc associations using raw SQL. We'll get
 
 ## Query with cursors
 
-`find_each_with_cursor`/`find_in_batches_with_cursor` work like `find_each`/`find_in_batches`, except they use cursors. For large data sets, cursors offer a noticible speed boost.
+`find_each_with_cursor`/`find_in_batches_with_cursor` work like `find_each`/`find_in_batches`, except they use cursors. For large data sets, cursors offer a noticible speed boost. Postgres only.
 
 ```ruby
 OccamsRecord.
