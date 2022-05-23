@@ -36,9 +36,9 @@ OccamsRecord
 **Use cursors**
 
 ```ruby
-OccamsRecord.
-  query(Order.order("created_at DESC")).
-  find_each_with_cursor { |order|
+OccamsRecord
+  .query(Order.order("created_at DESC"))
+  .find_each_with_cursor { |order|
     ...
   }
 ```
@@ -174,10 +174,10 @@ Occams Record also supports loading ad hoc associations using raw SQL. We'll get
 `find_each_with_cursor`/`find_in_batches_with_cursor` work like `find_each`/`find_in_batches`, except they use cursors. For large data sets, cursors offer a noticible speed boost. Postgres only.
 
 ```ruby
-OccamsRecord.
-  query(q).
-  eager_load(:customer).
-  find_each_with_cursor do |order|
+OccamsRecord
+  .query(q)
+  .eager_load(:customer)
+  .find_each_with_cursor do |order|
     ...
   end
 ```
@@ -185,11 +185,11 @@ OccamsRecord.
 The `cursor` method allows lower level access to cursor behavior. See `OccamsRecord::Cursor` for more info.
 
 ```ruby
-orders = OccamsRecord.
-  query(q).
-  eager_load(:customer).
-  cursor.
-  open do |cursor|
+orders = OccamsRecord
+  .query(q)
+  .eager_load(:customer)
+  .cursor
+  .open do |cursor|
     cursor.move(:forward, 300)
     cursor.fetch(:forward, 100)
   end
