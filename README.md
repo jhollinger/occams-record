@@ -35,7 +35,7 @@ OccamsRecord
 
 **Use cursors**
 
-```
+```ruby
 OccamsRecord.
   query(Order.order("created_at DESC")).
   find_each_with_cursor { |order|
