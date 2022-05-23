@@ -199,26 +199,6 @@ orders = OccamsRecord
 
 ActiveRecord has raw SQL escape hatches like `find_by_sql` and `exec_query`, but they give up critical features like eager loading and `find_each`/`find_in_batches`. Occams Record's escape hatches don't make you give up anything.
 
-**Batched loading**
-
-To use `find_each`/`find_in_batches` you must provide the limit and offset statements yourself; Occams will provide the values. Also, notice that the binding syntax is a bit different (it uses Ruby's built-in named string substitution).
-
-```ruby
-OccamsRecord
-  .sql("
-    SELECT * FROM orders
-    WHERE order_date > %{date}
-    ORDER BY order_date DESC, id
-    LIMIT %{batch_limit}
-    OFFSET %{batch_offset}
-  ", {
-    date: 10.years.ago
-  })
-  .find_each(batch_size: 1000) do |order|
-    ...
-  end
-```
-
 **Batched loading with cursors**
 
 `find_each_with_cursor`, `find_in_batches_with_cursor`, and `cursor` also with with `sql`!
@@ -233,6 +213,26 @@ OccamsRecord
     date: 10.years.ago
   })
   .find_each_with_cursor(batch_size: 1000) do |order|
+    ...
+  end
+```
+
+**Batched loading without cursors**
+
+If your database doesn't support cursors, you can use `find_each`/`find_in_batches`. Just provide `LIMIT` and `OFFSET` (see below), and Occams will plug in the right numbers.
+
+```ruby
+OccamsRecord
+  .sql("
+    SELECT * FROM orders
+    WHERE order_date > %{date}
+    ORDER BY order_date DESC, id
+    LIMIT %{batch_limit}
+    OFFSET %{batch_offset}
+  ", {
+    date: 10.years.ago
+  })
+  .find_each(batch_size: 1000) do |order|
     ...
   end
 ```
