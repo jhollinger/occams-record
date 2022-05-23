@@ -1,5 +1,3 @@
-require 'occams-record/batches'
-
 module OccamsRecord
   #
   # Starts building a OccamsRecord::Query. Pass it a scope from any of ActiveRecord's query builder
@@ -36,7 +34,7 @@ module OccamsRecord
     # @return [ActiveRecord::Relation] scope for building the main SQL query
     attr_reader :scope
 
-    include Batches
+    include OccamsRecord::Batches::CursorHelpers
     include EagerLoaders::Builder
     include Enumerable
     include Measureable
@@ -153,6 +151,76 @@ module OccamsRecord
       else
         to_a.each
       end
+    end
+
+    #
+    # Load records in batches of N and yield each record to a block if given. If no block is given,
+    # returns an Enumerator.
+    #
+    # NOTE Unlike ActiveRecord's find_each, ORDER BY is respected. The primary key will be appended
+    # to the ORDER BY clause to help ensure consistent batches. Additionally, it will be run inside
+    # of a transaction.
+    #
+    # @param batch_size [Integer]
+    # @param use_transaction [Boolean] Ensure it runs inside of a database transaction
+    # @param append_order_by [String] Append this column to ORDER BY to ensure consistent results. Defaults to the primary key. Pass false to disable.
+    # @yield [OccamsRecord::Results::Row]
+    # @return [Enumerator] will yield each record
+    #
+    def find_each(batch_size: 1000, use_transaction: true, append_order_by: nil)
+      enum = Enumerator.new { |y|
+        find_in_batches(batch_size: 1000, use_transaction: use_transaction, append_order_by: append_order_by).each { |batch|
+          batch.each { |record| y.yield record }
+        }
+      }
+      if block_given?
+        enum.each { |record| yield record }
+      else
+        enum
+      end
+    end
+
+    #
+    # Load records in batches of N and yield each batch to a block if given.
+    # If no block is given, returns an Enumerator.
+    #
+    # NOTE Unlike ActiveRecord's find_each, ORDER BY is respected. The primary key will be appended
+    # to the ORDER BY clause to help ensure consistent batches. Additionally, it will be run inside
+    # of a transaction.
+    #
+    # @param batch_size [Integer]
+    # @param use_transaction [Boolean] Ensure it runs inside of a database transaction
+    # @param append_order_by [String] Append this column to ORDER BY to ensure consistent results. Defaults to the primary key. Pass false to disable.
+    # @yield [OccamsRecord::Results::Row]
+    # @return [Enumerator] will yield each batch
+    #
+    def find_in_batches(batch_size: 1000, use_transaction: true, append_order_by: nil)
+      enum = Batches::OffsetLimit::Scoped
+        .new(model, scope, use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders)
+        .enum(batch_size: batch_size, use_transaction: use_transaction, append_order_by: append_order_by)
+      if block_given?
+        enum.each { |batch| yield batch }
+      else
+        enum
+      end
+    end
+
+    #
+    # Returns a cursor you can open and perform operations on. A lower-level alternative to 
+    # find_each_with_cursor and find_in_batches_with_cursor.
+    #
+    # NOTE Postgres only. See the docs for OccamsRecord::Cursor for more details.
+    #
+    # @param name [String] Specify a name for the cursor (defaults to a random name)
+    # @param scroll [Boolean] true = SCROLL, false = NO SCROLL, nil = default behavior of DB
+    # @param hold [Boolean] true = WITH HOLD, false = WITHOUT HOLD, nil = default behavior of DB
+    # @return [OccamsRecord::Cursor]
+    #
+    def cursor(name: nil, scroll: nil, hold: nil)
+      Cursor.new(model.connection, scope.to_sql,
+        name: name, scroll: scroll, hold: hold,
+        use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders,
+      )
     end
   end
 end

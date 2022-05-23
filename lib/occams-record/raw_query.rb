@@ -61,7 +61,7 @@ module OccamsRecord
     # @return [Hash]
     attr_reader :binds
 
-    include Batches
+    include OccamsRecord::Batches::CursorHelpers
     include EagerLoaders::Builder
     include Enumerable
     include Measureable
@@ -75,13 +75,15 @@ module OccamsRecord
     # @param eager_loaders [OccamsRecord::EagerLoaders::Context]
     # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
     # @param measurements [Array]
+    # @param connection
     #
-    def initialize(sql, binds, use: nil, eager_loaders: nil, query_logger: nil, measurements: nil)
+    def initialize(sql, binds, use: nil, eager_loaders: nil, query_logger: nil, measurements: nil, connection: nil)
       @sql = sql
       @binds = binds
       @use = use
       @eager_loaders = eager_loaders || EagerLoaders::Context.new
       @query_logger, @measurements = query_logger, measurements
+      @conn = connection
     end
 
     #
@@ -139,6 +141,74 @@ module OccamsRecord
       end
     end
 
+    #
+    # Load records in batches of N and yield each record to a block if given. If no block is given,
+    # returns an Enumerator.
+    #
+    # NOTE Unlike ActiveRecord's find_each, ORDER BY is respected. The primary key will be appended
+    # to the ORDER BY clause to help ensure consistent batches. Additionally, it will be run inside
+    # of a transaction.
+    #
+    # @param batch_size [Integer]
+    # @param use_transaction [Boolean] Ensure it runs inside of a database transaction
+    # @yield [OccamsRecord::Results::Row]
+    # @return [Enumerator] will yield each record
+    #
+    def find_each(batch_size: 1000, use_transaction: true)
+      enum = Enumerator.new { |y|
+        find_in_batches(batch_size: batch_size, use_transaction: use_transaction).each { |batch|
+          batch.each { |record| y.yield record }
+        }
+      }
+      if block_given?
+        enum.each { |record| yield record }
+      else
+        enum
+      end
+    end
+
+    #
+    # Load records in batches of N and yield each batch to a block if given.
+    # If no block is given, returns an Enumerator.
+    #
+    # NOTE Unlike ActiveRecord's find_each, ORDER BY is respected. The primary key will be appended
+    # to the ORDER BY clause to help ensure consistent batches. Additionally, it will be run inside
+    # of a transaction.
+    #
+    # @param batch_size [Integer]
+    # @param use_transaction [Boolean] Ensure it runs inside of a database transaction
+    # @yield [OccamsRecord::Results::Row]
+    # @return [Enumerator] will yield each batch
+    #
+    def find_in_batches(batch_size: 1000, use_transaction: true)
+      enum = Batches::OffsetLimit::RawQuery
+        .new(conn, @sql, @binds, use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders)
+        .enum(batch_size: batch_size, use_transaction: use_transaction)
+      if block_given?
+        enum.each { |batch| yield batch }
+      else
+        enum
+      end
+    end
+
+    #
+    # Returns a cursor you can open and perform operations on. A lower-level alternative to 
+    # find_each_with_cursor and find_in_batches_with_cursor.
+    #
+    # NOTE Postgres only. See the docs for OccamsRecord::Cursor for more details.
+    #
+    # @param name [String] Specify a name for the cursor (defaults to a random name)
+    # @param scroll [Boolean] true = SCROLL, false = NO SCROLL, nil = default behavior of DB
+    # @param hold [Boolean] true = WITH HOLD, false = WITHOUT HOLD, nil = default behavior of DB
+    # @return [OccamsRecord::Cursor]
+    #
+    def cursor(name: nil, scroll: nil, hold: nil)
+      Cursor.new(conn, @sql,
+        name: name, scroll: scroll, hold: hold,
+        use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders,
+      )
+    end
+
     private
 
     # Returns the SQL as a String with all variables escaped
@@ -156,45 +226,6 @@ module OccamsRecord
 
     def table_name
       @sql.match(/\s+FROM\s+"?(\w+)"?/i)&.captures&.first
-    end
-
-    #
-    # Returns an Enumerator that yields batches of records, of size "of".
-    # The SQL string must include 'LIMIT %{batch_limit} OFFSET %{batch_offset}'.
-    # The bind values will be provided by OccamsRecord.
-    #
-    # @param of [Integer] batch size
-    # @param use_transaction [Boolean] Ensure it runs inside of a database transaction
-    # @return [Enumerator] yields batches
-    #
-    def batches(of:, use_transaction: true, append_order_by: nil)
-      unless @sql =~ /LIMIT\s+%\{batch_limit\}/i and @sql =~ /OFFSET\s+%\{batch_offset\}/i
-        raise ArgumentError, "When using find_each/find_in_batches you must specify 'LIMIT %{batch_limit} OFFSET %{batch_offset}'. SQL statement: #{@sql}"
-      end
-
-      Enumerator.new do |y|
-        if use_transaction and conn.open_transactions == 0
-          conn.transaction {
-            run_batches y, of
-          }
-        else
-          run_batches y, of
-        end
-      end
-    end
-
-    def run_batches(y, of)
-      offset = 0
-      loop do
-        results = RawQuery.new(@sql, @binds.merge({
-          batch_limit: of,
-          batch_offset: offset,
-        }), use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders).run
-
-        y.yield results if results.any?
-        break if results.size < of
-        offset += results.size
-      end
     end
 
     def conn

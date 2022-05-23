@@ -6,6 +6,7 @@ class RawQueryTest < Minitest::Test
   def setup
     DatabaseCleaner.start
     @pg = !!(ActiveRecord::Base.connection.class.name =~ /postgres/i)
+    @sqlite = !!(ActiveRecord::Base.connection.class.name =~ /sqlite/i)
     @ar = ActiveRecord::VERSION::MAJOR
   end
 
@@ -131,9 +132,9 @@ class RawQueryTest < Minitest::Test
         .sql("SELECT * FROM commons ORDER BY name", {})
         .first
 
-    assert x.dec.is_a?(@pg ? BigDecimal : Float)
-    assert x.day.is_a?(@pg ? Date : String)
-    assert x.daytime.is_a?(@pg ? Time : String)
+    assert x.dec.is_a?(@sqlite ? Float : BigDecimal)
+    assert x.day.is_a?(@sqlite ? String : Date)
+    assert x.daytime.is_a?(@sqlite ? String : Time)
     assert_equal((
       if @pg
         true

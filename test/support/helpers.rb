@@ -17,5 +17,14 @@ module TestHelpers
     sql
       .gsub(/\s+/, " ")
       .gsub(/"/, "")
+      .gsub(/`/, "")
+  end
+
+  def quote_table(x)
+    ActiveRecord::Base.connection.quote_table_name x
+  end
+
+  def quote_col(x)
+    ActiveRecord::Base.connection.quote_column_name x
   end
 end

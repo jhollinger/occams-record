@@ -27,9 +27,11 @@ class EagerLoaderTest < Minitest::Test
     sqlz = []
     loader.send(:query, line_items) { |scope| sqlz << scope.to_sql }
     assert_equal [
-      %q(SELECT "splines".* FROM "splines" WHERE "splines"."id" IN (10, 11)),
-      %q(SELECT "widgets".* FROM "widgets" WHERE "widgets"."id" IN (5, 6)),
-    ].sort, sqlz.sort
+      %q(SELECT splines.* FROM splines WHERE splines.id IN (10, 11)),
+      %q(SELECT widgets.* FROM widgets WHERE widgets.id IN (5, 6)),
+    ].sort, sqlz.sort.map { |x|
+      normalize_sql x
+    }
   end
 
   def test_polymorphic_belongs_to_merge
@@ -110,7 +112,7 @@ class EagerLoaderTest < Minitest::Test
       OpenStruct.new(category_id: 10),
     ]
     loader.send(:query, widgets) { |scope|
-      assert_equal %q(SELECT "categories".* FROM "categories" WHERE "categories"."name" = 'Foo' AND "categories"."id" IN (5, 10)), scope.to_sql
+      assert_equal %q(SELECT categories.* FROM categories WHERE categories.name = 'Foo' AND categories.id IN (5, 10)), normalize_sql(scope.to_sql)
     }
   end
 
@@ -161,7 +163,7 @@ class EagerLoaderTest < Minitest::Test
       OpenStruct.new(id: 52),
     ]
     loader.send(:query, widgets) { |scope|
-      assert_equal %q(SELECT "widget_details".* FROM "widget_details" WHERE "widget_details"."widget_id" IN (1, 52)), scope.to_sql
+      assert_equal %q(SELECT widget_details.* FROM widget_details WHERE widget_details.widget_id IN (1, 52)), normalize_sql(scope.to_sql)
     }
   end
 
@@ -212,7 +214,7 @@ class EagerLoaderTest < Minitest::Test
       OpenStruct.new(id: 1001),
     ]
     loader.send(:query, orders) { |scope|
-      assert_equal %q(SELECT "line_items".* FROM "line_items" WHERE "line_items"."order_id" IN (1000, 1001)), scope.to_sql
+      assert_equal %q(SELECT line_items.* FROM line_items WHERE line_items.order_id IN (1000, 1001)), normalize_sql(scope.to_sql)
     }
   end
 
@@ -258,7 +260,7 @@ class EagerLoaderTest < Minitest::Test
     User.connection.execute "INSERT INTO offices_users (user_id, office_id) VALUES (1000, 100), (1000, 101), (1001, 101), (1001, 102), (1002, 103)"
 
     loader.send(:query, users) { |scope, join_rows|
-      assert_equal %q(SELECT "offices".* FROM "offices" WHERE "offices"."id" IN (100, 101, 102) ORDER BY offices.name DESC), scope.to_sql.gsub(/\s+/, " ")
+      assert_equal %q(SELECT offices.* FROM offices WHERE offices.id IN (100, 101, 102) ORDER BY offices.name DESC), normalize_sql(scope.to_sql.gsub(/\s+/, " "))
       ids = [[1000, 100], [1000, 101], [1001, 101], [1001, 102]]
       ids = ids.map { |x| x.map(&:to_s) } if @ar == 4 and @pg
       assert_equal ids, join_rows
