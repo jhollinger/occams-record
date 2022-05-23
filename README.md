@@ -224,15 +224,15 @@ OccamsRecord
 `find_each_with_cursor`, `find_in_batches_with_cursor`, and `cursor` also with with `sql`!
 
 ```ruby
-OccamsRecord.
-  sql("
+OccamsRecord
+  .sql("
     SELECT * FROM orders
     WHERE order_date > %{date}
     ORDER BY order_date DESC, id
   ", {
     date: 10.years.ago
-  }).
-  find_each_with_cursor(batch_size: 1000) do |order|
+  })
+  .find_each_with_cursor(batch_size: 1000) do |order|
     ...
   end
 ```
