@@ -14,9 +14,9 @@ class EagerLoadThroughTest < Minitest::Test
       run
 
     assert_equal [
-      %(SELECT "widget_details".* FROM "widget_details" ORDER BY "widget_details"."text" ASC),
-      %(SELECT "widgets".* FROM "widgets" WHERE "widgets"."id" IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
-      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (208889123, 922717355)),
+      %(SELECT #{quote_table "widget_details"}.* FROM #{quote_table "widget_details"} ORDER BY #{quote_table "widget_details"}.#{quote_col "text"} ASC),
+      %(SELECT #{quote_table "widgets"}.* FROM #{quote_table "widgets"} WHERE #{quote_table "widgets"}.#{quote_col "id"} IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
+      %(SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -40,9 +40,9 @@ class EagerLoadThroughTest < Minitest::Test
       run
 
     assert_equal [
-      %(SELECT "customers".* FROM "customers" ORDER BY "customers"."name" ASC),
-      %(SELECT "orders".* FROM "orders" WHERE "orders"."customer_id" IN (846114006, 980204181)),
-      %(SELECT "line_items".* FROM "line_items" WHERE "line_items"."order_id" IN (683130438, 834596858)),
+      %(SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
+      %(SELECT #{quote_table "orders"}.* FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
+      %(SELECT #{quote_table "line_items"}.* FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -61,10 +61,10 @@ class EagerLoadThroughTest < Minitest::Test
       run
 
     assert_equal [
-      %(SELECT "customers".* FROM "customers" ORDER BY "customers"."name" ASC),
-      %(SELECT "orders".* FROM "orders" WHERE "orders"."customer_id" IN (846114006, 980204181)),
-      %(SELECT "line_items".* FROM "line_items" WHERE "line_items"."order_id" IN (683130438, 834596858)),
-      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (208889123, 922717355)),
+      %(SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
+      %(SELECT #{quote_table "orders"}.* FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
+      %(SELECT #{quote_table "line_items"}.* FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
+      %(SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -88,9 +88,9 @@ class EagerLoadThroughTest < Minitest::Test
       run
 
     assert_equal [
-      %(SELECT "widget_details".* FROM "widget_details" ORDER BY "widget_details"."text" ASC),
-      %(SELECT id, category_id FROM "widgets" WHERE "widgets"."id" IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
-      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (208889123, 922717355)),
+      %(SELECT #{quote_table "widget_details"}.* FROM #{quote_table "widget_details"} ORDER BY #{quote_table "widget_details"}.#{quote_col "text"} ASC),
+      %(SELECT id, category_id FROM #{quote_table "widgets"} WHERE #{quote_table "widgets"}.#{quote_col "id"} IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
+      %(SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -114,9 +114,9 @@ class EagerLoadThroughTest < Minitest::Test
       run
 
     assert_equal [
-      %(SELECT "customers".* FROM "customers" ORDER BY "customers"."name" ASC),
-      %(SELECT id, customer_id FROM "orders" WHERE "orders"."customer_id" IN (846114006, 980204181)),
-      %(SELECT "line_items".* FROM "line_items" WHERE "line_items"."order_id" IN (683130438, 834596858)),
+      %(SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
+      %(SELECT id, customer_id FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
+      %(SELECT #{quote_table "line_items"}.* FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -135,10 +135,10 @@ class EagerLoadThroughTest < Minitest::Test
       run
 
     assert_equal [
-      %(SELECT "customers".* FROM "customers" ORDER BY "customers"."name" ASC),
-      %(SELECT id, customer_id FROM "orders" WHERE "orders"."customer_id" IN (846114006, 980204181)),
-      %(SELECT id, order_id, category_id FROM "line_items" WHERE "line_items"."order_id" IN (683130438, 834596858)),
-      %(SELECT "categories".* FROM "categories" WHERE "categories"."id" IN (208889123, 922717355)),
+      %(SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
+      %(SELECT id, customer_id FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
+      %(SELECT id, order_id, category_id FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
+      %(SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [

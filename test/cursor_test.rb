@@ -6,7 +6,7 @@ class CursorTest < Minitest::Test
   def setup
     DatabaseCleaner.start
     Time.zone = "Eastern Time (US & Canada)"
-    @skip = Widget.connection.class.name =~ /sqlite/i
+    @skip = Widget.connection.class.name =~ /(sqlite|mysql)/i
     $stderr.puts "Skipping CursorTest" if @skip
   end
 
