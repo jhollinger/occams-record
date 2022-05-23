@@ -176,8 +176,8 @@ Occams Record also supports loading ad hoc associations using raw SQL. We'll get
 ```ruby
 OccamsRecord.
   query(q).
-  eager_load(:customer)
-  .find_each_with_cursor do |order|
+  eager_load(:customer).
+  find_each_with_cursor do |order|
     ...
   end
 ```
