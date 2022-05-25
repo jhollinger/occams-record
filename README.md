@@ -9,7 +9,7 @@ OccamsRecord is a high-efficiency, advanced query library for use alongside Acti
 * 3x-5x faster than ActiveRecord queries, *minimum*.
 * Uses 1/3 the memory of ActiveRecord query results.
 * Eliminates the N+1 query problem. (This often exceeds the baseline 3x-5x gain.)
-* Support for cursors (Postgres only, new in v1.4.0-beta1)
+* Support for cursors (Postgres only, new in v1.4.0)
 
 ### 2) Supercharged querying & eager loading
 
