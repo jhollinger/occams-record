@@ -1,4 +1,4 @@
-### 1.4.0 (?)
+### 1.4.0 (2022-05-25)
 * Support for cursors (Postgres only)
   * `#find_each_with_cursor`
   * `#find_in_batches_with_cursor`

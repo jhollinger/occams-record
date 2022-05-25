@@ -1,6 +1,9 @@
 module OccamsRecord
   module Batches
     module OffsetLimit
+      #
+      # Implements batched loading for pure SQL.
+      #
       class RawQuery
         def initialize(conn, sql, binds, use: nil, query_logger: nil, eager_loaders: nil)
           @conn, @sql, @binds = conn, sql, binds

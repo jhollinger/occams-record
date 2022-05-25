@@ -1,9 +1,9 @@
 module OccamsRecord
-  #
-  # Methods for building batch finding methods. It expects "model" and "scope" methods to be present.
-  #
   module Batches
     module OffsetLimit
+      #
+      # Implements batched loading for ActiveRecord model scopes.
+      #
       class Scoped
         def initialize(model, scope, use: nil, query_logger: nil, eager_loaders: nil)
           @model, @scope = model, scope
