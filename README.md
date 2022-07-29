@@ -354,7 +354,7 @@ bundle install
 bundle exec rake test
 
 # test against Postgres
-TEST_DATABASE_URL=postgres://postgres@localhost:5432/occams_record bundle exec rake test
+TEST_DATABASE_URL=postgresql://postgres@localhost:5432/occams_record bundle exec rake test
 
 # test against MySQL
 TEST_DATABASE_URL=mysql2://root:@127.0.0.1:3306/occams_record bundle exec rake test
