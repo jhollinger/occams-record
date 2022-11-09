@@ -115,7 +115,7 @@ module OccamsRecord
 
       def build_loader!(assoc, custom_name, scope, select, use, optimizer, builder)
         build_loader(assoc, custom_name, scope, select, use, optimizer, builder) ||
-          raise("OccamsRecord: No assocation `:#{assoc}` on `#{@model.name}` or subclasses")
+          raise("OccamsRecord: No association `:#{assoc}` on `#{@model.name}` or subclasses")
       end
 
       def build_loader(assoc, custom_name, scope, select, use, optimizer, builder)
