@@ -17,12 +17,26 @@ module OccamsRecord
       # @yield perform eager loading on *this* association (optional)
       #
       def initialize(ref, scope = nil, use: nil, as: nil, optimizer: nil, &builder)
-        @ref, @scope, @use = ref, scope, use
+        @ref, @scopes, @use = ref, Array(scope), use
         @name = (as || ref.name).to_s
         @foreign_type = @ref.foreign_type.to_sym
         @foreign_key = @ref.foreign_key.to_sym
         @eager_loaders = EagerLoaders::Context.new(nil, polymorphic: true)
         instance_exec(&builder) if builder
+      end
+
+      #
+      # An alternative to passing a "scope" lambda to the constructor. Your block is passed the query
+      # so you can call select, where, order, etc on it.
+      #
+      # If you call scope multiple times, the results will be additive.
+      #
+      # @yield [ActiveRecord::Relation] a relation to modify with select, where, order, etc
+      # @return self
+      #
+      def scope(&scope)
+        @scopes << scope if scope
+        self
       end
 
       #
@@ -83,7 +97,7 @@ module OccamsRecord
       def base_scope(model)
         q = model.all
         q = q.instance_exec(&@ref.scope) if @ref.scope
-        q = @scope.(q) if @scope
+        q = @scopes.reduce(q) { |acc, scope| scope.(acc) }
         q
       end
     end

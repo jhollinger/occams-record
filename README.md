@@ -20,7 +20,9 @@ Continue using ActiveRecord's query builder, but let Occams take over running th
 ```ruby
 OccamsRecord
   .query(User.active)
-  .eager_load(:orders, ->(q) { q.where("created_at >= ?", date).order("created_at DESC") })
+  .eager_load(:orders) {
+    scope { |q| q.where("created_at >= ?", date).order("created_at DESC") }
+  }
 ```
 
 **Use `ORDER BY` with `find_each`/`find_in_batches`**
@@ -158,9 +160,12 @@ orders = OccamsRecord
   .query(q)
   # Only SELECT the columns you need. Your DBA will thank you.
   .eager_load(:customer, select: "id, name")
-  
-  # A Proc can use ActiveRecord's query builder
-  .eager_load(:line_items, ->(q) { q.active.order("created_at") }) {
+
+  # Or use 'scope' to access the full power of ActiveRecord's query builder.
+  # Here, only 'active' line items will be returned, and in a specific order.
+  .eager_load(:line_items) {
+    scope { |q| q.active.order("created_at") }
+
     eager_load(:product)
     eager_load(:something_else)
   }
