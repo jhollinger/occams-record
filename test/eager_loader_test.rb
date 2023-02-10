@@ -310,6 +310,41 @@ class EagerLoaderTest < Minitest::Test
     }
   end
 
+  def test_habtm_full_with_order_and_scope_method
+    users = OccamsRecord.
+      query(User.order("username ASC")).
+      eager_load(:offices) {
+        scope { |q| q.order("name DESC") }
+      }.
+      run
+
+    assert_equal [
+      ["bob", ["Foo", "Bar"]],
+      ["craig", ["Foo"]],
+      ["sue", ["Zorp", "Bar"]]
+    ], users.map { |u|
+      [u.username, u.offices.map(&:name)]
+    }
+  end
+
+  def test_multiple_scopes
+    users = OccamsRecord.
+      query(User.order("username ASC")).
+      eager_load(:offices) {
+        scope { |q| q.order("name DESC") }
+        scope { |q| q.where.not("name = ?", 'Zorp') }
+      }.
+      run
+
+    assert_equal [
+      ["bob", ["Foo", "Bar"]],
+      ["craig", ["Foo"]],
+      ["sue", ["Bar"]]
+    ], users.map { |u|
+      [u.username, u.offices.map(&:name)]
+    }
+  end
+
   def test_habtm_makes_empty_arrays_even_if_there_are_no_associated_records
     User.connection.execute "DELETE FROM offices_users"
     results = OccamsRecord.
