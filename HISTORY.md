@@ -1,3 +1,6 @@
+### 1.5.0 (2023-02-10)
+* Add the `scope` method as an alternative to passing a lambda to `eager_load`.
+
 ### 1.4.0 (2022-05-25)
 * Support for cursors (Postgres only)
   * `#find_each_with_cursor`
