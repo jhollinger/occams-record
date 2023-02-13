@@ -542,4 +542,15 @@ class EagerLoaderTest < Minitest::Test
       "#{x.icd10.code} #{x.name}"
     }
   end
+
+  def test_eager_load_with_none
+    cats = OccamsRecord.
+      query(Category.all).
+      eager_load(:widgets, ->(q) { q.none }).
+      run
+
+    assert_equal [], cats.reduce([]) { |acc, cat|
+      acc + cat.widgets
+    }
+  end
 end
