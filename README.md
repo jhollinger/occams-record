@@ -20,8 +20,8 @@ Continue using ActiveRecord's query builder, but let Occams take over running th
 ```ruby
 OccamsRecord
   .query(User.active)
-  .eager_load(:orders) {
-    scope { |q| q.where("created_at >= ?", date).order("created_at DESC") }
+  .eager_load(:orders) { |l|
+    l.scope { |q| q.where("created_at >= ?", date).order("created_at DESC") }
   }
 ```
 
@@ -137,9 +137,9 @@ Eager loading is similiar to ActiveRecord's `preload`: each association is loade
 OccamsRecord
   .query(q)
   .eager_load(:customer)
-  .eager_load(:line_items) {
-    eager_load(:product)
-    eager_load(:something_else)
+  .eager_load(:line_items) { |l|
+    l.eager_load(:product)
+    l.eager_load(:something_else)
   }
   .find_each { |order|
     puts order.customer.name
@@ -163,11 +163,11 @@ orders = OccamsRecord
 
   # Or use 'scope' to access the full power of ActiveRecord's query builder.
   # Here, only 'active' line items will be returned, and in a specific order.
-  .eager_load(:line_items) {
-    scope { |q| q.active.order("created_at") }
+  .eager_load(:line_items) { |l|
+    l.scope { |q| q.active.order("created_at") }
 
-    eager_load(:product)
-    eager_load(:something_else)
+    l.eager_load(:product)
+    l.eager_load(:something_else)
   }
   .run
 ```
@@ -267,9 +267,9 @@ Let's say we want to load each product with an array of all customers who've ord
 ```ruby
 products_with_orders = OccamsRecord
   .query(Product.all)
-  .eager_load(:line_items) {
-    eager_load(:order) {
-      eager_load(:customer)
+  .eager_load(:line_items) { |l|
+    l.eager_load(:order) { |l|
+      l.eager_load(:customer)
     }
   }
   .map { |product|

@@ -1,3 +1,6 @@
+### 1.6.0 (2023-02-14)
+* Allow `eager_load` blocks to accept an argument. If passed, the block's scope remains the outer scope, allowing instance methods, etc to be called. `eager_load` and `scope` can be called on the argument.
+
 ### 1.5.0 (2023-02-10)
 * Add the `scope` method as an alternative to passing a lambda to `eager_load`.
 
