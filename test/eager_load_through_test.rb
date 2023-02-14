@@ -26,7 +26,7 @@ class EagerLoadThroughTest < Minitest::Test
       "All about Widget D: Bar",
       "All about Widget E: Bar",
       "All about Widget F: Bar",
-      "Make it an uneven number: Bar",
+      "All about Widget G: Bar",
     ], widget_details.map { |d|
       "#{d.text}: #{d.category.name}"
     }
@@ -100,7 +100,7 @@ class EagerLoadThroughTest < Minitest::Test
       "All about Widget D: Bar",
       "All about Widget E: Bar",
       "All about Widget F: Bar",
-      "Make it an uneven number: Bar",
+      "All about Widget G: Bar",
     ], widget_details.map { |d|
       "#{d.text}: #{d.category.name}"
     }

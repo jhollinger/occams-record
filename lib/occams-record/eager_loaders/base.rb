@@ -24,7 +24,13 @@ module OccamsRecord
         @name = (as || ref.name).to_s
         @eager_loaders = EagerLoaders::Context.new(@model)
         @optimizer = optimizer
-        instance_exec(&builder) if builder
+        if builder
+          if builder.arity > 0
+            builder.call(self)
+          else
+            instance_exec(&builder)
+          end
+        end
       end
 
       #

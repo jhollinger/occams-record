@@ -553,4 +553,45 @@ class EagerLoaderTest < Minitest::Test
       acc + cat.widgets
     }
   end
+
+  def test_nested_eager_load_without_block_arg
+    test = self
+    cats = OccamsRecord.
+      query(Category.order(:name)).
+      eager_load(:widgets) {
+        scope { |q| test.apply_order q, :name }
+        eager_load(:detail)
+      }.
+      run
+
+    assert_equal [
+      "Bar: (Widget D - All about Widget D), (Widget E - All about Widget E), (Widget F - All about Widget F), (Widget G - All about Widget G)",
+      "Foo: (Widget A - All about Widget A), (Widget B - All about Widget B), (Widget C - All about Widget C)",
+    ], cats.map { |cat|
+      data = cat.widgets.map { |w| "(#{w.name} - #{w.detail.text})" }
+      "#{cat.name}: #{data.join ', '}"
+    }
+  end
+
+  def test_nested_eager_load_with_block_arg
+    cats = OccamsRecord.
+      query(Category.order(:name)).
+      eager_load(:widgets) { |l|
+        l.scope { |q| apply_order q, :name }
+        l.eager_load(:detail)
+      }.
+      run
+
+    assert_equal [
+      "Bar: (Widget D - All about Widget D), (Widget E - All about Widget E), (Widget F - All about Widget F), (Widget G - All about Widget G)",
+      "Foo: (Widget A - All about Widget A), (Widget B - All about Widget B), (Widget C - All about Widget C)",
+    ], cats.map { |cat|
+      data = cat.widgets.map { |w| "(#{w.name} - #{w.detail.text})" }
+      "#{cat.name}: #{data.join ', '}"
+    }
+  end
+
+  def apply_order(q, val)
+    q.order(val)
+  end
 end

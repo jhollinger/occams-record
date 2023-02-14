@@ -10,6 +10,12 @@ module OccamsRecord
       # Specify an association to be eager-loaded. For maximum memory savings, only SELECT the
       # colums you actually need.
       #
+      # If you pass a block to nest more eager loads, you may call it with one of two forms: with an argument and without:
+      #
+      # If you ommit the block argument, the "self" inside the block will be the eager loader. You can call "eager_load" and "scope" directly.
+      #
+      # If you include the block argument, the "self" inside the block is the same as the self outside the block. The argument will be the eager loader, which you can use to make additional "eager_load" or "scope" calls.
+      #
       # @param assoc [Symbol] name of association
       # @param scope [Proc] a scope to apply to the query (optional). It will be passed an
       # ActiveRecord::Relation on which you may call all the normal query hethods (select, where, etc) as well as any scopes you've defined on the model.
