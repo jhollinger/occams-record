@@ -384,7 +384,23 @@ class QueryTest < Minitest::Test
     end
     assert_equal :category, e.name
     assert_equal "Widget", e.model_name
-    assert_equal "Association 'category' is unavailable on Widget because it was not eager loaded!", e.message
+    assert_equal "Association 'category' is unavailable on Widget because it was not eager loaded! Found at root", e.message
+  end
+
+  def test_includes_load_path_in_missing_eager_loads
+    widgets = OccamsRecord.
+      query(Customer.all).
+      eager_load(:orders) {
+        eager_load(:line_items)
+      }.
+      run
+
+    e = assert_raises OccamsRecord::MissingEagerLoadError do
+      widgets[0].orders[0].line_items[0].category
+    end
+    assert_equal :category, e.name
+    assert_equal "LineItem", e.model_name
+    assert_equal "Association 'category' is unavailable on LineItem because it was not eager loaded! Found at root.orders.line_items", e.message
   end
 
   def test_raises_special_exception_for_missing_column
@@ -394,7 +410,23 @@ class QueryTest < Minitest::Test
     end
     assert_equal :name, e.name
     assert_equal "Widget", e.model_name
-    assert_equal "Column 'name' is unavailable on Widget because it was not included in the SELECT statement!", e.message
+    assert_equal "Column 'name' is unavailable on Widget because it was not included in the SELECT statement! Found at root", e.message
+  end
+
+  def test_includes_load_path_in_missing_columns
+    widgets = OccamsRecord.
+      query(Customer.all).
+      eager_load(:orders) {
+        eager_load(:line_items, select: "id, order_id")
+      }.
+      run
+
+    e = assert_raises OccamsRecord::MissingColumnError do
+      widgets[0].orders[0].line_items[0].amount
+    end
+    assert_equal :amount, e.name
+    assert_equal "LineItem", e.model_name
+    assert_equal "Column 'amount' is unavailable on LineItem because it was not included in the SELECT statement! Found at root.orders.line_items", e.message
   end
 
   def test_raises_normal_method_missing_for_unknown_method

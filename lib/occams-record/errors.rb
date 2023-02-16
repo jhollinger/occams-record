@@ -13,11 +13,19 @@ module OccamsRecord
     def initialize(record, name)
       @record, @name = record, name
       @model_name = record.class.model_name
+      @loader = record.class.eager_loader
     end
 
     # @return [String]
     def to_s
       message
+    end
+
+    private
+
+    def load_chain(loader = @loader)
+      return ['root'] if loader.nil?
+      load_chain(loader.parent_loader) << loader.name
     end
   end
 
@@ -25,7 +33,8 @@ module OccamsRecord
   class MissingColumnError < MissingDataError
     # @return [String]
     def message
-      "Column '#{name}' is unavailable on #{model_name} because it was not included in the SELECT statement!"
+      loads = load_chain.join(".")
+      "Column '#{name}' is unavailable on #{model_name} because it was not included in the SELECT statement! Found at #{loads}"
     end
   end
 
@@ -33,7 +42,8 @@ module OccamsRecord
   class MissingEagerLoadError < MissingDataError
     # @return [String]
     def message
-      "Association '#{name}' is unavailable on #{model_name} because it was not eager loaded!"
+      loads = load_chain.join(".")
+      "Association '#{name}' is unavailable on #{model_name} because it was not eager loaded! Found at #{loads}"
     end
   end
 
@@ -45,6 +55,7 @@ module OccamsRecord
     attr_reader :attrs
 
     # @param model_name [String]
+    #
     # @param attrs [Hash]
     def initialize(model_name, attrs)
       @model_name, @attrs = model_name, attrs

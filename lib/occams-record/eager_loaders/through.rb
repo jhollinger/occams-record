@@ -9,7 +9,7 @@ module OccamsRecord
       #
       # See documentation for OccamsRecord::EagerLoaders::Base.
       #
-      def initialize(ref, scope = nil, use: nil, as: nil, optimizer: :select, &builder)
+      def initialize(ref, scope = nil, use: nil, as: nil, optimizer: :select, parent_loader: nil, &builder)
         super
 
         unless @ref.macro == :has_one or @ref.macro == :has_many

@@ -14,14 +14,17 @@ module OccamsRecord
       # @return [ActiveRecord::Base]
       attr_reader :model
 
+      attr_reader :owner
+
       #
       # Initialize a new eager loading context.
       #
       # @param mode [ActiveRecord::Base] the model that contains the associations that will be referenced.
+      # @param owner [OccamsRecord::EagerLoaders::Base] the eager loader that owns this context (if any)
       # @param polymorphic [Boolean] When true, model is allowed to change, and it's assumed that not every loader is applicable to every model.
       #
-      def initialize(model = nil, polymorphic: false)
-        @model, @polymorphic = model, polymorphic
+      def initialize(model = nil, owner: nil, polymorphic: false)
+        @model, @polymorphic, @owner = model, polymorphic, owner
         @loaders = []
         @dynamic_loaders = []
       end
@@ -125,7 +128,7 @@ module OccamsRecord
 
         scope ||= ->(q) { q.select select } if select
         loader_class = !!ref.through_reflection ? EagerLoaders::Through : EagerLoaders.fetch!(ref)
-        loader_class.new(ref, scope, use: use, as: custom_name, optimizer: optimizer, &builder)
+        loader_class.new(ref, scope, use: use, as: custom_name, optimizer: optimizer, parent_loader: @owner, &builder)
       end
     end
   end

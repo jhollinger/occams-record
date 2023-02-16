@@ -101,7 +101,7 @@ module OccamsRecord
                else
                  model.connection.exec_query sql
                end
-      row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: model, modules: @use)
+      row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: model, modules: @use, eager_loader: @eager_loaders.owner)
       rows = result.rows.map { |row| row_class.new row }
       @eager_loaders.run!(rows, query_logger: @query_logger, measurements: @measurements)
       yield_measurements!

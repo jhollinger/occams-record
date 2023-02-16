@@ -146,7 +146,7 @@ OccamsRecord
     order.line_items.each { |line_item|
       puts line_item.product.name
       puts line_item.product.category.name
-      OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded!
+      OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded! Found at root.line_items.product
     }
   }
 ```

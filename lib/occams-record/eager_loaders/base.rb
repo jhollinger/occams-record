@@ -9,6 +9,9 @@ module OccamsRecord
       # @return [String] association name
       attr_reader :name
 
+      # @return [OccamsRecord::EagerLoaders::Base | nil] the eager loader this one is nested under (if any)
+      attr_reader :parent_loader
+
       #
       # @param ref [ActiveRecord::Association] the ActiveRecord association
       # @param scope [Proc] a scope to apply to the query (optional). It will be passed an
@@ -16,14 +19,16 @@ module OccamsRecord
       # @param use [Array(Module)] optional Module to include in the result class (single or array)
       # @param as [Symbol] Load the association usign a different attribute name
       # @param optimizer [Symbol] Only used for `through` associations. Options are :none (load all intermediate records) | :select (load all intermediate records but only SELECT the necessary columns)
+      # @param parent_loader [OccamsRecord::EagerLoaders::Base] the eager loader this one is nested under (if any)
       # @yield perform eager loading on *this* association (optional)
       #
-      def initialize(ref, scope = nil, use: nil, as: nil, optimizer: :select, &builder)
+      def initialize(ref, scope = nil, use: nil, as: nil, optimizer: :select, parent_loader: nil, &builder)
         @ref, @scopes, @use, @as = ref, Array(scope), use, as
         @model = ref.klass
         @name = (as || ref.name).to_s
-        @eager_loaders = EagerLoaders::Context.new(@model)
+        @eager_loaders = EagerLoaders::Context.new(@model, owner: self)
         @optimizer = optimizer
+        @parent_loader = parent_loader
         if builder
           if builder.arity > 0
             builder.call(self)
