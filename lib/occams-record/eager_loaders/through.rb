@@ -74,7 +74,7 @@ module OccamsRecord
         links = @chain[1..-2]
         tail = @chain[-1]
 
-        outer_loader = EagerLoaders.fetch!(head.ref).new(head.ref, optimized_select(head))
+        outer_loader = EagerLoaders.fetch!(head.ref).new(head.ref, optimized_select(head), parent: tracer.parent)
 
         links.
           reduce(outer_loader) { |loader, link|

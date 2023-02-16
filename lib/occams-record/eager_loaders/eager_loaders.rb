@@ -5,6 +5,7 @@ module OccamsRecord
   module EagerLoaders
     autoload :Builder, 'occams-record/eager_loaders/builder'
     autoload :Context, 'occams-record/eager_loaders/context'
+    autoload :Tracer, 'occams-record/eager_loaders/tracer'
 
     autoload :Base, 'occams-record/eager_loaders/base'
     autoload :BelongsTo, 'occams-record/eager_loaders/belongs_to'

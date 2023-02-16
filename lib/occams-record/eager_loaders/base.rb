@@ -1,8 +1,5 @@
 module OccamsRecord
   module EagerLoaders
-    # A low-memory way to trace the path of eager loads from any point back to the root query
-    Tracer = Struct.new(:name, :parent)
-
     #
     # Base class for eagoer loading an association. IMPORTANT eager loaders MUST remain stateless after initialization!
     #
@@ -29,9 +26,9 @@ module OccamsRecord
         @ref, @scopes, @use, @as = ref, Array(scope), use, as
         @model = ref.klass
         @name = (as || ref.name).to_s
-        @eager_loaders = EagerLoaders::Context.new(@model, owner: self)
-        @optimizer = optimizer
         @tracer = Tracer.new(name, parent)
+        @eager_loaders = EagerLoaders::Context.new(@model, tracer: @tracer)
+        @optimizer = optimizer
         if builder
           if builder.arity > 0
             builder.call(self)

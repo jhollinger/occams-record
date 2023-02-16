@@ -29,8 +29,8 @@ module OccamsRecord
       def initialize(name, mapping, sql, binds: {}, model: nil, use: nil, parent: nil, &builder)
         @name, @mapping = name.to_s, mapping
         @sql, @binds, @use, @model = sql, binds, use, model
-        @eager_loaders = EagerLoaders::Context.new(@model, owner: self)
         @tracer = Tracer.new(name, parent)
+        @eager_loaders = EagerLoaders::Context.new(@model, tracer: @tracer)
         if builder
           if builder.arity > 0
             builder.call(self)

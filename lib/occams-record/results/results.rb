@@ -1,8 +1,6 @@
 module OccamsRecord
   # Classes and methods for handing query results.
   module Results
-    EagerLoadTracer = Struct.new(:name, :parent)
-
     # ActiveRecord's internal type casting API changes from version to version.
     CASTER = case ActiveRecord::VERSION::MAJOR
              when 4 then :type_cast_from_database

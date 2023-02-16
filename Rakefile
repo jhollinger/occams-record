@@ -39,9 +39,9 @@ Rake::TestTask.new do |t|
       ["test/**/*_test.rb"]
     else
       args.map { |x|
-        if Dir.exists? x
+        if Dir.exist? x
           "#{x}/**/*_test.rb"
-        elsif File.exists? x
+        elsif File.exist? x
           x
         end
       }.compact

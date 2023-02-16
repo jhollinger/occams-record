@@ -92,7 +92,7 @@ module OccamsRecord
     #
     def run
       sql = block_given? ? yield(scope).to_sql : scope.to_sql
-      @query_logger << sql if @query_logger
+      @query_logger << "#{@eager_loaders.tracer}: #{sql}" if @query_logger
       result = if measure?
                  record_start_time!
                  measure!(model.table_name, sql) {
@@ -101,7 +101,7 @@ module OccamsRecord
                else
                  model.connection.exec_query sql
                end
-      row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: model, modules: @use, tracer: @eager_loaders.owner&.tracer)
+      row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: model, modules: @use, tracer: @eager_loaders.tracer)
       rows = result.rows.map { |row| row_class.new row }
       @eager_loaders.run!(rows, query_logger: @query_logger, measurements: @measurements)
       yield_measurements!

@@ -1,3 +1,8 @@
+### 1.6.1 (2023-02-16)
+* Add an 'eager load trace' to missing association/column errors. Otherwise, in a very large set of eager loads, it can be virtually impossible to tell where the missing one is.
+
+Example: `OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded! Found at root.line_items.product`
+
 ### 1.6.0 (2023-02-14)
 * Allow `eager_load` blocks to accept an argument. If passed, the block's scope remains the outer scope, allowing instance methods, etc to be called. `eager_load` and `scope` can be called on the argument.
 

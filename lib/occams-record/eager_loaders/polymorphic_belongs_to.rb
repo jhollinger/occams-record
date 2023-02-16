@@ -25,8 +25,8 @@ module OccamsRecord
         @name = (as || ref.name).to_s
         @foreign_type = @ref.foreign_type.to_sym
         @foreign_key = @ref.foreign_key.to_sym
-        @eager_loaders = EagerLoaders::Context.new(nil, owner: self, polymorphic: true)
         @tracer = Tracer.new(name, parent)
+        @eager_loaders = EagerLoaders::Context.new(nil, tracer: @tracer, polymorphic: true)
         if builder
           if builder.arity > 0
             builder.call(self)

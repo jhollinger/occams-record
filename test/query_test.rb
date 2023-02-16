@@ -70,7 +70,7 @@ class QueryTest < Minitest::Test
     assert_equal LineItem.count, results.map(&:ordered_line_items).flatten.size
     assert_includes log.map { |x|
       normalize_sql x
-    }, %q(SELECT line_items.* FROM line_items WHERE (1 != 2) AND line_items.order_id IN (683130438, 834596858) ORDER BY item_type)
+    }, %q(root.ordered_line_items: SELECT line_items.* FROM line_items WHERE (1 != 2) AND line_items.order_id IN (683130438, 834596858) ORDER BY item_type)
   end
 
   def test_eager_load_custom_select_from_proc
@@ -83,7 +83,7 @@ class QueryTest < Minitest::Test
     assert_equal LineItem.count, results.map(&:line_items).flatten.size
     assert_includes log.map { |x|
       normalize_sql x
-    } , %q(SELECT line_items.* FROM line_items WHERE (1 != 2) AND line_items.order_id IN (683130438, 834596858))
+    } , %q(root.line_items: SELECT line_items.* FROM line_items WHERE (1 != 2) AND line_items.order_id IN (683130438, 834596858))
   end
 
   def test_eager_load_custom_select_from_string
@@ -96,7 +96,7 @@ class QueryTest < Minitest::Test
     assert_equal LineItem.count, results.map(&:line_items).flatten.size
     assert_includes log.map { |x|
       normalize_sql x
-    }, %q(SELECT id, order_id FROM line_items WHERE line_items.order_id IN (683130438, 834596858))
+    }, %q(root.line_items: SELECT id, order_id FROM line_items WHERE line_items.order_id IN (683130438, 834596858))
   end
 
   def test_belongs_to
@@ -174,9 +174,9 @@ class QueryTest < Minitest::Test
       run
 
     assert_equal [
-      %q(SELECT categories.* FROM categories),
-      %q(SELECT widgets.* FROM widgets WHERE widgets.category_id IN (208889123, 922717355)),
-      %q(SELECT widget_details.* FROM widget_details WHERE widget_details.widget_id IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
+      %q(root: SELECT categories.* FROM categories),
+      %q(root.widgets: SELECT widgets.* FROM widgets WHERE widgets.category_id IN (208889123, 922717355)),
+      %q(root.widgets.detail: SELECT widget_details.* FROM widget_details WHERE widget_details.widget_id IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
     ], log.map { |x|
       normalize_sql x
     }
@@ -213,11 +213,11 @@ class QueryTest < Minitest::Test
       run
 
     assert_equal [
-      %q(SELECT orders.* FROM orders),
-      %q(SELECT customers.* FROM customers WHERE customers.id IN (846114006, 980204181)),
-      %q(SELECT line_items.* FROM line_items WHERE line_items.order_id IN (683130438, 834596858)),
-      %q(SELECT widgets.* FROM widgets WHERE widgets.id IN (112844655, 417155790, 683130438)),
-      %q(SELECT splines.* FROM splines WHERE splines.id IN (112844655, 683130438)),
+      %q(root: SELECT orders.* FROM orders),
+      %q(root.customer: SELECT customers.* FROM customers WHERE customers.id IN (846114006, 980204181)),
+      %q(root.line_items: SELECT line_items.* FROM line_items WHERE line_items.order_id IN (683130438, 834596858)),
+      %q(root.line_items.item: SELECT widgets.* FROM widgets WHERE widgets.id IN (112844655, 417155790, 683130438)),
+      %q(root.line_items.item: SELECT splines.* FROM splines WHERE splines.id IN (112844655, 683130438)),
     ], log.map { |x|
       normalize_sql x
     }
@@ -354,7 +354,7 @@ class QueryTest < Minitest::Test
     assert_equal "bob", bob.username
     assert_includes log.map { |x|
       normalize_sql x
-    }, %q|SELECT users.* FROM users WHERE users.username = 'bob' LIMIT 1|
+    }, %q|root: SELECT users.* FROM users WHERE users.username = 'bob' LIMIT 1|
   end
 
   def test_loading_just_first_raises_exception
@@ -365,7 +365,7 @@ class QueryTest < Minitest::Test
     end
     assert_includes log.map { |x|
       normalize_sql x
-    }, %q|SELECT users.* FROM users WHERE users.username = 'nobody' LIMIT 1|
+    }, %q|root: SELECT users.* FROM users WHERE users.username = 'nobody' LIMIT 1|
   end
 
   def test_boolean_aliases

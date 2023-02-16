@@ -118,7 +118,7 @@ class BatchTest < Minitest::Test
       to_a
     assert_includes log.map { |x|
       normalize_sql x
-    }, %(SELECT widgets.* FROM widgets ORDER BY widgets.id ASC LIMIT 1000 OFFSET 0)
+    }, %(root: SELECT widgets.* FROM widgets ORDER BY widgets.id ASC LIMIT 1000 OFFSET 0)
   end
 
   def test_batches_orders_by_custom_and_pkey
@@ -129,7 +129,7 @@ class BatchTest < Minitest::Test
       to_a
     assert_includes log.map { |x|
       normalize_sql x
-    }, %(SELECT widgets.* FROM widgets ORDER BY widgets.name ASC, widgets.id ASC LIMIT 1000 OFFSET 0)
+    }, %(root: SELECT widgets.* FROM widgets ORDER BY widgets.name ASC, widgets.id ASC LIMIT 1000 OFFSET 0)
   end
 
   def test_batches_orders_by_sym_pkey
@@ -140,7 +140,7 @@ class BatchTest < Minitest::Test
       to_a
     assert_includes log.map { |x|
       normalize_sql x
-    }, %(SELECT widgets.*, 1 AS one FROM widgets ORDER BY widgets.id ASC LIMIT 1000 OFFSET 0)
+    }, %(root: SELECT widgets.*, 1 AS one FROM widgets ORDER BY widgets.id ASC LIMIT 1000 OFFSET 0)
   end
 
   def test_batches_orders_by_str_pkey
@@ -151,7 +151,7 @@ class BatchTest < Minitest::Test
       to_a
     assert_includes log.map { |x|
       normalize_sql x
-    }, %(SELECT widgets.id FROM widgets ORDER BY widgets.id ASC LIMIT 1000 OFFSET 0)
+    }, %(root: SELECT widgets.id FROM widgets ORDER BY widgets.id ASC LIMIT 1000 OFFSET 0)
   end
 
   def test_batches_orders_by_str_col
@@ -162,7 +162,7 @@ class BatchTest < Minitest::Test
       to_a
     assert_includes log.map { |x|
       normalize_sql x
-    }, %(SELECT widgets.id FROM widgets ORDER BY name LIMIT 1000 OFFSET 0)
+    }, %(root: SELECT widgets.id FROM widgets ORDER BY name LIMIT 1000 OFFSET 0)
   end
 
   def test_batches_orders_without_append_order_by
@@ -173,6 +173,6 @@ class BatchTest < Minitest::Test
       to_a
     assert_includes log.map { |x|
       normalize_sql x
-    }, %(SELECT widgets.id FROM widgets LIMIT 1000 OFFSET 0)
+    }, %(root: SELECT widgets.id FROM widgets LIMIT 1000 OFFSET 0)
   end
 end

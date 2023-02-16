@@ -20,20 +20,13 @@ module OccamsRecord
     def to_s
       message
     end
-
-    private
-
-    def load_chain(trace = @load_trace)
-      return ['root'] if trace.nil?
-      load_chain(trace.parent) << trace.name
-    end
   end
 
   # Exception when an unselected column is called on a result row
   class MissingColumnError < MissingDataError
     # @return [String]
     def message
-      loads = load_chain.join(".")
+      loads = @load_trace.to_s
       "Column '#{name}' is unavailable on #{model_name} because it was not included in the SELECT statement! Found at #{loads}"
     end
   end
@@ -42,7 +35,7 @@ module OccamsRecord
   class MissingEagerLoadError < MissingDataError
     # @return [String]
     def message
-      loads = load_chain.join(".")
+      loads = @load_trace.to_s
       "Association '#{name}' is unavailable on #{model_name} because it was not eager loaded! Found at #{loads}"
     end
   end
