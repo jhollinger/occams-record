@@ -128,7 +128,7 @@ module OccamsRecord
 
         scope ||= ->(q) { q.select select } if select
         loader_class = !!ref.through_reflection ? EagerLoaders::Through : EagerLoaders.fetch!(ref)
-        loader_class.new(ref, scope, use: use, as: custom_name, optimizer: optimizer, parent_loader: @owner, &builder)
+        loader_class.new(ref, scope, use: use, as: custom_name, optimizer: optimizer, parent: @owner&.tracer, &builder)
       end
     end
   end

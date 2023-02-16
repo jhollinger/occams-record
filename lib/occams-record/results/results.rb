@@ -1,6 +1,8 @@
 module OccamsRecord
   # Classes and methods for handing query results.
   module Results
+    EagerLoadTracer = Struct.new(:name, :parent)
+
     # ActiveRecord's internal type casting API changes from version to version.
     CASTER = case ActiveRecord::VERSION::MAJOR
              when 4 then :type_cast_from_database
@@ -20,7 +22,7 @@ module OccamsRecord
     # @param [OccamsRecord::EagerLoaders::Base] the eager loaded that loaded this class of records
     # @return [OccamsRecord::Results::Row] a class customized for this result set
     #
-    def self.klass(column_names, column_types, association_names = [], model: nil, modules: nil, eager_loader: nil)
+    def self.klass(column_names, column_types, association_names = [], model: nil, modules: nil, tracer: nil)
       Class.new(Results::Row) do
         Array(modules).each { |mod| prepend mod } if modules
 
@@ -29,7 +31,7 @@ module OccamsRecord
         self._model = model
         self.model_name = model ? model.name : nil
         self.table_name = model ? model.table_name : nil
-        self.eager_loader = eager_loader
+        self.eager_loader_trace = tracer
         self.primary_key = if model&.primary_key and (pkey = model.primary_key.to_s) and columns.include?(pkey)
                              pkey
                            end

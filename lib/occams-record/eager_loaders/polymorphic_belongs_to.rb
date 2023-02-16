@@ -7,8 +7,8 @@ module OccamsRecord
       # @return [String] association name
       attr_reader :name
 
-      # @return [OccamsRecord::EagerLoaders::Base | nil] the eager loader this one is nested under (if any)
-      attr_reader :parent_loader
+      # @return [OccamsRecord::EagerLoaders::Tracer | nil] a reference to this eager loader and its parent (if any)
+      attr_reader :tracer
 
       #
       # @param ref [ActiveRecord::Association] the ActiveRecord association
@@ -17,16 +17,16 @@ module OccamsRecord
       # @param use [Array<Module>] optional Module to include in the result class (single or array)
       # @param as [Symbol] Load the association usign a different attribute name
       # @param optimizer [Symbol] Only used for `through` associations. A no op here.
-      # @param parent_loader [OccamsRecord::EagerLoaders::Base] the eager loader this one is nested under (if any)
+      # @param parent [OccamsRecord::EagerLoaders::Tracer] the eager loader this one is nested under (if any)
       # @yield perform eager loading on *this* association (optional)
       #
-      def initialize(ref, scope = nil, use: nil, as: nil, optimizer: nil, parent_loader: nil, &builder)
+      def initialize(ref, scope = nil, use: nil, as: nil, optimizer: nil, parent: nil, &builder)
         @ref, @scopes, @use = ref, Array(scope), use
         @name = (as || ref.name).to_s
         @foreign_type = @ref.foreign_type.to_sym
         @foreign_key = @ref.foreign_key.to_sym
         @eager_loaders = EagerLoaders::Context.new(nil, owner: self, polymorphic: true)
-        @parent_loader = parent_loader
+        @tracer = Tracer.new(name, parent)
         if builder
           if builder.arity > 0
             builder.call(self)

@@ -13,7 +13,7 @@ module OccamsRecord
     def initialize(record, name)
       @record, @name = record, name
       @model_name = record.class.model_name
-      @loader = record.class.eager_loader
+      @load_trace = record.class.eager_loader_trace
     end
 
     # @return [String]
@@ -23,9 +23,9 @@ module OccamsRecord
 
     private
 
-    def load_chain(loader = @loader)
-      return ['root'] if loader.nil?
-      load_chain(loader.parent_loader) << loader.name
+    def load_chain(trace = @load_trace)
+      return ['root'] if trace.nil?
+      load_chain(trace.parent) << trace.name
     end
   end
 

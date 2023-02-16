@@ -117,7 +117,7 @@ module OccamsRecord
                else
                  conn.exec_query _escaped_sql
                end
-      row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: @eager_loaders.model, modules: @use)
+      row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: @eager_loaders.model, modules: @use, tracer: @eager_loaders.owner&.tracer)
       rows = result.rows.map { |row| row_class.new row }
       @eager_loaders.run!(rows, query_logger: @query_logger, measurements: @measurements)
       yield_measurements!

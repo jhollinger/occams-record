@@ -11,8 +11,8 @@ module OccamsRecord
       # @return [String] association name
       attr_reader :name
 
-      # @return [OccamsRecord::EagerLoaders::Base | nil] the eager loader this one is nested under (if any)
-      attr_reader :parent_loader
+      # @return [OccamsRecord::EagerLoaders::Tracer | nil] a reference to this eager loader and its parent (if any)
+      attr_reader :tracer
 
       #
       # Initialize a new add hoc association.
@@ -23,14 +23,14 @@ module OccamsRecord
       # @param binds [Hash] any additional binds for your query.
       # @param model [ActiveRecord::Base] optional - ActiveRecord model that represents what you're loading. required when using Sqlite.
       # @param use [Array<Module>] optional - Ruby modules to include in the result objects (single or array)
-      # @param parent_loader [OccamsRecord::EagerLoaders::Base] the eager loader this one is nested under (if any)
+      # @param parent [OccamsRecord::EagerLoaders::Tracer] the eager loader this one is nested under (if any)
       # @yield eager load associations nested under this one
       #
-      def initialize(name, mapping, sql, binds: {}, model: nil, use: nil, parent_loader: nil, &builder)
+      def initialize(name, mapping, sql, binds: {}, model: nil, use: nil, parent: nil, &builder)
         @name, @mapping = name.to_s, mapping
         @sql, @binds, @use, @model = sql, binds, use, model
         @eager_loaders = EagerLoaders::Context.new(@model, owner: self)
-        @parent_loader = parent_loader
+        @tracer = Tracer.new(name, parent)
         if builder
           if builder.arity > 0
             builder.call(self)

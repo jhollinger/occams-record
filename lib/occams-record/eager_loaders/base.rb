@@ -1,5 +1,8 @@
 module OccamsRecord
   module EagerLoaders
+    # A low-memory way to trace the path of eager loads from any point back to the root query
+    Tracer = Struct.new(:name, :parent)
+
     #
     # Base class for eagoer loading an association. IMPORTANT eager loaders MUST remain stateless after initialization!
     #
@@ -9,8 +12,8 @@ module OccamsRecord
       # @return [String] association name
       attr_reader :name
 
-      # @return [OccamsRecord::EagerLoaders::Base | nil] the eager loader this one is nested under (if any)
-      attr_reader :parent_loader
+      # @return [OccamsRecord::EagerLoaders::Tracer | nil] a reference to this eager loader and its parent (if any)
+      attr_reader :tracer
 
       #
       # @param ref [ActiveRecord::Association] the ActiveRecord association
@@ -19,16 +22,16 @@ module OccamsRecord
       # @param use [Array(Module)] optional Module to include in the result class (single or array)
       # @param as [Symbol] Load the association usign a different attribute name
       # @param optimizer [Symbol] Only used for `through` associations. Options are :none (load all intermediate records) | :select (load all intermediate records but only SELECT the necessary columns)
-      # @param parent_loader [OccamsRecord::EagerLoaders::Base] the eager loader this one is nested under (if any)
+      # @param parent [OccamsRecord::EagerLoaders::Tracer] the eager loader this one is nested under (if any)
       # @yield perform eager loading on *this* association (optional)
       #
-      def initialize(ref, scope = nil, use: nil, as: nil, optimizer: :select, parent_loader: nil, &builder)
+      def initialize(ref, scope = nil, use: nil, as: nil, optimizer: :select, parent: nil, &builder)
         @ref, @scopes, @use, @as = ref, Array(scope), use, as
         @model = ref.klass
         @name = (as || ref.name).to_s
         @eager_loaders = EagerLoaders::Context.new(@model, owner: self)
         @optimizer = optimizer
-        @parent_loader = parent_loader
+        @tracer = Tracer.new(name, parent)
         if builder
           if builder.arity > 0
             builder.call(self)

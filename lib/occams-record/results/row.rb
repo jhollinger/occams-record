@@ -19,7 +19,8 @@ module OccamsRecord
         attr_accessor :table_name
         # Name of primary key column (nil if column wasn't in the SELECT)
         attr_accessor :primary_key
-        attr_accessor :eager_loader
+        # A trace of how this record was loaded (for debugging)
+        attr_accessor :eager_loader_trace
       end
       self.columns = []
       self.associations = []
