@@ -1,4 +1,8 @@
-### 1.6.1 (2023-02-16)
+### 1.6.2 (2023-02-17)
+* Bugfix for eager loading inside a 'through' association
+* Improve traces for 'through' associations
+
+### 1.6.1 (2023-02-17)
 * Add an 'eager load trace' to missing association/column errors. Otherwise, in a very large set of eager loads, it can be virtually impossible to tell where the missing one is.
 
 Example: `OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded! Found at root.line_items.product`
