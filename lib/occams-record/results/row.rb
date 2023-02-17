@@ -21,6 +21,8 @@ module OccamsRecord
         attr_accessor :primary_key
         # A trace of how this record was loaded (for debugging)
         attr_accessor :eager_loader_trace
+        # If present, missing methods will be forwarded to the ActiveRecord model. :lazy allows lazy loading in AR, :strict doesn't
+        attr_accessor :active_record_fallback
       end
       self.columns = []
       self.associations = []
@@ -113,17 +115,21 @@ module OccamsRecord
       def method_missing(name, *args, &block)
         model = self.class._model
         ex = NoMethodError.new("Undefined method `#{name}' for #{self.inspect}. Occams Record trace: #{self.class.eager_loader_trace}", name, args)
-        raise ex if args.any? or !block.nil? or model.nil?
+        raise ex if model.nil?
 
         name_str = name.to_s
         assoc = name_str.sub(IDS_SUFFIX, "").pluralize
-        if name_str =~ IDS_SUFFIX and can_define_ids_reader? assoc
+        no_args = args.empty? && block.nil?
+
+        if no_args and name_str =~ IDS_SUFFIX and can_define_ids_reader? assoc
           define_ids_reader! assoc
           send name
-        elsif model.reflections.has_key? name_str
+        elsif no_args and model.reflections.has_key? name_str
           raise MissingEagerLoadError.new(self, name)
-        elsif model.columns_hash.has_key? name_str
+        elsif no_args and model.columns_hash.has_key? name_str
           raise MissingColumnError.new(self, name)
+        elsif self.class.active_record_fallback
+          active_record_fallback(name, *args, &block)
         else
           raise ex
         end
@@ -143,6 +149,15 @@ module OccamsRecord
       end
 
       private
+
+      def active_record_fallback(name, *args, &block)
+        @active_record_fallback ||= Ugly::active_record(self.class._model, self).tap { |record|
+          record.strict_loading! if self.class.active_record_fallback == :strict
+        }
+        @active_record_fallback.send(name, *args, &block)
+      rescue NoMethodError => e
+        raise NoMethodError.new("#{e.message}. Occams Record trace: #{self.class.eager_loader_trace}.active_record_fallback(#{self.class._model.name})", name, args)
+      end
 
       def can_define_ids_reader?(assoc)
         model = self.class._model

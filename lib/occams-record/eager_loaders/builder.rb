@@ -24,11 +24,12 @@ module OccamsRecord
       # @param as [Symbol] Load the association usign a different attribute name
       # @param from [Symbol] Opposite of `as`. `assoc` is the custom name and `from` is the name of association on the ActiveRecord model.
       # @param optimizer [Symbol] Only used for `through` associations. Options are :none (load all intermediate records) | :select (load all intermediate records but only SELECT the necessary columns)
+      # @param active_record_fallback [Symbol] If passed, missing methods will be forwarded to an ActiveRecord instance. Options are :lazy (allow lazy loading in the AR record) or :strict (require strict loading)
       # @yield a block where you may perform eager loading on *this* association (optional)
       # @return self
       #
-      def eager_load(assoc, scope = nil, select: nil, use: nil, as: nil, from: nil, optimizer: :select, &builder)
-        @eager_loaders.add(assoc, scope, select: select, use: use, as: as, from: from, optimizer: optimizer, &builder)
+      def eager_load(assoc, scope = nil, select: nil, use: nil, as: nil, from: nil, optimizer: :select, active_record_fallback: nil, &builder)
+        @eager_loaders.add(assoc, scope, select: select, use: use, as: as, from: from, optimizer: optimizer, active_record_fallback: active_record_fallback, &builder)
         self
       end
 
@@ -45,11 +46,12 @@ module OccamsRecord
       # @param as [Symbol] Load the association usign a different attribute name
       # @param from [Symbol] Opposite of `as`. `assoc` is the custom name and `from` is the name of association on the ActiveRecord model.
       # @param optimizer [Symbol] Only used for `through` associations. Options are :none (load all intermediate records) | :select (load all intermediate records but only SELECT the necessary columns)
+      # @param active_record_fallback [Symbol] If passed, the record(s) will be converted to read-only ActiveRecord objects. Options are :lazy (allow lazy loading) or :strict (enables strict loading)
       # @return [OccamsRecord::EagerLoaders::Base]
       #
-      def nest(assoc, scope = nil, select: nil, use: nil, as: nil, from: nil, optimizer: :select)
+      def nest(assoc, scope = nil, select: nil, use: nil, as: nil, from: nil, optimizer: :select, active_record_fallback: nil)
         raise ArgumentError, "OccamsRecord::EagerLoaders::Builder#nest does not accept a block!" if block_given?
-        @eager_loaders.add(assoc, scope, select: select, use: use, as: as, from: from, optimizer: optimizer) ||
+        @eager_loaders.add(assoc, scope, select: select, use: use, as: as, from: from, optimizer: optimizer, active_record_fallback: active_record_fallback) ||
           raise("OccamsRecord::EagerLoaders::Builder#nest may not be called under a polymorphic association")
       end
 

@@ -21,15 +21,17 @@ module OccamsRecord
       # @param as [Symbol] Load the association usign a different attribute name
       # @param optimizer [Symbol] Only used for `through` associations. A no op here.
       # @param parent [OccamsRecord::EagerLoaders::Tracer] the eager loader this one is nested under (if any)
+      # @param active_record_fallback [Symbol] If passed, missing methods will be forwarded to an ActiveRecord instance. Options are :lazy (allow lazy loading in the AR record) or :strict (require strict loading)
       # @yield perform eager loading on *this* association (optional)
       #
-      def initialize(ref, scope = nil, use: nil, as: nil, optimizer: nil, parent: nil, &builder)
+      def initialize(ref, scope = nil, use: nil, as: nil, optimizer: nil, parent: nil, active_record_fallback: nil, &builder)
         @ref, @scopes, @use = ref, Array(scope), use
         @name = (as || ref.name).to_s
         @foreign_type = @ref.foreign_type.to_sym
         @foreign_key = @ref.foreign_key.to_sym
         @tracer = Tracer.new(name, parent)
         @eager_loaders = EagerLoaders::Context.new(nil, tracer: @tracer, polymorphic: true)
+        @active_record_fallback = active_record_fallback
         if builder
           if builder.arity > 0
             builder.call(self)
@@ -63,7 +65,7 @@ module OccamsRecord
         query(rows) { |scope|
           eager_loaders = @eager_loaders.dup
           eager_loaders.model = scope.klass
-          assoc_rows = Query.new(scope, use: @use, eager_loaders: eager_loaders, query_logger: query_logger, measurements: measurements).run
+          assoc_rows = Query.new(scope, use: @use, eager_loaders: eager_loaders, query_logger: query_logger, measurements: measurements, active_record_fallback: @active_record_fallback).run
           merge! assoc_rows, rows
         }
         nil

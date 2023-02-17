@@ -303,7 +303,11 @@ The SQL string and binds should be familiar. `%{ids}` will be provided for you -
 
 ## Injecting instance methods
 
-Occams Records results are just plain rows; there are no methods from your Rails models. (Separating your persistence layer from your domain is good thing!) But sometimes you need a few methods. Occams Record allows you to specify modules to be included in your results.
+Occams Records results are just plain rows; there are no methods from your Rails models. (Separating your persistence layer from your domain is good thing!) But sometimes you need a few methods. Occams Record provides two ways of accomplishing this.
+
+### Include custom modules
+
+You may also specify one or more modules to be included in your results:
 
 ```ruby
 module MyOrderMethods
@@ -322,6 +326,23 @@ orders = OccamsRecord
   .query(Order.all, use: MyOrderMethods)
   .eager_load(:line_items) {
     eager_load(:product, use: [MyProductMethods, OtherMethods])
+  }
+  .run
+```
+
+### ActiveRecord method fallback
+
+This is an ugly hack of last resort if you can't easily extract a method from your model into a shared module. Plugins, like `carrierwave`, are a good example. When you call a method that doesn't exist on an Occams Record result, it will initialize an ActiveRecord object and forward the method call to it.
+
+The `active_record_fallback` option must be passed either `:lazy` or `:strict` (recommended). `:strict` enables ActiveRecord's strict loading option, helping you avoid N+1 queries. :lazy allows them. Note that `:strict` is only available for ActiveRecord 6.1 and later.
+
+The following will forward any nonexistent methods for `Order` and `Product` records:
+
+```ruby
+orders = OccamsRecord
+  .query(Order.all, active_record_fallback: :strict)
+  .eager_load(:line_items) {
+    eager_load(:product, active_record_fallback: :strict)
   }
   .run
 ```

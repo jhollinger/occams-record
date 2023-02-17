@@ -139,6 +139,13 @@ class Widget < ActiveRecord::Base
   belongs_to :category
   has_one :detail, class_name: 'WidgetDetail'
   has_many :line_items, as: :item
+
+  def detail_with_category(arg = nil, &block)
+    vals = [category.name, detail.text]
+    vals << arg if arg
+    vals << block.call if block
+    vals.join(" - ")
+  end
 end
 
 class WidgetDetail < ActiveRecord::Base

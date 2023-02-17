@@ -18,10 +18,11 @@ module OccamsRecord
   # @param scope [ActiveRecord::Relation]
   # @param use [Module] optional Module to include in the result class
   # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
+  # @param active_record_fallback [Symbol] If passed, missing methods will be forwarded to an ActiveRecord instance. Options are :lazy (allow lazy loading in the AR record) or :strict (require strict loading)
   # @return [OccamsRecord::Query]
   #
-  def self.query(scope, use: nil, query_logger: nil)
-    Query.new(scope, use: use, query_logger: query_logger)
+  def self.query(scope, use: nil, active_record_fallback: nil, query_logger: nil)
+    Query.new(scope, use: use, query_logger: query_logger, active_record_fallback: active_record_fallback)
   end
 
   #
@@ -47,13 +48,15 @@ module OccamsRecord
     # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
     # @param eager_loaders [OccamsRecord::EagerLoaders::Context]
     # @param measurements [Array]
+    # @param active_record_fallback [Symbol] If passed, missing methods will be forwarded to an ActiveRecord instance. Options are :lazy (allow lazy loading in the AR record) or :strict (require strict loading)
     #
-    def initialize(scope, use: nil, eager_loaders: nil, query_logger: nil, measurements: nil)
+    def initialize(scope, use: nil, eager_loaders: nil, query_logger: nil, measurements: nil, active_record_fallback: nil)
       @model = scope.klass
       @scope = scope
       @eager_loaders = eager_loaders || EagerLoaders::Context.new(@model)
       @use = use
       @query_logger, @measurements = query_logger, measurements
+      @active_record_fallback = active_record_fallback
     end
 
     #
@@ -101,7 +104,7 @@ module OccamsRecord
                else
                  model.connection.exec_query sql
                end
-      row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: model, modules: @use, tracer: @eager_loaders.tracer)
+      row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: model, modules: @use, tracer: @eager_loaders.tracer, active_record_fallback: @active_record_fallback)
       rows = result.rows.map { |row| row_class.new row }
       @eager_loaders.run!(rows, query_logger: @query_logger, measurements: @measurements)
       yield_measurements!
