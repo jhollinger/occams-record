@@ -64,7 +64,7 @@ class EagerLoadThroughTest < Minitest::Test
       %(root: SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
       %(root.through(orders): SELECT #{quote_table "orders"}.* FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
       %(root.through(orders).through(line_items): SELECT #{quote_table "line_items"}.* FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
-      %(root.through(orders).through(line_items).category: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
+      %(root.through(orders).through(line_items).categories: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -138,7 +138,7 @@ class EagerLoadThroughTest < Minitest::Test
       %(root: SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
       %(root.through(orders): SELECT id, customer_id FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
       %(root.through(orders).through(line_items): SELECT id, order_id, category_id FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
-      %(root.through(orders).through(line_items).category: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
+      %(root.through(orders).through(line_items).categories: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
