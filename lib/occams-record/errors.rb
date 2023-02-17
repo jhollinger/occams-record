@@ -27,7 +27,7 @@ module OccamsRecord
     # @return [String]
     def message
       loads = @load_trace.to_s
-      "Column '#{name}' is unavailable on #{model_name} because it was not included in the SELECT statement! Found at #{loads}"
+      "Column '#{name}' is unavailable on #{model_name} because it was not included in the SELECT statement! Occams Record trace: #{loads}"
     end
   end
 
@@ -36,7 +36,7 @@ module OccamsRecord
     # @return [String]
     def message
       loads = @load_trace.to_s
-      "Association '#{name}' is unavailable on #{model_name} because it was not eager loaded! Found at #{loads}"
+      "Association '#{name}' is unavailable on #{model_name} because it was not eager loaded! Occams Record trace: #{loads}"
     end
   end
 

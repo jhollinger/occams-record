@@ -384,7 +384,7 @@ class QueryTest < Minitest::Test
     end
     assert_equal :category, e.name
     assert_equal "Widget", e.model_name
-    assert_equal "Association 'category' is unavailable on Widget because it was not eager loaded! Found at root", e.message
+    assert_equal "Association 'category' is unavailable on Widget because it was not eager loaded! Occams Record trace: root", e.message
   end
 
   def test_includes_load_path_in_missing_eager_loads
@@ -400,7 +400,7 @@ class QueryTest < Minitest::Test
     end
     assert_equal :category, e.name
     assert_equal "LineItem", e.model_name
-    assert_equal "Association 'category' is unavailable on LineItem because it was not eager loaded! Found at root.orders.line_items", e.message
+    assert_equal "Association 'category' is unavailable on LineItem because it was not eager loaded! Occams Record trace: root.orders.line_items", e.message
   end
 
   def test_raises_special_exception_for_missing_column
@@ -410,7 +410,7 @@ class QueryTest < Minitest::Test
     end
     assert_equal :name, e.name
     assert_equal "Widget", e.model_name
-    assert_equal "Column 'name' is unavailable on Widget because it was not included in the SELECT statement! Found at root", e.message
+    assert_equal "Column 'name' is unavailable on Widget because it was not included in the SELECT statement! Occams Record trace: root", e.message
   end
 
   def test_includes_load_path_in_missing_columns
@@ -426,7 +426,7 @@ class QueryTest < Minitest::Test
     end
     assert_equal :amount, e.name
     assert_equal "LineItem", e.model_name
-    assert_equal "Column 'amount' is unavailable on LineItem because it was not included in the SELECT statement! Found at root.orders.line_items", e.message
+    assert_equal "Column 'amount' is unavailable on LineItem because it was not included in the SELECT statement! Occams Record trace: root.orders.line_items", e.message
   end
 
   def test_raises_normal_method_missing_for_unknown_method
@@ -445,7 +445,7 @@ class QueryTest < Minitest::Test
       widgets[0].category.foo
     end
     assert_match(/Undefined method `foo'/, e.message)
-    assert_match(/Found at root.category/, e.message)
+    assert_match(/Occams Record trace: root.category/, e.message)
   end
 
   def test_to_s

@@ -112,7 +112,7 @@ module OccamsRecord
       IDS_SUFFIX = /_ids$/
       def method_missing(name, *args, &block)
         model = self.class._model
-        ex = NoMethodError.new("Undefined method `#{name}' for #{self.inspect}. Found at #{self.class.eager_loader_trace}", name, args)
+        ex = NoMethodError.new("Undefined method `#{name}' for #{self.inspect}. Occams Record trace: #{self.class.eager_loader_trace}", name, args)
         raise ex if args.any? or !block.nil? or model.nil?
 
         name_str = name.to_s
