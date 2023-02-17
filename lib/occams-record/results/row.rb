@@ -112,7 +112,8 @@ module OccamsRecord
       IDS_SUFFIX = /_ids$/
       def method_missing(name, *args, &block)
         model = self.class._model
-        return super if args.any? or !block.nil? or model.nil?
+        ex = NoMethodError.new("Undefined method `#{name}' for #{self.inspect}. Found at #{self.class.eager_loader_trace}", name, args)
+        raise ex if args.any? or !block.nil? or model.nil?
 
         name_str = name.to_s
         assoc = name_str.sub(IDS_SUFFIX, "").pluralize
@@ -124,7 +125,7 @@ module OccamsRecord
         elsif model.columns_hash.has_key? name_str
           raise MissingColumnError.new(self, name)
         else
-          super
+          raise ex
         end
       end
 

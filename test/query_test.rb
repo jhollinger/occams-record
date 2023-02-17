@@ -436,6 +436,18 @@ class QueryTest < Minitest::Test
     end
   end
 
+  def test_raises_method_missing_with_eager_load_trace
+    widgets = OccamsRecord.
+      query(Widget.all).
+      eager_load(:category).
+      run
+    e = assert_raises NoMethodError do
+      widgets[0].category.foo
+    end
+    assert_match(/Undefined method `foo'/, e.message)
+    assert_match(/Found at root.category/, e.message)
+  end
+
   def test_to_s
     widget1 = OccamsRecord.query(Widget.order(:name)).first
     assert_equal %q(Widget{:id=>683130438, :name=>"Widget A", :category_id=>208889123}), widget1.to_s
