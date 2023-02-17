@@ -14,6 +14,9 @@ module OccamsRecord
       # @return [OccamsRecord::EagerLoaders::Tracer | nil] a reference to this eager loader and its parent (if any)
       attr_reader :tracer
 
+      # @return [OccamsRecord::EagerLoaders::Context]
+      attr_reader :eager_loaders
+
       #
       # Initialize a new add hoc association.
       #

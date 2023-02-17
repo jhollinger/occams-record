@@ -190,4 +190,19 @@ class EagerLoadThroughTest < Minitest::Test
     widget = widget_details.widget
     assert widget.respond_to?(:name)
   end
+
+  def test_can_eager_load_inside_a_through
+    log = []
+    customers = OccamsRecord.
+      query(Customer.order(:name), query_logger: log).
+      eager_load(:categories, optimizer: :select) {
+        eager_load(:splines)
+      }.
+      run
+
+    splines = customers.reduce([]) { |acc, customer|
+      acc + customer.categories.map { |cat| cat.splines }.flatten
+    }
+    assert_equal ["Spline A", "Spline B", "Spline C"], splines.map(&:name).sort.uniq
+  end
 end

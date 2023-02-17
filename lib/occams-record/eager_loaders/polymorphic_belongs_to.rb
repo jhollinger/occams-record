@@ -10,6 +10,9 @@ module OccamsRecord
       # @return [OccamsRecord::EagerLoaders::Tracer | nil] a reference to this eager loader and its parent (if any)
       attr_reader :tracer
 
+      # @return [OccamsRecord::EagerLoaders::Context]
+      attr_reader :eager_loaders
+
       #
       # @param ref [ActiveRecord::Association] the ActiveRecord association
       # @param scope [Proc] a scope to apply to the query (optional). It will be passed an

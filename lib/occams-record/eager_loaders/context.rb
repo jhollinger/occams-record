@@ -116,6 +116,11 @@ module OccamsRecord
         nil
       end
 
+      def each
+        return @loaders.each unless block_given?
+        @loaders.each { |l| yield l }
+      end
+
       private
 
       def build_loader!(assoc, custom_name, scope, select, use, optimizer, builder)

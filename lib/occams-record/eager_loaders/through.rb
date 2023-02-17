@@ -85,6 +85,7 @@ module OccamsRecord
           }.
           nest(tail.ref.source_reflection.name, @scope, use: @use, as: @as)
 
+        @eager_loaders.each { |loader| inner_loader.eager_loaders << loader }
         inner_loader.tracer.name = tracer.name
         outer_loader
       end
