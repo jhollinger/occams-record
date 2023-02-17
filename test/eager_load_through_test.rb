@@ -15,8 +15,8 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(root: SELECT #{quote_table "widget_details"}.* FROM #{quote_table "widget_details"} ORDER BY #{quote_table "widget_details"}.#{quote_col "text"} ASC),
-      %(root.widget: SELECT #{quote_table "widgets"}.* FROM #{quote_table "widgets"} WHERE #{quote_table "widgets"}.#{quote_col "id"} IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
-      %(root.widget.category: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
+      %(root.through(widget): SELECT #{quote_table "widgets"}.* FROM #{quote_table "widgets"} WHERE #{quote_table "widgets"}.#{quote_col "id"} IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
+      %(root.through(widget).category: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -41,8 +41,8 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(root: SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
-      %(root.orders: SELECT #{quote_table "orders"}.* FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
-      %(root.orders.line_items: SELECT #{quote_table "line_items"}.* FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
+      %(root.through(orders): SELECT #{quote_table "orders"}.* FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
+      %(root.through(orders).line_items: SELECT #{quote_table "line_items"}.* FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -62,9 +62,9 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(root: SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
-      %(root.orders: SELECT #{quote_table "orders"}.* FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
-      %(root.orders.line_items: SELECT #{quote_table "line_items"}.* FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
-      %(root.orders.line_items.category: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
+      %(root.through(orders): SELECT #{quote_table "orders"}.* FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
+      %(root.through(orders).through(line_items): SELECT #{quote_table "line_items"}.* FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
+      %(root.through(orders).through(line_items).category: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -89,8 +89,8 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(root: SELECT #{quote_table "widget_details"}.* FROM #{quote_table "widget_details"} ORDER BY #{quote_table "widget_details"}.#{quote_col "text"} ASC),
-      %(root.widget: SELECT id, category_id FROM #{quote_table "widgets"} WHERE #{quote_table "widgets"}.#{quote_col "id"} IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
-      %(root.widget.category: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
+      %(root.through(widget): SELECT id, category_id FROM #{quote_table "widgets"} WHERE #{quote_table "widgets"}.#{quote_col "id"} IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
+      %(root.through(widget).category: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -115,8 +115,8 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(root: SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
-      %(root.orders: SELECT id, customer_id FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
-      %(root.orders.line_items: SELECT #{quote_table "line_items"}.* FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
+      %(root.through(orders): SELECT id, customer_id FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
+      %(root.through(orders).line_items: SELECT #{quote_table "line_items"}.* FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [
@@ -136,9 +136,9 @@ class EagerLoadThroughTest < Minitest::Test
 
     assert_equal [
       %(root: SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
-      %(root.orders: SELECT id, customer_id FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
-      %(root.orders.line_items: SELECT id, order_id, category_id FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
-      %(root.orders.line_items.category: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
+      %(root.through(orders): SELECT id, customer_id FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
+      %(root.through(orders).through(line_items): SELECT id, order_id, category_id FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
+      %(root.through(orders).through(line_items).category: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
     ], log.map { |x| x.gsub(/\s+/, " ") }
 
     assert_equal [

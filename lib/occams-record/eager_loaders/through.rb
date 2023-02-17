@@ -75,10 +75,13 @@ module OccamsRecord
         tail = @chain[-1]
 
         outer_loader = EagerLoaders.fetch!(head.ref).new(head.ref, optimized_select(head), parent: tracer.parent)
+        outer_loader.tracer.through = true
 
         links.
           reduce(outer_loader) { |loader, link|
-            loader.nest(link.ref.source_reflection.name, optimized_select(link))
+            nested_loader = loader.nest(link.ref.source_reflection.name, optimized_select(link))
+            nested_loader.tracer.through = true
+            nested_loader
           }.
           nest(tail.ref.source_reflection.name, @scope, use: @use, as: @as)
 
