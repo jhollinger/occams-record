@@ -2,6 +2,8 @@
 
 > Do not multiply entities beyond necessity. -- Occam's Razor
 
+Full documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record).
+
 OccamsRecord is a high-efficiency, advanced query library for use alongside ActiveRecord. It is **not** an ORM or an ActiveRecord replacement. OccamsRecord can breathe fresh life into your ActiveRecord app by giving it two things:
 
 ### 1) Huge performance gains
