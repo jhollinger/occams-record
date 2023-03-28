@@ -5,6 +5,7 @@ require 'occams-record/measureable'
 require 'occams-record/eager_loaders/eager_loaders'
 require 'occams-record/results/results'
 require 'occams-record/results/row'
+require 'occams-record/pluck'
 require 'occams-record/cursor'
 require 'occams-record/errors'
 

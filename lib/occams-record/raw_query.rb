@@ -62,6 +62,7 @@ module OccamsRecord
     attr_reader :binds
 
     include OccamsRecord::Batches::CursorHelpers
+    include OccamsRecord::Pluck
     include EagerLoaders::Builder
     include Enumerable
     include Measureable
@@ -207,6 +208,28 @@ module OccamsRecord
         name: name, scroll: scroll, hold: hold,
         use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders,
       )
+    end
+
+    #
+    # Returns the specified column(s) as an array of values.
+    #
+    # If more than one column is given, the result will be an array of arrays.
+    #
+    # @param cols [Array] one or more column names as Symbols or Strings. Also accepts SQL functions, e.g. "LENGTH(name)".
+    # @return [Array]
+    #
+    def pluck(*cols)
+      _escaped_sql = escaped_sql
+      @query_logger << _escaped_sql if @query_logger
+      result = if measure?
+                 record_start_time!
+                 measure!(table_name, _escaped_sql) {
+                   conn.exec_query _escaped_sql
+                 }
+               else
+                 conn.exec_query _escaped_sql
+               end
+      pluck_results result, cols
     end
 
     private
