@@ -1,3 +1,6 @@
+### 1.7.0 (2023-03-28)
+* Add `pluck` to `OccamsRecord.sql`, like ActiveRecord's
+
 ### 1.6.2 (2023-02-21)
 * Bugfix for eager loading inside a 'through' association
 * Improve traces for 'through' associations
