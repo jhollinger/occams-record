@@ -75,6 +75,17 @@ OccamsRecord
   .eager_load(:orders)
 ```
 
+**Use `pluck` with raw SQL**
+
+```ruby
+OccamsRecord
+  .sql("
+    SELECT some_col FROM users
+    INNER JOIN ...
+  ")
+  .pluck(:some_col)
+```
+
 **Eager load "ad hoc associations" using raw SQL**
 
 Relationships are complicated, and sometimes they can't be expressed in ActiveRecord models. Define your relationship on the fly!
