@@ -11,119 +11,32 @@ OccamsRecord is a high-efficiency, advanced query library for use alongside Acti
 * 3x-5x faster than ActiveRecord queries, *minimum*.
 * Uses 1/3 the memory of ActiveRecord query results.
 * Eliminates the N+1 query problem. (This often exceeds the baseline 3x-5x gain.)
-* Support for cursors (Postgres only, new in v1.4.0)
 
 ### 2) Supercharged querying & eager loading
 
-Continue using ActiveRecord's query builder, but let Occams take over running them, eager loading, and raw SQL calls. None of the examples below are possible with ActiveRecord, but OccamsRecord makes them trivial. (More complete examples are shown later, but these should whet your appetite.)
+* Customize the SQL used to eager load associations (order them, apply filters, etc)
+* Use cursors (Postgres only)
+* Use `ORDER BY` with `find_each`/`find_in_batches`
+* Use `find_each`/`find_in_batches` with raw SQL
+* Eager load associations off of raw SQL queries
+* Use `pluck` with raw SQL queries
 
-**Customize the SQL used to eager load associations**
-
-```ruby
-OccamsRecord
-  .query(User.active)
-  .eager_load(:orders) { |l|
-    l.scope { |q| q.where("created_at >= ?", date).order("created_at DESC") }
-  }
-```
-
-**Use `ORDER BY` with `find_each`/`find_in_batches`**
-
-```ruby
-OccamsRecord
-  .query(Order.order("created_at DESC"))
-  .find_each { |order|
-    ...
-  }
-```
-
-**Use cursors**
-
-```ruby
-OccamsRecord
-  .query(Order.order("created_at DESC"))
-  .find_each_with_cursor { |order|
-    ...
-  }
-```
-
-**Use `find_each`/`find_in_batches` with raw SQL**
-
-```ruby
-OccamsRecord
-  .sql("
-    SELECT * FROM orders
-    WHERE created_at >= %{date}
-    LIMIT %{batch_limit}
-    OFFSET %{batch_offset}",
-    {date: 10.years.ago}
-  )
-  .find_each { |order|
-    ...
-  }
-```
-
-**Eager load associations when you're writing raw SQL**
-
-```ruby
-OccamsRecord
-  .sql("
-    SELECT * FROM users
-    LEFT OUTER JOIN ...
-  ")
-  .model(User)
-  .eager_load(:orders)
-```
-
-**Use `pluck` with raw SQL**
-
-```ruby
-OccamsRecord
-  .sql("
-    SELECT some_col FROM users
-    INNER JOIN ...
-  ")
-  .pluck(:some_col)
-```
-
-**Eager load "ad hoc associations" using raw SQL**
-
-Relationships are complicated, and sometimes they can't be expressed in ActiveRecord models. Define your relationship on the fly!
-(Don't worry, there's a full explanation later on.)
-
-```ruby
-OccamsRecord
-  .query(User.all)
-  .eager_load_many(:orders, {:id => :user_id}, "
-    SELECT user_id, orders.*
-    FROM orders INNER JOIN ...
-    WHERE user_id IN (%{ids})
-  ")
-```
-
+### How does OccamsRecord do all this?
 [Look over the speed and memory measurements yourself!](https://github.com/jhollinger/occams-record/wiki/Measurements) OccamsRecord achieves all of this by making some **very specific trade-offs:**
 
 * OccamsRecord results are *read-only*.
 * OccamsRecord results are *purely database rows* - they don't have any instance methods from your Rails models.
-* You *must eager load* each assocation you intend to use. If you forget one, an exception will be raised.
+* You *must eager load* each assocation you intend to use. If you try to use one you didn't eager load, an exception will be raised.
 
----
+# Overview
 
-# Installation
+Full documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record). Code lives at at [github.com/jhollinger/occams-record](https://github.com/jhollinger/occams-record). Contributions welcome!
 
-Simply add it to your `Gemfile`:
+Simply add `occams-record` to your `Gemfile`:
 
 ```ruby
 gem 'occams-record'
 ```
-
----
-
-# Overview
-
-Full documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record).
-
-Code lives at at [github.com/jhollinger/occams-record](https://github.com/jhollinger/occams-record). Contributions welcome!
 
 Build your queries like normal, using ActiveRecord's excellent query builder. Then pass them off to Occams Record.
 
