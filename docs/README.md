@@ -1,5 +1,7 @@
 # Occams Record [![Build Status](https://travis-ci.org/jhollinger/occams-record.svg?branch=master)](https://travis-ci.org/jhollinger/occams-record)
 
+(test 1)
+
 > Do not multiply entities beyond necessity. -- Occam's Razor
 
 Full documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record).
