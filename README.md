@@ -1,8 +1,3 @@
----
-layout: default
-title: Occams Record
-description: The missing high-efficiency query API for ActiveRecord
----
 # Occams Record
 
 > Do not multiply entities beyond necessity. -- Occam's Razor
