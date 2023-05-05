@@ -3,7 +3,7 @@ layout: default
 title: Occams Record
 description: The missing high-efficiency query API for ActiveRecord
 ---
-# Occams Record [![Build Status](https://travis-ci.org/jhollinger/occams-record.svg?branch=master)](https://travis-ci.org/jhollinger/occams-record)
+# Occams Record
 
 > Do not multiply entities beyond necessity. -- Occam's Razor
 
