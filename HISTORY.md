@@ -1,3 +1,6 @@
+### 1.7.1 (2023-05-30)
+* Have `OccamsRecord#run` and `#pluck` short-circuit with an empty array if the SQL is blank (i.e. `ActiveRecord::QueryMethods#none` was used)
+
 ### 1.7.0 (2023-03-28)
 * Add `pluck` to `OccamsRecord.sql`, like ActiveRecord's
 
