@@ -96,6 +96,8 @@ module OccamsRecord
     #
     def run
       sql = block_given? ? yield(scope).to_sql : scope.to_sql
+      return [] if sql.blank? # return early in case ActiveRecord::QueryMethods#none was used
+
       @query_logger << "#{@eager_loaders.tracer}: #{sql}" if @query_logger
       result = if measure?
                  record_start_time!
@@ -237,6 +239,8 @@ module OccamsRecord
     #
     def pluck(*cols)
       sql = (block_given? ? yield(scope).to_sql : scope).select(*cols).to_sql
+      return [] if sql.blank? # return early in case ActiveRecord::QueryMethods#none was used
+
       @query_logger << "#{@eager_loaders.tracer}: #{sql}" if @query_logger
       result = if measure?
                  record_start_time!
