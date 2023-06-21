@@ -40,7 +40,7 @@ module OccamsRecord
       #
       # Hash-like accessor for attributes and associations.
       #
-      # @param attr [String|Symbol\
+      # @param attr [String|Symbol]
       # @return [Object]
       #
       def [](attr)
