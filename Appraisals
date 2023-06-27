@@ -32,4 +32,5 @@ appraise "ar-4.2" do
   gem "activerecord", "~> 4.2.11"
   gem "sqlite3", "~> 1.3.6"
   gem "pg", "0.21.0"
+  gem "bigdecimal", "1.3.5"
 end
