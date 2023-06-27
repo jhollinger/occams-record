@@ -6,7 +6,7 @@ class ActiveRecordFallbackTest < Minitest::Test
   def setup
     DatabaseCleaner.start
     Time.zone = "Eastern Time (US & Canada)"
-    @skip_strict_loading = defined? ActiveRecord::StrictLoadingViolationError
+    @skip_strict_loading = ! defined? ActiveRecord::StrictLoadingViolationError
   end
 
   def teardown
