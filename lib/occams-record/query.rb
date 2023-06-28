@@ -250,7 +250,7 @@ module OccamsRecord
                else
                  model.connection.exec_query sql
                end
-      pluck_results result, cols
+      pluck_results result, cols, model: @model
     end
   end
 end

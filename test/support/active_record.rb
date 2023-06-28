@@ -108,6 +108,7 @@ ActiveRecord::Base.connection.instance_eval do
     t.date :day
     t.datetime :daytime
     t.boolean :bool
+    t.integer :status
   end
 
   drop_table :exotics if table_exists? :exotics
@@ -198,6 +199,11 @@ class Icd10 < ActiveRecord::Base
 end
 
 class Common < ActiveRecord::Base
+  if ActiveRecord::VERSION::MAJOR >= 7
+    enum :status, [:pending, :active, :disabled]
+  else
+    enum status: [:pending, :active, :disabled]
+  end
 end
 
 class Exotic < ActiveRecord::Base

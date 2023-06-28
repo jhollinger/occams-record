@@ -229,7 +229,7 @@ module OccamsRecord
                else
                  conn.exec_query _escaped_sql
                end
-      pluck_results result, cols
+      pluck_results result, cols, model: @eager_loaders.model
     end
 
     private

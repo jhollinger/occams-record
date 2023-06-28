@@ -54,16 +54,41 @@ module OccamsRecord
           # * MySQL ?
           #
           type = column_types[col] || model_column_types&.[](col)
+
+          #
+          # NOTE is also some variation in when enum values are mapped in different AR versions.
+          # In >=5.0, <=7.0, ActiveRecord::Result objects contain the human-readable values. In 4.2 and
+          # pre-release versions of 7.1, they instead have the RAW values (e.g. integers) which we must map ourselves.
+          #
+          enum = model&.defined_enums&.[](col)
+          inv_enum = enum&.invert
+
           case type&.type
           when nil
-            define_method(col) { @raw_values[idx] }
+            if enum
+              define_method(col) {
+                val = @raw_values[idx]
+                enum.has_key?(val) ? val : inv_enum[val]
+              }
+            else
+              define_method(col) { @raw_values[idx] }
+            end
           when :datetime
             define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx])&.in_time_zone }
           when :boolean
             define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx]) }
             define_method("#{col}?") { !!send(col) }
           else
-            define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx]) }
+            if enum
+              define_method(col) {
+                @cast_values[idx] ||= (
+                  val = type.send(CASTER, @raw_values[idx])
+                  enum.has_key?(val) ? val : inv_enum[val]
+                )
+              }
+            else
+              define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx]) }
+            end
           end
         end
       end
