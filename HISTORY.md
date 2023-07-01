@@ -1,5 +1,5 @@
-### 1.8.0 (?)
-* Full support for enums
+### 1.8.0 (2023-07-01)
+* Full support for ActiveRecord enums (previously, support depended on which version of ActiveRecord was used)
 
 ### 1.7.1 (2023-05-30)
 * Have `OccamsRecord#run` and `#pluck` short-circuit with an empty array if the SQL is blank (i.e. `ActiveRecord::QueryMethods#none` was used)
