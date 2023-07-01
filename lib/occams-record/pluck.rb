@@ -15,40 +15,42 @@ module OccamsRecord
       enum = model&.defined_enums&.[](col)
       inv_enum = enum&.invert
       if enum
-        results.map { |r|
-          val = r[col]
+        results.map { |row|
+          val = row.values[0]
           enum.has_key?(val) ? val : inv_enum[val]
         }
       else
         # micro-optimization for when there are no enums
-        results.map { |r| r[col] }
+        results.map { |row| row.values[0] }
       end
     end
 
     # returns an array of arrays
     def pluck_results_multi(results, cols, model: nil)
       any_enums = false
-      cols_with_enums = cols.map { |col|
+      cols_with_enums = cols.each_with_index.map { |col, idx|
         enum = model&.defined_enums&.[](col)
         any_enums ||= !!enum
-        [col, enum, enum&.invert]
+        [idx, enum, enum&.invert]
       }
 
       if any_enums
         results.map { |row|
-          cols_with_enums.map { |(col, enum, inv_enum)|
+          values = row.values
+          cols_with_enums.map { |(idx, enum, inv_enum)|
             if enum
-              val = row[col]
+              val = values[idx]
               enum.has_key?(val) ? val : inv_enum[val]
             else
-              row[col]
+              values[idx]
             end
           }
         }
       else
         # micro-optimization for when there are no enums
         results.map { |row|
-          cols.map { |col| row[col] }
+          values = row.values
+          cols.each_with_index.map { |_col, idx| values[idx] }
         }
       end
     end
