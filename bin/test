@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+if [[ $# -lt 3 ]]; then
+  echo "Use: bin/test ruby-X ar-X sqlite|postgres-* [args]"
+  exit 1
+fi
+
+set -euo pipefail
+
+cd $(dirname $0)/../
+
+ruby_version=$1
+ar_version=$2
+db=$3
+shift 3
+
+if [[ $db == sqlite* ]]; then
+  db_url=""
+elif [[ $db == postgres-* ]]; then
+  db_url="postgresql://postgres@${db}:5432/postgres"
+elif [[ $db == mysql-* ]]; then
+  db_url="mysql2://root:@${db}:3306/mysql"
+else
+  echo "Unknown database '${db}'. Options are: sqlite, postgres-*, mysql-*"
+  exit 1
+fi
+
+exec bin/run ${ruby_version} bash -c '
+  BVER=$(tail -n 1 Gemfile.lock | sed "s/ //g")
+  if ! gem list bundler --exact | grep $BVER > /dev/null; then
+    gem install bundler -v $BVER
+  fi
+  bundle install && \
+    bundle exec appraisal '${ar_version}' bundle install && \
+    TEST_DATABASE_URL="'${db_url}'" bundle exec appraisal '${ar_version}' rake test '"$@"

@@ -298,32 +298,40 @@ On the other hand, Active Record makes it *very* easy to forget to eager load as
 
 # Testing
 
-```bash
-bundle install
-
-# test against SQLite
-bundle exec rake test
-
-# test against Postgres
-TEST_DATABASE_URL=postgresql://postgres@localhost:5432/occams_record bundle exec rake test
-
-# test against MySQL
-TEST_DATABASE_URL=mysql2://root:@127.0.0.1:3306/occams_record bundle exec rake test
-```
-
-**Test against all supported ActiveRecord versions**
+Tests run with `appraisal` in Docker Compose.
 
 ```bash
-bundle exec appraisal install
+# Run tests against all supported ActiveRecord versions, Ruby versions, and databases
+bin/testall
 
-# test against all supported AR versions (defaults to SQLite)
-bundle exec appraisal rake test
+# Run tests for Ruby vX only
+bin/testall ruby-3.1
 
-# test against a specific AR version
-bundle exec appraisal ar-7.0 rake test
+# Run tests for ActiveRecord vX only
+bin/testall ar-6.1
 
-# test against Postgres
-TEST_DATABASE_URL=postgresql://postgres@localhost:5432/occams_record bundle exec appraisal rake test
+# Run tests against a specific database
+bin/testall sqlite|postgres-14|mysql-8
+
+# Run exactly one set of tests
+bin/test ruby-3.1 ar-7.0 postgres-14
+
+# If all tests complete successfully, you'll be rewarded by an ASCII Nyancat!
+
++      o     +              o
+    +             o     +       +
+o          +
+    o  +           +        +
++        o     o       +        o
+-_-_-_-_-_-_-_,------,      o
+_-_-_-_-_-_-_-|   /\_/\
+-_-_-_-_-_-_-~|__( ^ .^)  +     +
+_-_-_-_-_-_-_-""  ""
+    +      o         o   +       o
+    +         +
+o        o         o      o     +
+    o           +
++      +     o        o      +
 ```
 
 # License

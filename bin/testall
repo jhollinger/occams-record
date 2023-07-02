@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+#
+# Run every combination:
+#   bin/testall
+#
+# Run just the matching combinations:
+#   bin/testall ruby-3.0
+#
+
+set -euo pipefail
+
+cd $(dirname $0)/../
+source bin/lib.sh
+
+[[ $# -gt 0 ]] && filter=$@ || filter=()
+
+function run {
+  ruby_version=$1
+  ar_version=$2
+  shift 2
+
+  for db in $@; do
+    if [[ ${#filter} -eq 0 ]] || in_array $ruby_version ${filter[@]} || in_array $ar_version ${filter[@]} || in_array $db ${filter[@]}; then
+      cmd="bin/test  $ruby_version  $ar_version  $db"
+      announce "$cmd"
+      sleep 1
+      $cmd
+    fi
+  done
+}
+
+# NOTE ruby-3.2 is currently excluded because the "appraisal" gem doesn't work with it yet
+# See https://github.com/thoughtbot/appraisal/issues/199
+
+#run ruby-3.2 ar-7.0 sqlite3 postgres-14
+#run ruby-3.2 ar-6.1 sqlite3 postgres-14
+#run ruby-3.2 ar-6.0 sqlite3 postgres-14
+
+run ruby-3.1 ar-7.0 sqlite3 postgres-14 mysql-8
+run ruby-3.1 ar-6.1 sqlite3 postgres-14 mysql-8
+run ruby-3.1 ar-6.0 sqlite3 postgres-14 mysql-8
+
+run ruby-3.0 ar-7.0 sqlite3 postgres-14 mysql-8
+run ruby-3.0 ar-6.1 sqlite3 postgres-14 mysql-8
+run ruby-3.0 ar-6.0 sqlite3 postgres-14 mysql-8
+
+run ruby-2.7 ar-7.0 sqlite3 postgres-14 mysql-8
+run ruby-2.7 ar-6.1 sqlite3 postgres-14 mysql-8
+run ruby-2.7 ar-6.0 sqlite3 postgres-14 mysql-8
+run ruby-2.7 ar-5.2 sqlite3 postgres-14 mysql-8
+run ruby-2.7 ar-5.1 sqlite3 postgres-14 mysql-8
+run ruby-2.7 ar-5.0 sqlite3 postgres-14 mysql-8
+run ruby-2.7 ar-4.2 sqlite3 postgres-14 # postgres !!!
+
+run ruby-2.6 ar-6.1 sqlite3 postgres-14
+run ruby-2.6 ar-6.0 sqlite3 postgres-14
+run ruby-2.6 ar-5.2 sqlite3 postgres-14
+run ruby-2.6 ar-5.1 sqlite3 postgres-14
+run ruby-2.6 ar-5.0 sqlite3 postgres-14
+run ruby-2.6 ar-4.2 sqlite3 postgres-14 # postgres !!!
+
+nyancat

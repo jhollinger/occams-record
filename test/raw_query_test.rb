@@ -7,6 +7,7 @@ class RawQueryTest < Minitest::Test
     DatabaseCleaner.start
     @pg = !!(ActiveRecord::Base.connection.class.name =~ /postgres/i)
     @sqlite = !!(ActiveRecord::Base.connection.class.name =~ /sqlite/i)
+    @my = !!(ActiveRecord::Base.connection.class.name =~ /mysql/i)
     @ar = ActiveRecord::VERSION::MAJOR
   end
 
@@ -138,7 +139,7 @@ class RawQueryTest < Minitest::Test
     assert_equal((
       if @pg
         true
-      elsif @ar >= 6
+      elsif (@ar >= 6) || @my
         1
       else
         "t"

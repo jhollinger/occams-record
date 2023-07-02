@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+#
+# Use: bin/run service cmd [arg1...]
+#
+
+set -euo pipefail
+
+cd $(dirname $0)/../
+
+service=$1
+shift
+
+docker compose build $service
+docker compose up --no-start $service
+docker compose run --rm $service "$@"
