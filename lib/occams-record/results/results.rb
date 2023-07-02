@@ -1,13 +1,6 @@
 module OccamsRecord
   # Classes and methods for handing query results.
   module Results
-    # ActiveRecord's internal type casting API changes from version to version.
-    CASTER = case ActiveRecord::VERSION::MAJOR
-             when 4 then :type_cast_from_database
-             when 5, 6, 7 then :deserialize
-             else raise "OccamsRecord::Results::CASTER does yet support this version of ActiveRecord"
-             end
-
     #
     # Dynamically build a class for a specific set of result rows. It inherits from OccamsRecord::Results::Row, and optionall prepends
     # user-defined modules.
@@ -43,53 +36,22 @@ module OccamsRecord
         attr_accessor(*association_names)
 
         # Build a getter for each attribute returned by the query. The values will be type converted on demand.
-        model_column_types = model ? model.attributes_builder.types : nil
+        casters = TypeCaster.generate(column_names, column_types, model: model)
         self.columns.each_with_index do |col, idx|
-          #
-          # NOTE there's lots of variation between DB adapters and AR versions here. Some notes:
-          # * Postgres AR < 6.1 `column_types` will contain entries for every column.
-          # * Postgres AR >= 6.1 `column_types` only contains entries for "exotic" types. Columns with "common" types have already been converted by the PG adapter.
-          # * SQLite `column_types` will always be empty. Some types will have already been convered by the SQLite adapter, but others will depend on
-          #   `model_column_types` for converstion. See test/raw_query_test.rb#test_common_types for examples.
-          # * MySQL ?
-          #
-          type = column_types[col] || model_column_types&.[](col)
+          caster = casters[col]
 
-          #
-          # NOTE is also some variation in when enum values are mapped in different AR versions.
-          # In >=5.0, <=7.0, ActiveRecord::Result objects contain the human-readable values. In 4.2 and
-          # pre-release versions of 7.1, they instead have the RAW values (e.g. integers) which we must map ourselves.
-          #
-          enum = model&.defined_enums&.[](col)
-          inv_enum = enum&.invert
-
-          case type&.type
-          when nil
-            if enum
-              define_method(col) {
-                val = @raw_values[idx]
-                enum.has_key?(val) ? val : inv_enum[val]
-              }
-            else
-              define_method(col) { @raw_values[idx] }
-            end
-          when :datetime
-            define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx])&.in_time_zone }
-          when :boolean
-            define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx]) }
-            define_method("#{col}?") { !!send(col) }
+          if caster
+            define_method(col) {
+              @cast_values[idx] = caster.(@raw_values[idx]) if @cast_values[idx].nil?
+              @cast_values[idx]
+            }
           else
-            if enum
-              define_method(col) {
-                @cast_values[idx] ||= (
-                  val = type.send(CASTER, @raw_values[idx])
-                  enum.has_key?(val) ? val : inv_enum[val]
-                )
-              }
-            else
-              define_method(col) { @cast_values[idx] ||= type.send(CASTER, @raw_values[idx]) }
-            end
+            define_method(col) {
+              @raw_values[idx]
+            }
           end
+
+          define_method("#{col}?") { !!send(col) }
         end
       end
     end
