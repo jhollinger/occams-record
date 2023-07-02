@@ -30,34 +30,31 @@ function run {
   done
 }
 
-# NOTE ruby-3.2 is currently excluded because the "appraisal" gem doesn't work with it yet
-# See https://github.com/thoughtbot/appraisal/issues/199
+run  ruby-3.2  ar-7.0  sqlite3  postgres-14  mysql-8
+run  ruby-3.2  ar-6.1  sqlite3  postgres-14  mysql-8
+run  ruby-3.2  ar-6.0  sqlite3  postgres-14  mysql-8
 
-#run ruby-3.2 ar-7.0 sqlite3 postgres-14
-#run ruby-3.2 ar-6.1 sqlite3 postgres-14
-#run ruby-3.2 ar-6.0 sqlite3 postgres-14
+run  ruby-3.1  ar-7.0  sqlite3  postgres-14  mysql-8
+run  ruby-3.1  ar-6.1  sqlite3  postgres-14  mysql-8
+run  ruby-3.1  ar-6.0  sqlite3  postgres-14  mysql-8
 
-run ruby-3.1 ar-7.0 sqlite3 postgres-14 mysql-8
-run ruby-3.1 ar-6.1 sqlite3 postgres-14 mysql-8
-run ruby-3.1 ar-6.0 sqlite3 postgres-14 mysql-8
+run  ruby-3.0  ar-7.0  sqlite3  postgres-14  mysql-8
+run  ruby-3.0  ar-6.1  sqlite3  postgres-14  mysql-8
+run  ruby-3.0  ar-6.0  sqlite3  postgres-14  mysql-8
 
-run ruby-3.0 ar-7.0 sqlite3 postgres-14 mysql-8
-run ruby-3.0 ar-6.1 sqlite3 postgres-14 mysql-8
-run ruby-3.0 ar-6.0 sqlite3 postgres-14 mysql-8
+run  ruby-2.7  ar-7.0  sqlite3  postgres-14  mysql-8
+run  ruby-2.7  ar-6.1  sqlite3  postgres-14  mysql-8
+run  ruby-2.7  ar-6.0  sqlite3  postgres-14  mysql-8
+run  ruby-2.7  ar-5.2  sqlite3  postgres-14  mysql-8
+run  ruby-2.7  ar-5.1  sqlite3  postgres-14  mysql-8
+run  ruby-2.7  ar-5.0  sqlite3  postgres-14  mysql-8
+run  ruby-2.7  ar-4.2  sqlite3  postgres-14  mysql-8
 
-run ruby-2.7 ar-7.0 sqlite3 postgres-14 mysql-8
-run ruby-2.7 ar-6.1 sqlite3 postgres-14 mysql-8
-run ruby-2.7 ar-6.0 sqlite3 postgres-14 mysql-8
-run ruby-2.7 ar-5.2 sqlite3 postgres-14 mysql-8
-run ruby-2.7 ar-5.1 sqlite3 postgres-14 mysql-8
-run ruby-2.7 ar-5.0 sqlite3 postgres-14 mysql-8
-run ruby-2.7 ar-4.2 sqlite3 postgres-14 # postgres !!!
-
-run ruby-2.6 ar-6.1 sqlite3 postgres-14
-run ruby-2.6 ar-6.0 sqlite3 postgres-14
-run ruby-2.6 ar-5.2 sqlite3 postgres-14
-run ruby-2.6 ar-5.1 sqlite3 postgres-14
-run ruby-2.6 ar-5.0 sqlite3 postgres-14
-run ruby-2.6 ar-4.2 sqlite3 postgres-14 # postgres !!!
+run  ruby-2.6  ar-6.1  sqlite3  postgres-14  mysql-8
+run  ruby-2.6  ar-6.0  sqlite3  postgres-14  mysql-8
+run  ruby-2.6  ar-5.2  sqlite3  postgres-14  mysql-8
+run  ruby-2.6  ar-5.1  sqlite3  postgres-14  mysql-8
+run  ruby-2.6  ar-5.0  sqlite3  postgres-14  mysql-8
+run  ruby-2.6  ar-4.2  sqlite3  postgres-14  mysql-8
 
 nyancat
