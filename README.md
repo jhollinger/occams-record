@@ -298,7 +298,7 @@ On the other hand, Active Record makes it *very* easy to forget to eager load as
 
 # Testing
 
-Tests run with `appraisal` in Docker Compose.
+Tests are run with `appraisal` in Docker Compose using the `bin/test` or `bin/testall` scripts.
 
 ```bash
 # Run tests against all supported ActiveRecord versions, Ruby versions, and databases
