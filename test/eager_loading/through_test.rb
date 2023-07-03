@@ -1,7 +1,15 @@
 require 'test_helper'
 
-class EagerLoadThroughTest < Minitest::Test
+class EagerLoadingThroughTest < Minitest::Test
   include TestHelpers
+
+  def setup
+    DatabaseCleaner.start
+  end
+
+  def teardown
+    DatabaseCleaner.clean
+  end
 
   #
   # NO optimizer

@@ -5,16 +5,10 @@ class RawQueryTest < Minitest::Test
 
   def setup
     DatabaseCleaner.start
-    @pg = !!(ActiveRecord::Base.connection.class.name =~ /postgres/i)
-    @sqlite = !!(ActiveRecord::Base.connection.class.name =~ /sqlite/i)
-    @my = !!(ActiveRecord::Base.connection.class.name =~ /mysql/i)
-    @ar = ActiveRecord::VERSION::MAJOR
   end
 
   def teardown
     DatabaseCleaner.clean
-    @pg = false
-    @ar = nil
   end
 
   def test_initializes_correctly
@@ -90,81 +84,5 @@ class RawQueryTest < Minitest::Test
     assert_equal [["Spline C", "Widget A"], ["Spline A", "Widget C"], ["Widget D"]], batches.map { |b|
       b.map(&:item).map(&:name)
     }
-  end
-
-  def test_common_types
-    Common.create!({
-      name: "asdf",
-      desc: "sdiuj aispduhfa sdf",
-      int: 42,
-      flt: 4.2,
-      dec: 100.5,
-      day: Date.new(2020, 2, 3),
-      daytime: Time.local(2020, 2, 3, 10, 30, 0),
-      bool: true,
-    })
-
-    x =
-      OccamsRecord
-        .sql("SELECT * FROM commons ORDER BY name", {})
-        .first
-
-    assert x.id.is_a? Integer
-    assert x.name.is_a? String
-    assert x.desc.is_a? String
-    assert x.int.is_a? Integer
-    assert x.flt.is_a? Float
-  end
-
-  def test_advanced_types
-    Common.create!({
-      name: "asdf",
-      desc: "sdiuj aispduhfa sdf",
-      int: 42,
-      flt: 4.2,
-      dec: 100.5,
-      day: Date.new(2020, 2, 3),
-      daytime: Time.local(2020, 2, 3, 10, 30, 0),
-      bool: true,
-    })
-
-    x =
-      OccamsRecord
-        .sql("SELECT * FROM commons ORDER BY name", {})
-        .first
-
-    assert x.dec.is_a?(@sqlite ? Float : BigDecimal)
-    assert x.day.is_a?(@sqlite ? String : Date)
-    assert x.daytime.is_a?(@sqlite ? String : Time)
-    assert_equal((
-      if @pg
-        true
-      elsif (@ar >= 6) || @my
-        1
-      else
-        "t"
-      end
-    ), x.bool)
-  end
-
-  def test_pg_exotic_types
-    if @pg
-      Exotic.create!({
-        data1: {foo: "foo", num: 5, q: false},
-        data2: {foo: "foo", num: 5, q: false},
-        data3: {foo: "foo", num: 5, q: false},
-        tags: ["foo", "bar"],
-      })
-
-      x = OccamsRecord
-        .sql("SELECT * FROM exotics", {})
-        .first
-
-      assert x.id.is_a?(String)
-      assert_equal({"foo" => "foo", "num" => 5, "q" => false}, x.data1)
-      assert_equal({"foo" => "foo", "num" => 5, "q" => false}, x.data2)
-      assert_equal({"foo" => "foo", "num" => "5", "q" => "false"}, x.data3)
-      assert_equal ["foo", "bar"], x.tags
-    end
   end
 end

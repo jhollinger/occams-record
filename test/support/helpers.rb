@@ -13,6 +13,22 @@ module TestHelpers
     end
   end
 
+  def pg?
+    !!(ActiveRecord::Base.connection.class.name =~ /postgres/i)
+  end
+
+  def sqlite?
+    !!(ActiveRecord::Base.connection.class.name =~ /sqlite/i)
+  end
+
+  def mysql?
+    !!(ActiveRecord::Base.connection.class.name =~ /mysql/i)
+  end
+
+  def ar_version
+    ActiveRecord::VERSION::MAJOR
+  end
+
   def normalize_sql(sql)
     sql
       .gsub(/\s+/, " ")
