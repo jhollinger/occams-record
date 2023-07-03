@@ -42,8 +42,6 @@ module OccamsRecord
             end
           when :datetime
             ->(val) { type.send(CASTER, val)&.in_time_zone }
-          when :boolean
-            ->(val) { type.send(CASTER, val) }
           else
             if enum
               ->(val) {
