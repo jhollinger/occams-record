@@ -239,14 +239,13 @@ module OccamsRecord
     # Returns the SQL as a String with all variables escaped
     def escaped_sql
       return sql if binds.empty?
-      sql % binds.reduce({}) { |a, (col, val)|
-        a[col.to_sym] =
+      sql % binds.each_with_object({}) { |(col, val), acc|
+        acc[col.to_sym] =
           if val.is_a? Array
             val.map { |x| conn.quote x }.join(', ')
           else
             conn.quote val
           end
-        a
       }
     end
 

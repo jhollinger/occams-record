@@ -70,17 +70,15 @@ module OccamsRecord
       # @param rows [Array<OccamsRecord::Results::Row>] Array of rows used to calculate the query.
       #
       def calc_fkey_binds(rows)
-        @mapping.keys.reduce({}) { |a, fkey|
-          a[fkey.to_s.pluralize.to_sym] = rows.reduce(Set.new) { |aa, row|
+        @mapping.keys.each_with_object({}) { |fkey, acc|
+          acc[fkey.to_s.pluralize.to_sym] = rows.each_with_object(Set.new) { |row, acc2|
             begin
               val = row.send fkey
-              aa << val if val
+              acc2 << val if val
             rescue NoMethodError => e
               raise MissingColumnError.new(row, e.name)
             end
-            aa
           }.to_a
-          a
         }
       end
 

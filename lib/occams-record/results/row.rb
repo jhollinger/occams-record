@@ -69,22 +69,20 @@ module OccamsRecord
       # @return [Hash] a Hash with String or Symbol keys
       #
       def to_h(symbolize_names: false, recursive: false)
-        hash = self.class.columns.reduce({}) { |a, col_name|
+        hash = self.class.columns.each_with_object({}) { |col_name, acc|
           key = symbolize_names ? col_name.to_sym : col_name
-          a[key] = send col_name
-          a
+          acc[key] = send col_name
         }
 
-        recursive ? self.class.associations.reduce(hash) { |a, assoc_name|
+        recursive ? self.class.associations.each_with_object(hash) { |assoc_name, acc|
           key = symbolize_names ? assoc_name.to_sym : assoc_name
           assoc = send assoc_name
-          a[key] =
+          acc[key] =
             if assoc.is_a? Array
               assoc.map { |x| x.to_h(symbolize_names: symbolize_names, recursive: true) }
             elsif assoc
               assoc.to_h(symbolize_names: symbolize_names, recursive: true)
             end
-          a
         } : hash
       end
 

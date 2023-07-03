@@ -35,14 +35,13 @@ module OccamsRecord
       # Optimized for merges where there's a single mapping key pair (which is the vast majority)
       if mapping.size == 1
         target_attr, assoc_attr = target_attrs[0], assoc_attrs[0]
-        assoc_rows_by_ids = assoc_rows.reduce({}) { |a, assoc_row|
+        assoc_rows_by_ids = assoc_rows.each_with_object({}) { |assoc_row, acc|
           begin
             id = assoc_row.send assoc_attr
           rescue NoMethodError => e
             raise MissingColumnError.new(assoc_row, e.name)
           end
-          a[id] ||= assoc_row
-          a
+          acc[id] ||= assoc_row
         }
 
         target_rows.each do |row|
@@ -56,14 +55,13 @@ module OccamsRecord
 
       # Slower but works with any number of mapping key pairs
       else
-        assoc_rows_by_ids = assoc_rows.reduce({}) { |a, assoc_row|
+        assoc_rows_by_ids = assoc_rows.each_with_object({}) { |assoc_row, acc|
           begin
             ids = assoc_attrs.map { |attr| assoc_row.send attr }
           rescue NoMethodError => e
             raise MissingColumnError.new(assoc_row, e.name)
           end
-          a[ids] ||= assoc_row
-          a
+          acc[ids] ||= assoc_row
         }
 
         target_rows.each do |row|

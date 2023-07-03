@@ -203,9 +203,8 @@ module OccamsRecord
     #   end
     #
     def execute(sql, binds = {})
-      conn.execute(sql % binds.reduce({}) { |acc, (key, val)|
+      conn.execute(sql % binds.each_with_object({}) { |(key, val), acc|
         acc[key] = conn.quote(val)
-        acc
       })
     end
 

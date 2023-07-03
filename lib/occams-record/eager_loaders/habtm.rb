@@ -24,23 +24,21 @@ module OccamsRecord
       # @param join_rows [Array<Array<String>>] raw join'd ids from the db
       #
       def merge!(assoc_rows, rows, join_rows)
-        joins_by_id = join_rows.reduce({}) { |a, join|
+        joins_by_id = join_rows.each_with_object({}) { |join, acc|
           id = join[0].to_s
-          a[id] ||= []
-          a[id] << join[1].to_s
-          a
+          acc[id] ||= []
+          acc[id] << join[1].to_s
         }
 
         assoc_order_cache = {} # maintains the original order of assoc_rows
-        assoc_rows_by_id = assoc_rows.each_with_index.reduce({}) { |a, (row, idx)|
+        assoc_rows_by_id = assoc_rows.each_with_index.each_with_object({}) { |(row, idx), acc|
           begin
             id = row.send(@ref.association_primary_key).to_s
           rescue NoMethodError => e
             raise MissingColumnError.new(row, e.name)
           end
           assoc_order_cache[id] = idx
-          a[id] = row
-          a
+          acc[id] = row
         }
 
         assign = "#{name}="
