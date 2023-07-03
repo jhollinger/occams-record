@@ -78,11 +78,12 @@ module OccamsRecord
         recursive ? self.class.associations.reduce(hash) { |a, assoc_name|
           key = symbolize_names ? assoc_name.to_sym : assoc_name
           assoc = send assoc_name
-          a[key] = if assoc.is_a? Array
-                     assoc.map { |x| x.to_h(symbolize_names: symbolize_names, recursive: true) }
-                   elsif assoc
-                     assoc.to_h(symbolize_names: symbolize_names, recursive: true)
-                   end
+          a[key] =
+            if assoc.is_a? Array
+              assoc.map { |x| x.to_h(symbolize_names: symbolize_names, recursive: true) }
+            elsif assoc
+              assoc.to_h(symbolize_names: symbolize_names, recursive: true)
+            end
           a
         } : hash
       end

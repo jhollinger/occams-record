@@ -110,14 +110,15 @@ module OccamsRecord
     def run
       _escaped_sql = escaped_sql
       @query_logger << _escaped_sql if @query_logger
-      result = if measure?
-                 record_start_time!
-                 measure!(table_name, _escaped_sql) {
-                   conn.exec_query _escaped_sql
-                 }
-               else
-                 conn.exec_query _escaped_sql
-               end
+      result =
+        if measure?
+          record_start_time!
+          measure!(table_name, _escaped_sql) {
+            conn.exec_query _escaped_sql
+          }
+        else
+          conn.exec_query _escaped_sql
+        end
       row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: @eager_loaders.model, modules: @use, tracer: @eager_loaders.tracer)
       rows = result.rows.map { |row| row_class.new row }
       @eager_loaders.run!(rows, query_logger: @query_logger, measurements: @measurements)
@@ -221,14 +222,15 @@ module OccamsRecord
     def pluck(*cols)
       _escaped_sql = escaped_sql
       @query_logger << _escaped_sql if @query_logger
-      result = if measure?
-                 record_start_time!
-                 measure!(table_name, _escaped_sql) {
-                   conn.exec_query _escaped_sql
-                 }
-               else
-                 conn.exec_query _escaped_sql
-               end
+      result =
+        if measure?
+          record_start_time!
+          measure!(table_name, _escaped_sql) {
+            conn.exec_query _escaped_sql
+          }
+        else
+          conn.exec_query _escaped_sql
+        end
       pluck_results result, cols, model: @eager_loaders.model
     end
 
@@ -238,11 +240,12 @@ module OccamsRecord
     def escaped_sql
       return sql if binds.empty?
       sql % binds.reduce({}) { |a, (col, val)|
-        a[col.to_sym] = if val.is_a? Array
-                          val.map { |x| conn.quote x }.join(', ')
-                        else
-                          conn.quote val
-                        end
+        a[col.to_sym] =
+          if val.is_a? Array
+            val.map { |x| conn.quote x }.join(', ')
+          else
+            conn.quote val
+          end
         a
       }
     end

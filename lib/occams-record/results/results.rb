@@ -28,9 +28,10 @@ module OccamsRecord
         self.table_name = model ? model.table_name : nil
         self.eager_loader_trace = tracer
         self.active_record_fallback = active_record_fallback
-        self.primary_key = if model&.primary_key and (pkey = model.primary_key.to_s) and columns.include?(pkey)
-                             pkey
-                           end
+        self.primary_key =
+          if model&.primary_key and (pkey = model.primary_key.to_s) and columns.include?(pkey)
+            pkey
+          end
 
         # Build getters & setters for associations. (We need setters b/c they're set AFTER the row is initialized
         attr_accessor(*association_names)

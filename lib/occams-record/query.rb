@@ -99,14 +99,15 @@ module OccamsRecord
       return [] if sql.blank? # return early in case ActiveRecord::QueryMethods#none was used
 
       @query_logger << "#{@eager_loaders.tracer}: #{sql}" if @query_logger
-      result = if measure?
-                 record_start_time!
-                 measure!(model.table_name, sql) {
-                   model.connection.exec_query sql
-                 }
-               else
-                 model.connection.exec_query sql
-               end
+      result =
+        if measure?
+          record_start_time!
+          measure!(model.table_name, sql) {
+            model.connection.exec_query sql
+          }
+        else
+          model.connection.exec_query sql
+        end
       row_class = OccamsRecord::Results.klass(result.columns, result.column_types, @eager_loaders.names, model: model, modules: @use, tracer: @eager_loaders.tracer, active_record_fallback: @active_record_fallback)
       rows = result.rows.map { |row| row_class.new row }
       @eager_loaders.run!(rows, query_logger: @query_logger, measurements: @measurements)
@@ -242,14 +243,15 @@ module OccamsRecord
       return [] if sql.blank? # return early in case ActiveRecord::QueryMethods#none was used
 
       @query_logger << "#{@eager_loaders.tracer}: #{sql}" if @query_logger
-      result = if measure?
-                 record_start_time!
-                 measure!(model.table_name, sql) {
-                   model.connection.exec_query sql
-                 }
-               else
-                 model.connection.exec_query sql
-               end
+      result =
+        if measure?
+          record_start_time!
+          measure!(model.table_name, sql) {
+            model.connection.exec_query sql
+          }
+        else
+          model.connection.exec_query sql
+        end
       pluck_results result, cols, model: @model
     end
   end
