@@ -51,7 +51,7 @@ module OccamsRecord
             }
           end
 
-          define_method("#{col}?") { !!send(col) }
+          define_method("#{col}?") { send(col).present? }
         end
       end
     end
