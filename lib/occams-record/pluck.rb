@@ -15,10 +15,14 @@ module OccamsRecord
       casters = TypeCaster.generate(results.columns, results.column_types, model: model)
       col = results.columns[0]
       caster = casters[col]
-      results.map { |row|
-        val = row[col]
-        caster ? caster.(val) : val
-      }
+      if caster
+        results.map { |row|
+          val = row[col]
+          caster.(val)
+        }
+      else
+        results.map { |row| row[col] }
+      end
     end
 
     # returns an array of arrays
