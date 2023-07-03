@@ -239,7 +239,7 @@ module OccamsRecord
     # @return [Array]
     #
     def pluck(*cols)
-      sql = (block_given? ? yield(scope).to_sql : scope).select(*cols).to_sql
+      sql = (block_given? ? yield(scope).to_sql : scope).unscope(:select).select(*cols).to_sql
       return [] if sql.blank? # return early in case ActiveRecord::QueryMethods#none was used
 
       @query_logger << "#{@eager_loaders.tracer}: #{sql}" if @query_logger
@@ -252,7 +252,7 @@ module OccamsRecord
         else
           model.connection.exec_query sql
         end
-      pluck_results result, cols, model: @model
+      pluck_results(result, model: @model)
     end
   end
 end

@@ -212,14 +212,14 @@ module OccamsRecord
     end
 
     #
-    # Returns the specified column(s) as an array of values.
+    # Returns the column(s) you've SELECT as an array of values.
     #
-    # If more than one column is given, the result will be an array of arrays.
+    # If you're selecting multiple columns, you'll get back an array of arrays.
+    # Otherwise you'll get an array of the single column's values.
     #
-    # @param cols [Array] one or more column names as Symbols or Strings. Also accepts SQL functions, e.g. "LENGTH(name)".
     # @return [Array]
     #
-    def pluck(*cols)
+    def pluck
       _escaped_sql = escaped_sql
       @query_logger << _escaped_sql if @query_logger
       result =
@@ -231,7 +231,7 @@ module OccamsRecord
         else
           conn.exec_query _escaped_sql
         end
-      pluck_results result, cols, model: @eager_loaders.model
+      pluck_results(result, model: @eager_loaders.model)
     end
 
     private

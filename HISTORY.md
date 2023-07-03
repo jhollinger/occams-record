@@ -1,3 +1,8 @@
+### 1.?.? (2023-?-?)
+* Match ActiveRecord's behavior for ? methods (e.g. `record.name?`)
+* `OccamsRecord.sql("SELECT name FROM ...").pluck` no longer accepts args - it already knows what columns to return
+  * NOTE `OccamsRecord.query(User.all).pluck(:name)` works as before
+
 ### 1.8.1 (2023-07-02)
 * Bug fixes for `#pluck` and enum values for certain combinations of ActiveRecord versions and databases
 * The most thoroughly tested version EVER!
