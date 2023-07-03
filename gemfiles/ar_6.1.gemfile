@@ -3,11 +3,12 @@
 source "https://rubygems.org"
 
 gem "rake"
+gem "memory_profiler"
+gem "appraisal", git: "https://github.com/thoughtbot/appraisal.git", ref: "b200e636903700098bef25f4f51dbc4c46e4c04c"
 gem "activerecord", "~> 6.1.4"
-gem "sqlite3", "~> 1.4.2"
 gem "pg", "~> 1.0"
 gem "mysql2"
-gem "memory_profiler"
+gem "sqlite3", "~> 1.4.2"
 gem "otr-activerecord", "~> 2.1.1"
 
 group :test do

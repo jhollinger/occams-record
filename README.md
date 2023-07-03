@@ -334,6 +334,16 @@ o        o         o      o     +
 +      +     o        o      +
 ```
 
+## Testing without Docker
+
+It's possible to run tests without Docker Compose, but you'll be limited by the Ruby version(s) and database(s) you have on your system.
+
+```bash
+bundle install
+bundle exec appraisal ar-7.0 bundle install
+bundle exec appraisal ar-7.0 rake test
+```
+
 # License
 
 MIT License. See LICENSE for details.
