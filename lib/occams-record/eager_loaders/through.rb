@@ -20,7 +20,7 @@ module OccamsRecord
           raise ArgumentError, "#{@ref.active_record.name}##{@ref.name} cannot be eager loaded because these `through` associations are polymorphic: #{names.join ', '}"
         end
         unless @optimizer == :none or @optimizer == :select
-          raise ArgumentError, "Unrecognized optimizer '#{@optimizer}'"
+          raise ArgumentError, "Unrecognized optimizer '#{@optimizer}' (valid options are :none, :select)"
         end
 
         chain = @ref.chain.reverse
@@ -31,7 +31,6 @@ module OccamsRecord
         @loader = build_loader
       end
 
-      # TODO make not hacky
       def through_name
         @loader.name
       end
@@ -47,6 +46,7 @@ module OccamsRecord
 
       private
 
+      # starting at the top of the chain, recurse and return the leaf node(s)
       def reduce(node, depth = 0)
         link = @chain[depth]
         case link&.macro
@@ -69,17 +69,18 @@ module OccamsRecord
         end
       end
 
+      # build all the nested eager loaders
       def build_loader
         head = @chain[0]
         links = @chain[1..-2]
         tail = @chain[-1]
 
-        outer_loader = EagerLoaders.fetch!(head.ref).new(head.ref, optimized_select(head), parent: tracer.parent)
+        outer_loader = EagerLoaders.fetch!(head.ref).new(head.ref, optimized_scope(head), parent: tracer.parent)
         outer_loader.tracer.through = true
 
         inner_loader = links.
           reduce(outer_loader) { |loader, link|
-            nested_loader = loader.nest(link.ref.source_reflection.name, optimized_select(link))
+            nested_loader = loader.nest(link.ref.source_reflection.name, optimized_scope(link))
             nested_loader.tracer.through = true
             nested_loader
           }.
@@ -90,17 +91,26 @@ module OccamsRecord
         outer_loader
       end
 
-      def optimized_select(link)
-        return nil unless @optimizer == :select
+      def optimized_scope(link)
+        case @optimizer
+        when :select
+          optimized_select(link)
+        when :none
+          nil
+        end
+      end
 
-        cols = case link.macro
-               when :belongs_to
-                 [link.ref.association_primary_key]
-               when :has_one, :has_many
-                 [link.ref.association_primary_key, link.ref.foreign_key]
-               else
-                 raise "Unsupported through chain link type '#{link.macro}'"
-               end
+      # only select the ids/foreign keys required to link the parent/child records
+      def optimized_select(link)
+        cols =
+          case link.macro
+          when :belongs_to
+            [link.ref.association_primary_key]
+          when :has_one, :has_many
+            [link.ref.association_primary_key, link.ref.foreign_key]
+          else
+            raise "Unsupported through chain link type '#{link.macro}'"
+          end
 
         case link.next_ref.source_reflection.macro
         when :belongs_to
