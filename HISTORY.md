@@ -1,5 +1,6 @@
 ### 1.?.? (2023-?-?)
 * Match ActiveRecord's behavior for ? methods (e.g. `record.name?`)
+* Bugfix when eager loading a "through" association and passing in a scope
 * `OccamsRecord.sql("SELECT name FROM ...").pluck` prints warnings if args are passed (they'll be removed in a future version)
   * NOTE `OccamsRecord.query(User.all).pluck(:name)` works as before
 

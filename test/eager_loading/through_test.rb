@@ -173,6 +173,21 @@ class EagerLoadingThroughTest < Minitest::Test
     }
   end
 
+  def test_eager_load_through_with_a_scope
+    customers = OccamsRecord.
+      query(Customer.order(:name)).
+      eager_load(:categories, ->(q) { q.where(name: "Foo") }).
+      run
+
+    assert_equal [
+      "Jane: Foo",
+      "Jon: Foo",
+    ], customers.map { |c|
+      cats = c.categories.map(&:name).sort
+      "#{c.name}: #{cats.join(', ')}"
+    }
+  end
+
   def test_eager_load_through_name_collision_a
     widget_details = OccamsRecord.
       query(WidgetDetail.all).

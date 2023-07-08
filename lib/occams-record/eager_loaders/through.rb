@@ -83,7 +83,7 @@ module OccamsRecord
             nested_loader.tracer.through = true
             nested_loader
           }.
-          nest(tail.ref.source_reflection.name, @scope, use: @use, as: @as, active_record_fallback: @active_record_fallback)
+          nest(tail.ref.source_reflection.name, @scopes, use: @use, as: @as, active_record_fallback: @active_record_fallback)
 
         @eager_loaders.each { |loader| inner_loader.eager_loaders << loader }
         inner_loader.tracer.name = tracer.name
