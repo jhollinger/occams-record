@@ -1,6 +1,6 @@
 ### 1.?.? (2023-?-?)
 * Match ActiveRecord's behavior for ? methods (e.g. `record.name?`)
-* `OccamsRecord.sql("SELECT name FROM ...").pluck` no longer accepts args - it already knows what columns to return
+* `OccamsRecord.sql("SELECT name FROM ...").pluck` prints warnings if args are passed (they'll be removed in a future version)
   * NOTE `OccamsRecord.query(User.all).pluck(:name)` works as before
 
 ### 1.8.1 (2023-07-02)

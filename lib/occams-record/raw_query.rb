@@ -217,9 +217,12 @@ module OccamsRecord
     # If you're selecting multiple columns, you'll get back an array of arrays.
     # Otherwise you'll get an array of the single column's values.
     #
+    # @param *args DEPRECATED
     # @return [Array]
     #
-    def pluck
+    def pluck(*args)
+      $stderr.puts "OccamsRecord: passing arguments to OccamsRecord.sql(\"...\").pluck is deprecated and will be removed in a future version. Called from #{caller[0]}" if args.any?
+
       _escaped_sql = escaped_sql
       @query_logger << _escaped_sql if @query_logger
       result =
