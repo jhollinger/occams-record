@@ -22,10 +22,12 @@ class EagerLoadingThroughTest < Minitest::Test
       run
 
     assert_equal [
-      %(root: SELECT #{quote_table "widget_details"}.* FROM #{quote_table "widget_details"} ORDER BY #{quote_table "widget_details"}.#{quote_col "text"} ASC),
-      %(root.through(widget): SELECT #{quote_table "widgets"}.* FROM #{quote_table "widgets"} WHERE #{quote_table "widgets"}.#{quote_col "id"} IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
-      %(root.through(widget).category: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
-    ], log.map { |x| x.gsub(/\s+/, " ") }
+      %(root: SELECT widget_details.* FROM widget_details ORDER BY widget_details.text ASC),
+      %(root.through(widget): SELECT widgets.* FROM widgets WHERE widgets.id IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
+      %(root.through(widget).category: SELECT categories.* FROM categories WHERE categories.id IN (208889123, 922717355)),
+    ], log.map { |x|
+      normalize_sql x
+    }
 
     assert_equal [
       "All about Widget A: Foo",
@@ -48,10 +50,12 @@ class EagerLoadingThroughTest < Minitest::Test
       run
 
     assert_equal [
-      %(root: SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
-      %(root.through(orders): SELECT #{quote_table "orders"}.* FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
-      %(root.through(orders).line_items: SELECT #{quote_table "line_items"}.* FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
-    ], log.map { |x| x.gsub(/\s+/, " ") }
+      %(root: SELECT customers.* FROM customers ORDER BY customers.name ASC),
+      %(root.through(orders): SELECT orders.* FROM orders WHERE orders.customer_id IN (846114006, 980204181)),
+      %(root.through(orders).line_items: SELECT line_items.* FROM line_items WHERE line_items.order_id IN (683130438, 834596858)),
+    ], log.map { |x|
+      normalize_sql x
+    }
 
     assert_equal [
       "Jane: 3",
@@ -69,11 +73,13 @@ class EagerLoadingThroughTest < Minitest::Test
       run
 
     assert_equal [
-      %(root: SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
-      %(root.through(orders): SELECT #{quote_table "orders"}.* FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
-      %(root.through(orders).through(line_items): SELECT #{quote_table "line_items"}.* FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
-      %(root.through(orders).through(line_items).categories: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
-    ], log.map { |x| x.gsub(/\s+/, " ") }
+      %(root: SELECT customers.* FROM customers ORDER BY customers.name ASC),
+      %(root.through(orders): SELECT orders.* FROM orders WHERE orders.customer_id IN (846114006, 980204181)),
+      %(root.through(orders).through(line_items): SELECT line_items.* FROM line_items WHERE line_items.order_id IN (683130438, 834596858)),
+      %(root.through(orders).through(line_items).categories: SELECT categories.* FROM categories WHERE categories.id IN (208889123, 922717355)),
+    ], log.map { |x|
+      normalize_sql x
+    }
 
     assert_equal [
       "Jane: Bar, Foo",
@@ -96,10 +102,12 @@ class EagerLoadingThroughTest < Minitest::Test
       run
 
     assert_equal [
-      %(root: SELECT #{quote_table "widget_details"}.* FROM #{quote_table "widget_details"} ORDER BY #{quote_table "widget_details"}.#{quote_col "text"} ASC),
-      %(root.through(widget): SELECT id, category_id FROM #{quote_table "widgets"} WHERE #{quote_table "widgets"}.#{quote_col "id"} IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
-      %(root.through(widget).category: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
-    ], log.map { |x| x.gsub(/\s+/, " ") }
+      %(root: SELECT widget_details.* FROM widget_details ORDER BY widget_details.text ASC),
+      %(root.through(widget): SELECT id, category_id FROM widgets WHERE widgets.id IN (30677878, 112844655, 417155790, 683130438, 802847325, 834596858, 919808993)),
+      %(root.through(widget).category: SELECT categories.* FROM categories WHERE categories.id IN (208889123, 922717355)),
+    ], log.map { |x|
+      normalize_sql x
+    }
 
     assert_equal [
       "All about Widget A: Foo",
@@ -122,10 +130,12 @@ class EagerLoadingThroughTest < Minitest::Test
       run
 
     assert_equal [
-      %(root: SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
-      %(root.through(orders): SELECT id, customer_id FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
-      %(root.through(orders).line_items: SELECT #{quote_table "line_items"}.* FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
-    ], log.map { |x| x.gsub(/\s+/, " ") }
+      %(root: SELECT customers.* FROM customers ORDER BY customers.name ASC),
+      %(root.through(orders): SELECT id, customer_id FROM orders WHERE orders.customer_id IN (846114006, 980204181)),
+      %(root.through(orders).line_items: SELECT line_items.* FROM line_items WHERE line_items.order_id IN (683130438, 834596858)),
+    ], log.map { |x|
+      normalize_sql x
+    }
 
     assert_equal [
       "Jane: 3",
@@ -143,11 +153,13 @@ class EagerLoadingThroughTest < Minitest::Test
       run
 
     assert_equal [
-      %(root: SELECT #{quote_table "customers"}.* FROM #{quote_table "customers"} ORDER BY #{quote_table "customers"}.#{quote_col "name"} ASC),
-      %(root.through(orders): SELECT id, customer_id FROM #{quote_table "orders"} WHERE #{quote_table "orders"}.#{quote_col "customer_id"} IN (846114006, 980204181)),
-      %(root.through(orders).through(line_items): SELECT id, order_id, category_id FROM #{quote_table "line_items"} WHERE #{quote_table "line_items"}.#{quote_col "order_id"} IN (683130438, 834596858)),
-      %(root.through(orders).through(line_items).categories: SELECT #{quote_table "categories"}.* FROM #{quote_table "categories"} WHERE #{quote_table "categories"}.#{quote_col "id"} IN (208889123, 922717355)),
-    ], log.map { |x| x.gsub(/\s+/, " ") }
+      %(root: SELECT customers.* FROM customers ORDER BY customers.name ASC),
+      %(root.through(orders): SELECT id, customer_id FROM orders WHERE orders.customer_id IN (846114006, 980204181)),
+      %(root.through(orders).through(line_items): SELECT id, order_id, category_id FROM line_items WHERE line_items.order_id IN (683130438, 834596858)),
+      %(root.through(orders).through(line_items).categories: SELECT categories.* FROM categories WHERE categories.id IN (208889123, 922717355)),
+    ], log.map { |x|
+      normalize_sql x
+    }
 
     assert_equal [
       "Jane: Bar, Foo",

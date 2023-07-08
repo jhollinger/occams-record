@@ -20,7 +20,6 @@ module OccamsRecord
             raise MissingColumnError.new(row, e.name)
           end
         }.compact.uniq
-        ids.sort! if $occams_record_test
 
         q = base_scope.where(@ref.foreign_key => ids)
         q.where!(@ref.type => rows[0].class&.model_name) if @ref.options[:as]

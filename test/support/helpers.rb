@@ -34,13 +34,13 @@ module TestHelpers
       .gsub(/\s+/, " ")
       .gsub(/"/, "")
       .gsub(/`/, "")
-  end
-
-  def quote_table(x)
-    ActiveRecord::Base.connection.quote_table_name x
-  end
-
-  def quote_col(x)
-    ActiveRecord::Base.connection.quote_column_name x
+      .gsub(/ IN \([^)]+\)/) { |match|
+        match.sub!(/^ IN \(/, "")
+        match.sub!(/\)$/, "")
+        items = match.split(",").map(&:strip).map { |v|
+          v =~ /^\d+$/ ? v.to_i : v
+        }.sort
+        " IN (#{items.join ", "})"
+      }
   end
 end
