@@ -1,6 +1,6 @@
 module OccamsRecord
-  # @private
   module TypeCaster
+    # @private
     CASTER =
       case ActiveRecord::VERSION::MAJOR
       when 4 then :type_cast_from_database
@@ -9,9 +9,13 @@ module OccamsRecord
       end
 
     #
-    # @param column_names [Array<String>] the column names in the result set. The order MUST match the order returned by the query.
-    # @param column_types [Hash] Column name => type from an ActiveRecord::Result
-    # @param model [ActiveRecord::Base] the AR model representing the table (it holds column & type info).
+    # Returns a Hash containing type converters (a Proc) for each column. The Proc's accept a value and return a converted value, mapping enum values from the model if necessary.
+    #
+    # NOTE Some columns may have no Proc (particularly if you're using SQLite and running a raw SQL query).
+    #
+    # @param column_names [Array<String>] the column names in the result set (ActiveRecord::Result#columns). The order MUST match the order returned by the query.
+    # @param column_types [Hash] Column name => type (ActiveRecord::Result#column_types)
+    # @param model [ActiveRecord::Base] the AR model representing the table (it holds column & type info as well as enums).
     # @return [Hash<Proc>] a Hash of casting Proc's keyed by column
     #
     def self.generate(column_names, column_types, model: nil)
