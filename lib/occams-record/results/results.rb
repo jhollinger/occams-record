@@ -43,7 +43,7 @@ module OccamsRecord
 
           if caster
             define_method(col) {
-              @cast_values[idx] = caster.(@raw_values[idx]) if @cast_values[idx].nil?
+              @cast_values[idx] = caster.(@raw_values[idx]) unless @cast_values.has_key?(idx)
               @cast_values[idx]
             }
           else
