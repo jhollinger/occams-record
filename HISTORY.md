@@ -1,5 +1,9 @@
-### 1.?.? (2023-?-?)
+### 1.9.0 (2023-?-?)
 * Match ActiveRecord's behavior for ? methods (e.g. `record.name?`)
+* Additional, Rails-like formats for query params in `OccamsRecord.sql`:
+  * `OccamsRecord.sql("SELECT * FROM orders WHERE user_id = :user_id", {user_id: user.id}).run`
+  * `OccamsRecord.sql("SELECT * FROM orders WHERE user_id = ?", [user.id]).run`
+  * `OccamsRecord.sql("SELECT * FROM orders WHERE user_id = %s", [user.id]).run`
 * Bugfix when eager loading a "through" association and passing in a scope
 * `OccamsRecord.sql("SELECT name FROM ...").pluck` prints warnings if args are passed (they'll be removed in a future version)
   * NOTE `OccamsRecord.query(User.all).pluck(:name)` works as before

@@ -130,6 +130,18 @@ orders = OccamsRecord
 
 ActiveRecord has raw SQL escape hatches like `find_by_sql` and `exec_query`, but they give up critical features like eager loading and `find_each`/`find_in_batches`. Occams Record's escape hatches don't make you give up anything.
 
+**Query params**
+
+```ruby
+# Supported in all versions of OccamsRecord
+OccamsRecord.sql("SELECT * FROM orders WHERE user_id = %{user_id}", {user_id: user.id}).run
+
+# Supported in OccamsRecord 1.9+
+OccamsRecord.sql("SELECT * FROM orders WHERE user_id = :user_id", {user_id: user.id}).run
+OccamsRecord.sql("SELECT * FROM orders WHERE user_id = ?", [user.id]).run
+OccamsRecord.sql("SELECT * FROM orders WHERE user_id = %s", [user.id]).run
+```
+
 **Batched loading with cursors**
 
 `find_each_with_cursor`, `find_in_batches_with_cursor`, and `cursor.open` are all available.

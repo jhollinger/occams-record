@@ -9,8 +9,12 @@ module OccamsRecord
           @conn, @sql, @binds = conn, sql, binds
           @use, @query_logger, @eager_loaders = use, query_logger, eager_loaders
 
+          unless binds.is_a? Hash
+            raise ArgumentError, "When using find_each/find_in_batches with raw SQL, binds MUST be a Hash. SQL statement: #{@sql}"
+          end
+
           unless @sql =~ /LIMIT\s+%\{batch_limit\}/i and @sql =~ /OFFSET\s+%\{batch_offset\}/i
-            raise ArgumentError, "When using find_each/find_in_batches you must specify 'LIMIT %{batch_limit} OFFSET %{batch_offset}'. SQL statement: #{@sql}"
+            raise ArgumentError, "When using find_each/find_in_batches with raw SQL, you must specify 'LIMIT %{batch_limit} OFFSET %{batch_offset}'. SQL statement: #{@sql}"
           end
         end
 

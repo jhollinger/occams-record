@@ -41,6 +41,36 @@ class RawQueryTest < Minitest::Test
     assert_equal ["Widget A", "Widget B", "Widget C", "Widget D", "Widget E", "Widget F", "Widget G"], results.map(&:name)
   end
 
+  def test_positional_query_params
+    results = OccamsRecord.
+      sql(
+        "SELECT * FROM widgets WHERE category_id = %s AND name IN (%s) ORDER BY name",
+        [categories(:foo).id, ["Widget A", "Widget B"]]
+      ).
+      run
+    assert_equal ["Widget A", "Widget B"], results.map(&:name)
+  end
+
+  def test_rails_named_query_params
+    results = OccamsRecord.
+      sql(
+        "SELECT * FROM widgets WHERE category_id = :cat_id AND name IN (:names) ORDER BY name",
+        {cat_id: categories(:foo).id, names: ["Widget A", "Widget B"]}
+      ).
+      run
+    assert_equal ["Widget A", "Widget B"], results.map(&:name)
+  end
+
+  def test_rails_positional_query_params
+    results = OccamsRecord.
+      sql(
+        "SELECT * FROM widgets WHERE category_id = ? AND name IN (?) ORDER BY name",
+        [categories(:foo).id, ["Widget A", "Widget B"]]
+      ).
+      run
+    assert_equal ["Widget A", "Widget B"], results.map(&:name)
+  end
+
   def test_eager_load
     results = OccamsRecord.
       sql(

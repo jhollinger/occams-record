@@ -1,7 +1,7 @@
 module OccamsRecord
   #
   # Starts building a OccamsRecord::RawQuery. Pass it a raw SQL statement, optionally followed by
-  # a Hash of binds. While this doesn't offer an additional performance boost, it's a nice way to
+  # a Hash or Array of binds. While this doesn't offer an additional performance boost, it's a nice way to
   # write safe, complicated SQL by hand while also supporting eager loading.
   #
   #   results = OccamsRecord.sql("
@@ -39,10 +39,10 @@ module OccamsRecord
   # It is possible to coerce the SQLite adapter into returning native types for everything IF they're columns of a table
   # that you have an AR model for. e.g. if you're selecting from the widgets, table: `OccamsRecord.sql("...").model(Widget)...`.
   #
-  # MySQL ?
+  # MySQL Mostly native Ruby types, but more testing is needed.
   #
-  # @param sql [String] The SELECT statement to run. Binds should use Ruby's named string substitution.
-  # @param binds [Hash] Bind values (Symbol keys)
+  # @param sql [String] The SELECT statement to run. Binds may be Rails-style (?, :foo) or Ruby-style (%s, %{foo}).
+  # @param binds [Hash] Bind values as Hash (with Symbol keys) or an Array
   # @param use [Array<Module>] optional Module to include in the result class (single or array)
   # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
   # @return [OccamsRecord::RawQuery]
@@ -58,7 +58,7 @@ module OccamsRecord
   class RawQuery
     # @return [String]
     attr_reader :sql
-    # @return [Hash]
+    # @return [Hash|Array]
     attr_reader :binds
 
     include OccamsRecord::Batches::CursorHelpers
@@ -70,8 +70,8 @@ module OccamsRecord
     #
     # Initialize a new query.
     #
-    # @param sql [String] The SELECT statement to run. Binds should use Ruby's named string substitution.
-    # @param binds [Hash] Bind values (Symbol keys)
+    # @param sql [String] The SELECT statement to run. Binds may be Rails-style (?, :foo) or Ruby-style (%s, %{foo}).
+    # @param binds [Hash] Bind values as Hash (with Symbol keys) or an Array
     # @param use [Array<Module>] optional Module to include in the result class (single or array)
     # @param eager_loaders [OccamsRecord::EagerLoaders::Context]
     # @param query_logger [Array] (optional) an array into which all queries will be inserted for logging/debug purposes
@@ -79,7 +79,7 @@ module OccamsRecord
     # @param connection
     #
     def initialize(sql, binds, use: nil, eager_loaders: nil, query_logger: nil, measurements: nil, connection: nil)
-      @sql = sql
+      @sql = BindsConverter.convert(sql, binds)
       @binds = binds
       @use = use
       @eager_loaders = eager_loaders || EagerLoaders::Context.new
@@ -242,14 +242,23 @@ module OccamsRecord
     # Returns the SQL as a String with all variables escaped
     def escaped_sql
       return sql if binds.empty?
-      sql % binds.each_with_object({}) { |(col, val), acc|
-        acc[col.to_sym] =
-          if val.is_a? Array
-            val.map { |x| conn.quote x }.join(', ')
-          else
-            conn.quote val
-          end
-      }
+      escaped_binds =
+        if binds.is_a? Array
+          binds.map { |val| quote val }
+        else
+          binds.each_with_object({}) { |(col, val), acc|
+            acc[col.to_sym] = quote val
+          }
+        end
+      sql % escaped_binds
+    end
+
+    def quote(val)
+      if val.is_a? Array
+        val.map { |x| conn.quote x }.join(', ')
+      else
+        conn.quote val
+      end
     end
 
     def table_name
