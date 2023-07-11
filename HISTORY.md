@@ -1,4 +1,4 @@
-### 1.9.0 (2023-?-?)
+### 1.9.0 (2023-07-11)
 * Match ActiveRecord's behavior for ? methods (e.g. `record.name?`)
 * Additional, Rails-like formats for query params in `OccamsRecord.sql`:
   * `OccamsRecord.sql("SELECT * FROM orders WHERE user_id = :user_id", {user_id: user.id}).run`
