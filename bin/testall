@@ -57,4 +57,5 @@ run  ruby-2.6  ar-5.1  sqlite3  postgres-14  mysql-8
 run  ruby-2.6  ar-5.0  sqlite3  postgres-14  mysql-8
 run  ruby-2.6  ar-4.2  sqlite3  postgres-14  mysql-8
 
+docker compose stop
 nyancat
