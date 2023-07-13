@@ -322,8 +322,11 @@ bin/testall ruby-3.1
 # Run tests for ActiveRecord vX only
 bin/testall ar-6.1
 
+# Run tests only for Ruby vX and ActiveRecored vX
+bin/testall ruby-3.1 ar-6.1
+
 # Run tests against a specific database
-bin/testall sqlite|postgres-14|mysql-8
+bin/testall sqlite3|postgres-14|mysql-8
 
 # Run exactly one set of tests
 bin/test ruby-3.1 ar-7.0 postgres-14
