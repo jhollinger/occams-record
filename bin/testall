@@ -13,29 +13,25 @@ set -euo pipefail
 cd $(dirname $0)/../
 source bin/lib.sh
 
-[[ $# -gt 0 ]] && filter=$@ || filter=()
-
-function run {
-  if [[ ${#filter} -eq 0 ]] || in_array $1 ${filter[@]} || in_array $2 ${filter[@]} || in_array $3 ${filter[@]}; then
-    cmd="bin/test  $1  $2  $3"
-    announce "$cmd"
-    sleep 1
-    $cmd
-  fi
-}
+[[ $# -gt 0 ]] && filter=("$@") || filter=()
 
 # flatten matrix
 matrix=()
-while read ruby_version ar_version dbs; do
+while read ruby ar dbs; do
   for db in $dbs; do
-    matrix+=("$ruby_version $ar_version $db")
+    matrix+=("$ruby $ar $db")
   done
 done < <(awk '/^ *[^#]/' test/matrix)
 
 # run each row in the matrix
 for row in "${matrix[@]}"; do
-  read ruby_version ar_version db <<< "$row"
-  run $ruby_version $ar_version $db
+  read ruby ar db <<< "$row"
+  if [[ ${#filter[@]} -eq 0 ]] || array_in_array ${#filter[@]} ${filter[@]} $ruby $ar $db; then
+    cmd="bin/test  $ruby  $ar  $db"
+    announce "$cmd"
+    sleep 1
+    $cmd
+  fi
 done
 
 docker compose stop

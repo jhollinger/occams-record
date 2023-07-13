@@ -1,3 +1,17 @@
+function array_in_array {
+  args=("$@")
+  term_size=${args[0]}
+  terms=("${args[@]:1:$term_size}")
+  array=("${args[@]:$(($term_size+1))}")
+
+  for x in ${terms[@]}; do
+    if ! in_array $x ${array[@]}; then
+      return 1
+    fi
+  done
+  return 0
+}
+
 function in_array {
   term=$1
   shift 1
