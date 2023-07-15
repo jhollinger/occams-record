@@ -3,7 +3,8 @@
 set -euo pipefail
 
 cd $(dirname $0)/../
+source bin/lib.sh
 
-docker compose stop
-docker compose down
-docker compose down --rmi=local --volumes
+podpose stop
+podpose down
+podpose down --rmi=local --volumes

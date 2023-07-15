@@ -1,3 +1,11 @@
+function podpose {
+  if [[ -n "${OCCAMS_PODMAN-}" ]]; then
+    podman-compose "$@"
+  else
+    docker compose "$@"
+  fi
+}
+
 function array_in_array {
   args=("$@")
   term_size=${args[0]}

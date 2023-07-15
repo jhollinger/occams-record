@@ -34,5 +34,5 @@ for row in "${matrix[@]}"; do
   fi
 done
 
-docker compose stop
+podpose stop
 nyancat

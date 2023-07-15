@@ -7,10 +7,11 @@
 set -euo pipefail
 
 cd $(dirname $0)/../
+source bin/lib.sh
 
 service=$1
 shift
 
-docker compose build $service
-docker compose up --no-start $service
-docker compose run --rm $service "$@"
+podpose build $service
+podpose up --no-start $service
+podpose run --rm $service "$@"

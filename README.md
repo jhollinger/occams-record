@@ -331,6 +331,9 @@ bin/testall sqlite3|postgres-14|mysql-8
 # Run exactly one set of tests
 bin/test ruby-3.1 ar-7.0 postgres-14
 
+# Use Podman Compose
+OCCAMS_PODMAN=1 bin/testall
+
 # If all tests complete successfully, you'll be rewarded by an ASCII Nyancat!
 
 +      o     +              o
