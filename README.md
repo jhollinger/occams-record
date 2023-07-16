@@ -316,13 +316,10 @@ Tests are run with `appraisal` in Docker Compose using the `bin/test` or `bin/te
 # Run tests against all supported ActiveRecord versions, Ruby versions, and databases
 bin/testall
 
-# Run tests for Ruby vX only
+# Run tests only for Ruby 3.1
 bin/testall ruby-3.1
 
-# Run tests for ActiveRecord vX only
-bin/testall ar-6.1
-
-# Run tests only for Ruby vX and ActiveRecored vX
+# Run tests only for Ruby 3.1 and ActiveRecored 6.1
 bin/testall ruby-3.1 ar-6.1
 
 # Run tests against a specific database
