@@ -11,7 +11,7 @@
 ### 1.8.1 (2023-07-02)
 * Bug fixes for `#pluck` and enum values for certain combinations of ActiveRecord versions and databases
 * The most thoroughly tested version EVER!
-  * Uses a new Docker Compose-based testing system to easily test all Ruby version, ActiveRecord version, and database combinations
+  * Uses a [new Docker Compose-based testing system](https://jordanhollinger.com/2023/07/14/testing-occams-record/) to easily test all Ruby version, ActiveRecord version, and database combinations
 
 ### 1.8.0 (2023-07-01)
 * Full support for ActiveRecord enums (previously, support depended on which version of ActiveRecord was used)
