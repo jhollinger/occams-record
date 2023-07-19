@@ -31,7 +31,7 @@ module OccamsRecord
         escape = false
         until @i > @end
           char = @sql[@i]
-          unescape = escape
+          clear_escape = escape
           case char
           when @bind_sigil
             if escape
@@ -56,7 +56,7 @@ module OccamsRecord
           else
             @i += 1
           end
-          escape = false if unescape
+          escape = false if clear_escape
         end
         yield flush_sql if @i > @start_i
       end
