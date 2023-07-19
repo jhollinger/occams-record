@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ $# -lt 3 ]]; then
-  echo "Use: bin/test ruby-X ar-X sqlite|postgres-* [args]"
+  echo "Use: bin/test ruby-X ar-X sqlite3|postgres-*|mysql-8 [args]"
   exit 1
 fi
 
