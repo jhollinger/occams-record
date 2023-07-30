@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Instance Methods - Occams Record</title>
+        <title>Batched Loading - Occams Record</title>
 
 
         <!-- Custom HTML head -->
@@ -82,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../intro.html">Introduction</a></li><li class="chapter-item expanded affix "><a href="../install.html">Installation</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Getting Started</li><li class="chapter-item expanded "><a href="../getting-started/query.html"><strong aria-hidden="true">1.</strong> Your First Query</a></li><li class="chapter-item expanded "><a href="../getting-started/eager-loading.html"><strong aria-hidden="true">2.</strong> Eager Loading</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Advanced Use</li><li class="chapter-item expanded "><a href="../advanced/eager-loading.html"><strong aria-hidden="true">3.</strong> Advanced Eager Loading</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../advanced/ad-hoc-associations.html"><strong aria-hidden="true">3.1.</strong> Ad Hoc Associations</a></li></ol></li><li class="chapter-item expanded "><a href="../advanced/sql.html"><strong aria-hidden="true">4.</strong> Hand-written SQL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../advanced/sql-eager-loading.html"><strong aria-hidden="true">4.1.</strong> Eager Loading</a></li><li class="chapter-item expanded "><a href="../advanced/sql-batched-loading.html"><strong aria-hidden="true">4.2.</strong> Batched Loading</a></li></ol></li><li class="chapter-item expanded "><a href="../advanced/cursors.html"><strong aria-hidden="true">5.</strong> Cursors</a></li><li class="chapter-item expanded "><a href="../advanced/methods.html" class="active"><strong aria-hidden="true">6.</strong> Instance Methods</a></li><li class="chapter-item expanded "><a href="../advanced/exceptions.html"><strong aria-hidden="true">7.</strong> Exceptions</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../intro.html">Introduction</a></li><li class="chapter-item expanded affix "><a href="../install.html">Installation</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Getting Started</li><li class="chapter-item expanded "><a href="../getting-started/query.html"><strong aria-hidden="true">1.</strong> Your First Query</a></li><li class="chapter-item expanded "><a href="../getting-started/eager-loading.html"><strong aria-hidden="true">2.</strong> Eager Loading</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Advanced Use</li><li class="chapter-item expanded "><a href="../advanced/eager-loading.html"><strong aria-hidden="true">3.</strong> Advanced Eager Loading</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../advanced/ad-hoc-associations.html"><strong aria-hidden="true">3.1.</strong> Ad Hoc Associations</a></li></ol></li><li class="chapter-item expanded "><a href="../advanced/sql.html"><strong aria-hidden="true">4.</strong> Hand-written SQL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../advanced/sql-eager-loading.html"><strong aria-hidden="true">4.1.</strong> Eager Loading</a></li><li class="chapter-item expanded "><a href="../advanced/sql-batched-loading.html" class="active"><strong aria-hidden="true">4.2.</strong> Batched Loading</a></li></ol></li><li class="chapter-item expanded "><a href="../advanced/cursors.html"><strong aria-hidden="true">5.</strong> Cursors</a></li><li class="chapter-item expanded "><a href="../advanced/methods.html"><strong aria-hidden="true">6.</strong> Instance Methods</a></li><li class="chapter-item expanded "><a href="../advanced/exceptions.html"><strong aria-hidden="true">7.</strong> Exceptions</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -165,53 +165,51 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="instance-methods"><a class="header" href="#instance-methods">Instance Methods</a></h1>
-<p>OccamsRecords results are just plain structs; they don't have methods from your Rails models. (Separating your persistence layer from your domain is good thing!) But sometimes you need a few methods. OccamsRecord provides two ways of accomplishing this.</p>
-<h2 id="injecting-modules"><a class="header" href="#injecting-modules">Injecting modules</a></h2>
-<p>You may also specify one or more modules to be included in your results:</p>
-<pre><code class="language-ruby">module MyOrderMethods
-  def description
-    &quot;#{order_number} - #{date}&quot;
-  end
-end
-
-module MyProductMethods
-  def expensive?
-    price &gt; 100
-  end
-end
-
-orders = OccamsRecord.
-  query(Order.all, use: MyOrderMethods).
-  eager_load(:line_items) {
-    eager_load(:product, use: [MyProductMethods, OtherMethods])
-  }.
-  find_each { |order|
-    puts order.description # MyOrderMethods#description
-    puts order.line_items[0].product.expensive? # MyProductMethods#expensive?
+                        <h1 id="batched-loading"><a class="header" href="#batched-loading">Batched Loading</a></h1>
+<p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2Esql">sql</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_each">find_each</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_in_batches">find_in_batches</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a></p>
+<p>Unlike ActiveRecord, OccamsRecord lets you use batched loading with hand-written SQL. There are two ways to do it.</p>
+<h2 id="cursor-based"><a class="header" href="#cursor-based">Cursor based</a></h2>
+<p>If you're using PostgreSQL, using cursors for batched loading is faster and easy:</p>
+<pre><code class="language-ruby">OccamsRecord.
+  sql(&quot;
+    SELECT * FROM orders
+    WHERE order_date &gt; :date
+    ORDER BY order_date DESC, id
+  &quot;, {
+    date: 10.years.ago
+  }).
+  find_each_with_cursor(batch_size: 1000) { |order|
+    ...
   }
 </code></pre>
-<h2 id="activerecord-fallback-mode"><a class="header" href="#activerecord-fallback-mode">ActiveRecord fallback mode</a></h2>
-<p>This is an ugly hack of last resort if you can’t easily extract a method from your model into a shared module. Plugins, like carrierwave, are a good example. When you call a method that doesn’t exist on an OccamsRecord result, it will initialize an ActiveRecord object and forward the method call to it.</p>
-<p>The <code>active_record_fallback</code> option must be passed either <code>:lazy</code> or <code>:strict</code> (recommended). <code>:strict</code> enables ActiveRecord’s strict loading option, helping you avoid N+1 queries in your model code. <code>:lazy</code> allows them. (<code>:strict</code> is only available for ActiveRecord 6.1 and later.)</p>
-<p>The following will forward any nonexistent methods for <code>Order</code> and <code>Product</code> records:</p>
-<pre><code class="language-ruby">orders = OccamsRecord.
-  query(Order.all, active_record_fallback: :strict).
-  eager_load(:line_items) {
-    eager_load(:product, active_record_fallback: :strict)
-  }.
-  run
+<p>Read more about using <a href="./cursors.html#cursors-with-hand-written-sql">Cursors</a> in OccamsRecord.</p>
+<h2 id="offset--limit-based"><a class="header" href="#offset--limit-based">OFFSET &amp; LIMIT based</a></h2>
+<p>With other database, you'll need to fall back to the traditional (and potentially slower) <code>OFFSET &amp; LIMIT</code> approach.</p>
+<pre><code class="language-ruby">OccamsRecord.
+  sql(&quot;
+    SELECT * FROM orders
+    WHERE order_date &gt; :date
+    ORDER BY order_date DESC, id
+    LIMIT :batch_limit
+    OFFSET :batch_offset
+  &quot;, {
+    date: 10.years.ago
+  }).
+  find_each(batch_size: 1000) { |order|
+    ...
+  }
 </code></pre>
+<p>OccamsRecord will provide the values for <code>:batch_limit</code> and <code>:batch_offset</code>. Just put the references in the right place.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../advanced/cursors.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../advanced/sql-eager-loading.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="../advanced/exceptions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../advanced/cursors.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -221,11 +219,11 @@ orders = OccamsRecord.
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../advanced/cursors.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../advanced/sql-eager-loading.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="../advanced/exceptions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../advanced/cursors.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

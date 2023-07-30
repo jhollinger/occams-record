@@ -168,6 +168,63 @@
                         <h1 id="cursors"><a class="header" href="#cursors">Cursors</a></h1>
 <p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:cursor">cursor</a></p>
 <p><em>Note:</em> This section is only relevant to applications using PostgreSQL.</p>
+<p>For batched loading, cursors perform better than the traditional <code>OFFSET &amp; LIMIT</code> approach. If you're using PostgreSQL, take advantage of them with <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a> and <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a>.</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:customer).
+  find_each_with_cursor { |order|
+    ...
+  }
+</code></pre>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:customer).
+  find_in_batches_with_cursor { |order|
+    ...
+  }
+</code></pre>
+<p>If you need custom logic when using your cursor, use the lower-level <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:cursor">cursor</a> method:</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:customer).
+  cursor.
+  open { |cursor|
+    cursor.move(:forward, 300)
+    orders = cursor.fetch(:forward, 100)
+    orders.each { |order| ... }
+  }
+</code></pre>
+<p>The <code>cursor</code> var is an instance of <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord/Cursor">OccamsRecord::Cursor</a>.</p>
+<h2 id="cursors-with-hand-written-sql"><a class="header" href="#cursors-with-hand-written-sql">Cursors with hand-written SQL</a></h2>
+<p>Using cursors with hand-written SQL is a breeze with <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a> and <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a>.</p>
+<pre><code class="language-ruby">OccamsRecord.
+  sql(&quot;
+    SELECT * FROM orders
+    WHERE order_date &gt; :date
+    ORDER BY order_date DESC, id
+  &quot;, {
+    date: 10.years.ago
+  }).
+  find_each_with_cursor(batch_size: 1000) { |order|
+    ...
+  }
+</code></pre>
+<p>And you still have low-level access via <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:cursor">cursor</a>:</p>
+<pre><code class="language-ruby">OccamsRecord.
+  sql(&quot;
+    SELECT * FROM orders
+    WHERE order_date &gt; :date
+    ORDER BY order_date DESC, id
+  &quot;, {
+    date: 10.years.ago
+  }).
+  cursor.
+  open { |cursor|
+    cursor.move(:forward, 300)
+    orders = cursor.fetch(:forward, 100)
+    orders.each { |order| ... }
+  }
+</code></pre>
 
                     </main>
 

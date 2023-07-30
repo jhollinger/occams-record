@@ -370,6 +370,9 @@ OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; %s&quot;, [date])
   model(Order).
   eager_load(:customer) {
     eager_load(:profile)
+  }.
+  each { |order|
+    puts order.customer.profile.username
   }
 </code></pre>
 <p>This works because the query is returning <code>orders.customer_id</code>, and that's the foreign key for the <code>Order#customer</code> relationship.</p>
@@ -386,8 +389,12 @@ OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; %s&quot;, [date])
   eager_load_one(:customer, {:customer_id =&gt; :id}, &quot;
     SELECT * FROM customers
     WHERE id IN (:customer_ids)
-  &quot;)
+  &quot;).
+  each { |order|
+    puts order.customer.name
+  }
 </code></pre>
+<p>This will take the <code>customer_id</code> column from the parent query and match it to the <code>id</code> column in the eager load query.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="batched-loading"><a class="header" href="#batched-loading">Batched Loading</a></h1>
 <p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2Esql">sql</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_each">find_each</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_in_batches">find_in_batches</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a></p>
 <p>Unlike ActiveRecord, OccamsRecord lets you use batched loading with hand-written SQL. There are two ways to do it.</p>
@@ -401,11 +408,11 @@ OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; %s&quot;, [date])
   &quot;, {
     date: 10.years.ago
   }).
-  find_each_with_cursor(batch_size: 1000) do |order|
+  find_each_with_cursor(batch_size: 1000) { |order|
     ...
-  end
+  }
 </code></pre>
-<p>Read more about using <a href="advanced/./cursors.html">Cursors</a> in OccamsRecord.</p>
+<p>Read more about using <a href="advanced/./cursors.html#cursors-with-hand-written-sql">Cursors</a> in OccamsRecord.</p>
 <h2 id="offset--limit-based"><a class="header" href="#offset--limit-based">OFFSET &amp; LIMIT based</a></h2>
 <p>With other database, you'll need to fall back to the traditional (and potentially slower) <code>OFFSET &amp; LIMIT</code> approach.</p>
 <pre><code class="language-ruby">OccamsRecord.
@@ -418,15 +425,108 @@ OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; %s&quot;, [date])
   &quot;, {
     date: 10.years.ago
   }).
-  find_each(batch_size: 1000) do |order|
+  find_each(batch_size: 1000) { |order|
     ...
-  end
+  }
 </code></pre>
 <p>OccamsRecord will provide the values for <code>:batch_limit</code> and <code>:batch_offset</code>. Just put the references in the right place.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="cursors"><a class="header" href="#cursors">Cursors</a></h1>
 <p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:cursor">cursor</a></p>
 <p><em>Note:</em> This section is only relevant to applications using PostgreSQL.</p>
+<p>For batched loading, cursors perform better than the traditional <code>OFFSET &amp; LIMIT</code> approach. If you're using PostgreSQL, take advantage of them with <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a> and <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a>.</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:customer).
+  find_each_with_cursor { |order|
+    ...
+  }
+</code></pre>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:customer).
+  find_in_batches_with_cursor { |order|
+    ...
+  }
+</code></pre>
+<p>If you need custom logic when using your cursor, use the lower-level <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:cursor">cursor</a> method:</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:customer).
+  cursor.
+  open { |cursor|
+    cursor.move(:forward, 300)
+    orders = cursor.fetch(:forward, 100)
+    orders.each { |order| ... }
+  }
+</code></pre>
+<p>The <code>cursor</code> var is an instance of <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord/Cursor">OccamsRecord::Cursor</a>.</p>
+<h2 id="cursors-with-hand-written-sql"><a class="header" href="#cursors-with-hand-written-sql">Cursors with hand-written SQL</a></h2>
+<p>Using cursors with hand-written SQL is a breeze with <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a> and <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a>.</p>
+<pre><code class="language-ruby">OccamsRecord.
+  sql(&quot;
+    SELECT * FROM orders
+    WHERE order_date &gt; :date
+    ORDER BY order_date DESC, id
+  &quot;, {
+    date: 10.years.ago
+  }).
+  find_each_with_cursor(batch_size: 1000) { |order|
+    ...
+  }
+</code></pre>
+<p>And you still have low-level access via <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:cursor">cursor</a>:</p>
+<pre><code class="language-ruby">OccamsRecord.
+  sql(&quot;
+    SELECT * FROM orders
+    WHERE order_date &gt; :date
+    ORDER BY order_date DESC, id
+  &quot;, {
+    date: 10.years.ago
+  }).
+  cursor.
+  open { |cursor|
+    cursor.move(:forward, 300)
+    orders = cursor.fetch(:forward, 100)
+    orders.each { |order| ... }
+  }
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="instance-methods"><a class="header" href="#instance-methods">Instance Methods</a></h1>
+<p>OccamsRecords results are just plain structs; they don't have methods from your Rails models. (Separating your persistence layer from your domain is good thing!) But sometimes you need a few methods. OccamsRecord provides two ways of accomplishing this.</p>
+<h2 id="injecting-modules"><a class="header" href="#injecting-modules">Injecting modules</a></h2>
+<p>You may also specify one or more modules to be included in your results:</p>
+<pre><code class="language-ruby">module MyOrderMethods
+  def description
+    &quot;#{order_number} - #{date}&quot;
+  end
+end
+
+module MyProductMethods
+  def expensive?
+    price &gt; 100
+  end
+end
+
+orders = OccamsRecord.
+  query(Order.all, use: MyOrderMethods).
+  eager_load(:line_items) {
+    eager_load(:product, use: [MyProductMethods, OtherMethods])
+  }.
+  find_each { |order|
+    puts order.description # MyOrderMethods#description
+    puts order.line_items[0].product.expensive? # MyProductMethods#expensive?
+  }
+</code></pre>
+<h2 id="activerecord-fallback-mode"><a class="header" href="#activerecord-fallback-mode">ActiveRecord fallback mode</a></h2>
+<p>This is an ugly hack of last resort if you can’t easily extract a method from your model into a shared module. Plugins, like carrierwave, are a good example. When you call a method that doesn’t exist on an OccamsRecord result, it will initialize an ActiveRecord object and forward the method call to it.</p>
+<p>The <code>active_record_fallback</code> option must be passed either <code>:lazy</code> or <code>:strict</code> (recommended). <code>:strict</code> enables ActiveRecord’s strict loading option, helping you avoid N+1 queries in your model code. <code>:lazy</code> allows them. (<code>:strict</code> is only available for ActiveRecord 6.1 and later.)</p>
+<p>The following will forward any nonexistent methods for <code>Order</code> and <code>Product</code> records:</p>
+<pre><code class="language-ruby">orders = OccamsRecord.
+  query(Order.all, active_record_fallback: :strict).
+  eager_load(:line_items) {
+    eager_load(:product, active_record_fallback: :strict)
+  }.
+  run
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="exceptions"><a class="header" href="#exceptions">Exceptions</a></h1>
 <h2 id="no-lazy-loading"><a class="header" href="#no-lazy-loading">No lazy loading</a></h2>
 <p>As mentioned in the <a href="advanced/../intro.html">introduction</a>, OccamsRecord won't lazy load any associations for you. If you forget to eager load one and try to use it, it will throw an <code>OccamsRecord::MissingEagerLoadError</code> exception.</p>
