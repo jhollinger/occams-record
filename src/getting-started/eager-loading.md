@@ -2,7 +2,7 @@
 
 *Docs:* [eager_load](https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FEagerLoaders%2FBuilder:eager_load)
 
-OccamsRecord `eager_load` method is most similar to ActiveRecord's `preload` method (i.e. it doesn't join). Probably should have just called it `preload`...
+OccamsRecord's `eager_load` method is similar to ActiveRecord's `preload` (i.e. it uses a separate query instead of a join).
 
 ```ruby
 OccamsRecord.

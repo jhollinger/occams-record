@@ -208,7 +208,7 @@ OccamsRecord.query(q).map { |order| ... }
 OccamsRecord.query(q).reduce([]) { |acc, order| ... }
 </code></pre>
 <h2 id="batching"><a class="header" href="#batching">Batching</a></h2>
-<p>OccamsRecord provides <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_each">find_each</a> and <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_in_batches">find_in_batches</a> methods that work similarly to their counterparts in ActiveRecord.</p>
+<p>OccamsRecord provides <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_each">find_each</a> and <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_in_batches">find_in_batches</a> methods that work similarly to their ActiveRecord counterparts.</p>
 <pre><code class="language-ruby">OccamsRecord.query(q).find_each { |order|
   ...
 }
@@ -219,10 +219,10 @@ OccamsRecord.query(q).find_in_batches { |orders|
   }
 }
 </code></pre>
-<p>If you're using PostgreSQL, consider using <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a> or <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a> for a possible performance boost. See <a href="getting-started/../advanced/cursors.html">Cursors</a> for more info.</p>
+<p>Using PostgreSQL? Consider using <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a> or <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a> for a performance boost. See <a href="getting-started/../advanced/cursors.html">Cursors</a> for more info.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="eager-loading"><a class="header" href="#eager-loading">Eager Loading</a></h1>
 <p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FEagerLoaders%2FBuilder:eager_load">eager_load</a></p>
-<p>OccamsRecord <code>eager_load</code> method is most similar to ActiveRecord's <code>preload</code> method (i.e. it doesn't join). Probably should have just called it <code>preload</code>...</p>
+<p>OccamsRecord's <code>eager_load</code> method is similar to ActiveRecord's <code>preload</code> (i.e. it uses a separate query instead of a join).</p>
 <pre><code class="language-ruby">OccamsRecord.
   query(q).
   eager_load(:customer).
@@ -581,6 +581,22 @@ orders = OccamsRecord.
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 

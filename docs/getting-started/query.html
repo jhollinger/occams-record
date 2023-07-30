@@ -188,7 +188,7 @@ OccamsRecord.query(q).map { |order| ... }
 OccamsRecord.query(q).reduce([]) { |acc, order| ... }
 </code></pre>
 <h2 id="batching"><a class="header" href="#batching">Batching</a></h2>
-<p>OccamsRecord provides <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_each">find_each</a> and <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_in_batches">find_in_batches</a> methods that work similarly to their counterparts in ActiveRecord.</p>
+<p>OccamsRecord provides <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_each">find_each</a> and <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_in_batches">find_in_batches</a> methods that work similarly to their ActiveRecord counterparts.</p>
 <pre><code class="language-ruby">OccamsRecord.query(q).find_each { |order|
   ...
 }
@@ -199,7 +199,7 @@ OccamsRecord.query(q).find_in_batches { |orders|
   }
 }
 </code></pre>
-<p>If you're using PostgreSQL, consider using <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a> or <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a> for a possible performance boost. See <a href="../advanced/cursors.html">Cursors</a> for more info.</p>
+<p>Using PostgreSQL? Consider using <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a> or <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a> for a performance boost. See <a href="../advanced/cursors.html">Cursors</a> for more info.</p>
 
                     </main>
 
@@ -230,6 +230,22 @@ OccamsRecord.query(q).find_in_batches { |orders|
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 
