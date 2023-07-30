@@ -83,7 +83,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html">Introduction</a></li><li class="chapter-item expanded affix "><a href="install.html">Installation</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Getting Started</li><li class="chapter-item expanded "><a href="getting-started/query.html"><strong aria-hidden="true">1.</strong> Your First Query</a></li><li class="chapter-item expanded "><a href="getting-started/eager-loading.html"><strong aria-hidden="true">2.</strong> Eager Loading</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Advanced Use</li><li class="chapter-item expanded "><a href="advanced/eager-loading.html"><strong aria-hidden="true">3.</strong> Advanced Eager Loading</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="advanced/ad-hoc-associations.html"><strong aria-hidden="true">3.1.</strong> Ad Hoc Associations</a></li></ol></li><li class="chapter-item expanded "><a href="advanced/cursors.html"><strong aria-hidden="true">4.</strong> Cursors</a></li><li class="chapter-item expanded "><a href="advanced/sql.html"><strong aria-hidden="true">5.</strong> Hand-written SQL</a></li><li class="chapter-item expanded "><a href="advanced/exceptions.html"><strong aria-hidden="true">6.</strong> Exceptions</a></li><li class="chapter-item expanded "><a href="advanced/methods.html"><strong aria-hidden="true">7.</strong> Instance Methods</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html">Introduction</a></li><li class="chapter-item expanded affix "><a href="install.html">Installation</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Getting Started</li><li class="chapter-item expanded "><a href="getting-started/query.html"><strong aria-hidden="true">1.</strong> Your First Query</a></li><li class="chapter-item expanded "><a href="getting-started/eager-loading.html"><strong aria-hidden="true">2.</strong> Eager Loading</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Advanced Use</li><li class="chapter-item expanded "><a href="advanced/eager-loading.html"><strong aria-hidden="true">3.</strong> Advanced Eager Loading</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="advanced/ad-hoc-associations.html"><strong aria-hidden="true">3.1.</strong> Ad Hoc Associations</a></li></ol></li><li class="chapter-item expanded "><a href="advanced/sql.html"><strong aria-hidden="true">4.</strong> Hand-written SQL</a></li><li class="chapter-item expanded "><a href="advanced/cursors.html"><strong aria-hidden="true">5.</strong> Cursors</a></li><li class="chapter-item expanded "><a href="advanced/methods.html"><strong aria-hidden="true">6.</strong> Instance Methods</a></li><li class="chapter-item expanded "><a href="advanced/exceptions.html"><strong aria-hidden="true">7.</strong> Exceptions</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -211,6 +211,7 @@ OccamsRecord.query(q).find_in_batches { |orders|
   }
 }
 </code></pre>
+<p>If you're using PostgreSQL, consider using <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a> or <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a> for a possible performance boost. See <a href="getting-started/../advanced/cursors.html">Cursors</a> for more info.</p>
 <h2 id="enumeration"><a class="header" href="#enumeration">Enumeration</a></h2>
 <p>You may also run your query and iterate using any <a href="https://ruby-doc.org/core-3.0.2/Enumerable.html">Enumerable</a> method:</p>
 <pre><code class="language-ruby">OccamsRecord.query(q).each { |order| ... }
@@ -314,7 +315,7 @@ OccamsRecord.query(q).reduce([]) { |acc, order| ... }
 <h3 id="eager_load_one"><a class="header" href="#eager_load_one">eager_load_one</a></h3>
 <p><code>eager_load_one</code> works exactly the same but for one-to-one relationships.</p>
 <h3 id="nesting-ad-hoc-associations"><a class="header" href="#nesting-ad-hoc-associations">Nesting ad hoc associations</a></h3>
-<p>You can nest ad hoc eager loads. Here's an <code>eager_load_many</code> with an <code>eager_load_one</code> nested inside:</p>
+<p>Like other eager loads, you can nest ad hoc ones. Here's an <code>eager_load_many</code> with an <code>eager_load_one</code> nested inside:</p>
 <pre><code class="language-ruby">OccamsRecord.
   query(Product.all).
   eager_load_many(:customers, {:id =&gt; :product_id}, &quot;SELECT...&quot;) {
@@ -329,10 +330,101 @@ OccamsRecord.query(q).reduce([]) { |acc, order| ... }
   }
 </code></pre>
 <p>Notice that we added <code>model: Customer</code> to <code>eager_load_many</code>'s arguments. That annotates the ad hoc association with the model, allowing us to use the regular <code>eager_load</code> on <code>Customer</code> associations like <code>:profile</code>.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="cursors"><a class="header" href="#cursors">Cursors</a></h1>
-<p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:cursor">cursor</a></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="hand-written-sql"><a class="header" href="#hand-written-sql">Hand-written SQL</a></h1>
 <p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2Esql">sql</a></p>
+<p>Sometimes you have to write a big, gnarly SQL query by hand. Here's a basic example (using simple SQL for brevity):</p>
+<pre><code class="language-ruby">OccamsRecord.
+  sql(&quot;
+    SELECT * FROM orders
+    WHERE order_date &gt; :date
+    ORDER BY order_date DESC, id
+  &quot;, {
+    date: 30.days.ago
+  }).
+  each { |order|
+     ...
+  }
+</code></pre>
+<p>OccamsRecord supports several query param syntaxes:</p>
+<pre><code class="language-ruby"># Rails-style
+OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; :date&quot;, {date: date})
+OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; ?&quot;, [date])
+
+# Ruby-style
+OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; %{date}&quot;, {date: date})
+OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; %s&quot;, [date])
+</code></pre>
+<h2 id="eager-loading-1"><a class="header" href="#eager-loading-1">Eager loading</a></h2>
+<p>Unlike ActiveRecord, OccamsRecord lets you eager load associations when using hand-written SQL. There are two ways to do it.</p>
+<h3 id="using-a-model"><a class="header" href="#using-a-model">Using a model</a></h3>
+<p>If your results are close enough to a model, you can annotate the query with the model and <code>eager_load</code> its associations.</p>
+<pre><code class="language-ruby">OccamsRecord.
+  sql(&quot;
+    SELECT * FROM orders
+    WHERE order_date &gt; :date
+    ORDER BY order_date DESC, id
+  &quot;, {
+    date: 30.days.ago
+  }).
+  model(Order).
+  eager_load(:customer) {
+    eager_load(:profile)
+  }
+</code></pre>
+<p>This works because the query is returning <code>orders.customer_id</code>, and that's the foreign key for the <code>Order#customer</code> relationship.</p>
+<h3 id="using-ad-hoc-associations"><a class="header" href="#using-ad-hoc-associations">Using ad hoc associations</a></h3>
+<p>If your results don't resemble a model, or you need to load associations from various models, you can write the SQL yourself in an &quot;ad hoc association&quot;. See <a href="advanced/./ad-hoc-associations.html">Ad Hoc Associations</a> for more details.</p>
+<pre><code class="language-ruby">OccamsRecord.
+  sql(&quot;
+    SELECT * FROM orders
+    WHERE order_date &gt; :date
+    ORDER BY order_date DESC, id
+  &quot;, {
+    date: 30.days.ago
+  }).
+  eager_load_one(:customer, {:customer_id =&gt; :id}, &quot;
+    SELECT * FROM customers
+    WHERE id IN (:customer_ids)
+  &quot;)
+</code></pre>
+<h2 id="batched-loading"><a class="header" href="#batched-loading">Batched loading</a></h2>
+<p>Unlike ActiveRecord, OccamsRecord lets you use batched loading with hand-written SQL. There are two ways to do it.</p>
+<h3 id="cursor-based"><a class="header" href="#cursor-based">Cursor based</a></h3>
+<p>If you're using PostgreSQL, using cursors for batched loading is faster and easy:</p>
+<pre><code class="language-ruby">OccamsRecord.
+  sql(&quot;
+    SELECT * FROM orders
+    WHERE order_date &gt; :date
+    ORDER BY order_date DESC, id
+  &quot;, {
+    date: 10.years.ago
+  }).
+  find_each_with_cursor(batch_size: 1000) do |order|
+    ...
+  end
+</code></pre>
+<p>Read more about using <a href="advanced/./cursors.html">Cursors</a> in OccamsRecord.</p>
+<h3 id="offset--limit-based"><a class="header" href="#offset--limit-based">OFFSET &amp; LIMIT based</a></h3>
+<p>With other database, you'll need to fall back to the traditional (and potentially slower) <code>OFFSET &amp; LIMIT</code> approach.</p>
+<pre><code class="language-ruby">OccamsRecord.
+  sql(&quot;
+    SELECT * FROM orders
+    WHERE order_date &gt; :date
+    ORDER BY order_date DESC, id
+    LIMIT :batch_limit
+    OFFSET :batch_offset
+  &quot;, {
+    date: 10.years.ago
+  }).
+  find_each(batch_size: 1000) do |order|
+    ...
+  end
+</code></pre>
+<p>OccamsRecord will provide the values for <code>:batch_limit</code> and <code>:batch_offset</code>. Just put the references in the right place.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cursors"><a class="header" href="#cursors">Cursors</a></h1>
+<p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:cursor">cursor</a></p>
+<p><em>Note:</em> This section is only relevant to applications using PostgreSQL.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="instance-methods"><a class="header" href="#instance-methods">Instance Methods</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="exceptions"><a class="header" href="#exceptions">Exceptions</a></h1>
 <h2 id="no-lazy-loading"><a class="header" href="#no-lazy-loading">No lazy loading</a></h2>
 <p>As mentioned in the <a href="advanced/../intro.html">introduction</a>, OccamsRecord won't lazy load any associations for you. If you forget to eager load one and try to use it, it will throw an <code>OccamsRecord::MissingEagerLoadError</code> exception.</p>
@@ -348,7 +440,6 @@ OccamsRecord.query(q).reduce([]) { |acc, order| ... }
 </code></pre>
 <pre><code class="language-ruby">OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded! Found at root.line_items.product
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="instance-methods"><a class="header" href="#instance-methods">Instance Methods</a></h1>
 
                     </main>
 

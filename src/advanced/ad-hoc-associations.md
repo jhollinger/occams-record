@@ -44,7 +44,7 @@ The forth argument is optional. It can be a Hash or Array of any other query par
 
 ### Nesting ad hoc associations
 
-You can nest ad hoc eager loads. Here's an `eager_load_many` with an `eager_load_one` nested inside:
+Like other eager loads, you can nest ad hoc ones. Here's an `eager_load_many` with an `eager_load_one` nested inside:
 
 ```ruby
 OccamsRecord.

@@ -37,6 +37,8 @@ OccamsRecord.query(q).find_in_batches { |orders|
 }
 ```
 
+If you're using PostgreSQL, consider using [find_each_with_cursor](https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor) or [find_in_batches_with_cursor](https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor) for a possible performance boost. See [Cursors](../advanced/cursors.md) for more info.
+
 ## Enumeration
 
 You may also run your query and iterate using any [Enumerable](https://ruby-doc.org/core-3.0.2/Enumerable.html) method:
