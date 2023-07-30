@@ -91,6 +91,28 @@ class EagerLoadingAdHocTest < Minitest::Test
       }
   end
 
+  def test_regular_eager_load_under_ad_hoc
+    widgets = OccamsRecord.
+      query(Widget.order("name").limit(4)).
+      eager_load_one(:category, {:category_id => :id}, %(
+        SELECT * FROM categories WHERE id IN (%{category_ids}) AND name != %{bad_name}
+      ), binds: {
+        bad_name: "Bad category"
+      }, model: Category) {
+        eager_load(:splines)
+      }.
+      run
+
+      assert_equal [
+        "Widget A: Foo (2 splines in category)",
+        "Widget B: Foo (2 splines in category)",
+        "Widget C: Foo (2 splines in category)",
+        "Widget D: Bar (1 splines in category)",
+      ], widgets.map { |w|
+        "#{w.name}: #{w.category&.name} (#{w.category&.splines&.size} splines in category)"
+      }
+  end
+
   def test_eager_load_one_and_many_with_zero_parents
     widgets = OccamsRecord.
       query(Widget.where(name: "Does Not Exist")).
