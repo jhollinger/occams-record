@@ -166,7 +166,8 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="exceptions"><a class="header" href="#exceptions">Exceptions</a></h1>
-<h2 id="no-lazy-loading"><a class="header" href="#no-lazy-loading">No lazy loading</a></h2>
+<p>Aside from various possible <code>RuntimeError</code> and <code>ArgumentError</code> exceptions, OccamsRecord has several well-defined exceptions for common errors. The most useful are described here.</p>
+<h2 id="occamsrecordmissingeagerloaderror"><a class="header" href="#occamsrecordmissingeagerloaderror">OccamsRecord::MissingEagerLoadError</a></h2>
 <p>As mentioned in the <a href="../intro.html">introduction</a>, OccamsRecord won't lazy load any associations for you. If you forget to eager load one and try to use it, it will throw an <code>OccamsRecord::MissingEagerLoadError</code> exception.</p>
 <pre><code class="language-ruby">OccamsRecord.
   query(q).
@@ -174,12 +175,30 @@
     eager_load(:product)
   }.
   find_each { |order|
-    # this throws the following exception
+    # this throws because it tries to access &quot;category&quot;, which we didn't eager load
     puts order.line_items[0].product.category.name
   }
 </code></pre>
-<pre><code class="language-ruby">OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded! Found at root.line_items.product
+<p>The message contains helpful information telling us exactly where we forgot to eager load it:</p>
+<blockquote>
+<p>Association 'category' is unavailable on Product because it was not eager loaded! Occams Record trace: root.line_items.product</p>
+</blockquote>
+<h2 id="occamsrecordmissingcolumnerror"><a class="header" href="#occamsrecordmissingcolumnerror">OccamsRecord::MissingColumnError</a></h2>
+<p>Elsewhere we noted that your eager loads can specify a subset of columns to select (for performance reasons). If you try to access a column you didn't select, it will throw an <code>OccamsRecord::MissingColumnError</code> exception.</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:line_items) {
+    eager_load(:product, select: &quot;id, name&quot;)
+  }.
+  find_each { |order|
+    # this throws because it tries to access the &quot;description&quot; column, which we didn't select
+    puts order.line_items[0].product.description
+  }
 </code></pre>
+<p>The message contains helpful information telling us exactly where we forgot to select it:</p>
+<blockquote>
+<p>Column 'description' is unavailable on Product because it was not included in the SELECT statement! Occams Record trace: root.line_items.product&quot;</p>
+</blockquote>
 
                     </main>
 
