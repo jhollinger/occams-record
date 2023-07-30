@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - Occams Record</title>
+        <title>Cursors - Occams Record</title>
 
 
         <!-- Custom HTML head -->
@@ -12,20 +12,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
@@ -34,7 +34,7 @@
     <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "";
+            var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
@@ -82,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html" class="active">Introduction</a></li><li class="chapter-item expanded affix "><a href="install.html">Installation</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Getting Started</li><li class="chapter-item expanded "><a href="getting-started/query.html"><strong aria-hidden="true">1.</strong> Your First Query</a></li><li class="chapter-item expanded "><a href="getting-started/eager-loading.html"><strong aria-hidden="true">2.</strong> Eager Loading</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Advanced Use</li><li class="chapter-item expanded "><a href="advanced/eager-loading.html"><strong aria-hidden="true">3.</strong> Advanced Eager Loading</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="advanced/ad-hoc-associations.html"><strong aria-hidden="true">3.1.</strong> Ad Hoc Associations</a></li></ol></li><li class="chapter-item expanded "><a href="advanced/cursors.html"><strong aria-hidden="true">4.</strong> Cursors</a></li><li class="chapter-item expanded "><a href="advanced/sql.html"><strong aria-hidden="true">5.</strong> Hand-written SQL</a></li><li class="chapter-item expanded "><a href="advanced/exceptions.html"><strong aria-hidden="true">6.</strong> Exceptions</a></li><li class="chapter-item expanded "><a href="advanced/methods.html"><strong aria-hidden="true">7.</strong> Instance Methods</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../intro.html">Introduction</a></li><li class="chapter-item expanded affix "><a href="../install.html">Installation</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Getting Started</li><li class="chapter-item expanded "><a href="../getting-started/query.html"><strong aria-hidden="true">1.</strong> Your First Query</a></li><li class="chapter-item expanded "><a href="../getting-started/eager-loading.html"><strong aria-hidden="true">2.</strong> Eager Loading</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Advanced Use</li><li class="chapter-item expanded "><a href="../advanced/eager-loading.html"><strong aria-hidden="true">3.</strong> Advanced Eager Loading</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../advanced/ad-hoc-associations.html"><strong aria-hidden="true">3.1.</strong> Ad Hoc Associations</a></li></ol></li><li class="chapter-item expanded "><a href="../advanced/cursors.html" class="active"><strong aria-hidden="true">4.</strong> Cursors</a></li><li class="chapter-item expanded "><a href="../advanced/sql.html"><strong aria-hidden="true">5.</strong> Hand-written SQL</a></li><li class="chapter-item expanded "><a href="../advanced/exceptions.html"><strong aria-hidden="true">6.</strong> Exceptions</a></li><li class="chapter-item expanded "><a href="../advanced/methods.html"><strong aria-hidden="true">7.</strong> Instance Methods</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -136,7 +136,7 @@
                     <h1 class="menu-title">Occams Record</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -165,27 +165,18 @@
 
                 <div id="content" class="content">
                     <main>
-                        <p>OccamsRecord provides the power tools that ActiveRecord forgot. Specifically, advanced eager loading capabilities, full support for hand-written SQL, cursors, and high performance for read-only operations. Use it alongside ActiveRecord to unlock the power of your database.</p>
-<p>Contribute to OccamsRecord's development at <a href="https://github.com/jhollinger/occams-record/">github.com/jhollinger/occams-record</a>.</p>
-<p>Full documentation is available at <a href="http://www.rubydoc.info/gems/occams-record">rubydoc.info/gems/occams-record</a>.</p>
-<h2 id="occams-razor--simplicity"><a class="header" href="#occams-razor--simplicity">Occam's Razor &amp; Simplicity</a></h2>
-<blockquote>
-<p>Do not multiply entities beyond necessity. -- William of Ockham</p>
-</blockquote>
-<p>This definition of simplicity is a core tenant of OccamsRecord. Good libraries are simple, fast, and stay out of your way.</p>
-<h3 id="fast--read-only"><a class="header" href="#fast--read-only">Fast &amp; read-only</a></h3>
-<p>OccamsRecord embraces simplicity by doing <em>less</em>. The vast majority of ActiveRecord objects are used <em>read-only</em>, yet each prepares and holds internal state <em>just in case</em> it's used for writing. By returning results as structs, OccamsRecord offers a baseline <strong>3x-5x speed boost and 2/3 memory reduction</strong>.</p>
-<h3 id="no-n1-problem"><a class="header" href="#no-n1-problem">No N+1 problem</a></h3>
-<p>OccamsRecord simply refuses to do lazy loading, aka the &quot;N+1 query problem&quot;. If you want to use an association, eager load it up-front. While ActiveRecord now supports similar <em>opt-in</em> behavior, it still can't beat Occams in speed and the power of defaults.</p>
-<h3 id="no-arbitrary-limitations"><a class="header" href="#no-arbitrary-limitations">No arbitrary limitations</a></h3>
-<p>OccamsRecord also embraces simplicity by making things easier for you, the person writing code. ActiveRecord has poor support for hand-written SQL, advanced eager loading scenarios, and advanced database features like cursors. OccamsRecord makes everything simpler by providing all of this in a way that's familiar and easy to use.</p>
+                        <h1 id="cursors"><a class="header" href="#cursors">Cursors</a></h1>
+<p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:cursor">cursor</a></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../advanced/ad-hoc-associations.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
-                            <a rel="next" href="install.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../advanced/sql.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -195,8 +186,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../advanced/ad-hoc-associations.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
-                    <a rel="next" href="install.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../advanced/sql.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -227,13 +221,13 @@
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
 

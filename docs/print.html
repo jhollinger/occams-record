@@ -83,7 +83,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> Chapter 1</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html">Introduction</a></li><li class="chapter-item expanded affix "><a href="install.html">Installation</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Getting Started</li><li class="chapter-item expanded "><a href="getting-started/query.html"><strong aria-hidden="true">1.</strong> Your First Query</a></li><li class="chapter-item expanded "><a href="getting-started/eager-loading.html"><strong aria-hidden="true">2.</strong> Eager Loading</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Advanced Use</li><li class="chapter-item expanded "><a href="advanced/eager-loading.html"><strong aria-hidden="true">3.</strong> Advanced Eager Loading</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="advanced/ad-hoc-associations.html"><strong aria-hidden="true">3.1.</strong> Ad Hoc Associations</a></li></ol></li><li class="chapter-item expanded "><a href="advanced/cursors.html"><strong aria-hidden="true">4.</strong> Cursors</a></li><li class="chapter-item expanded "><a href="advanced/sql.html"><strong aria-hidden="true">5.</strong> Hand-written SQL</a></li><li class="chapter-item expanded "><a href="advanced/exceptions.html"><strong aria-hidden="true">6.</strong> Exceptions</a></li><li class="chapter-item expanded "><a href="advanced/methods.html"><strong aria-hidden="true">7.</strong> Instance Methods</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -166,7 +166,189 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
+                        <p>OccamsRecord provides the power tools that ActiveRecord forgot. Specifically, advanced eager loading capabilities, full support for hand-written SQL, cursors, and high performance for read-only operations. Use it alongside ActiveRecord to unlock the power of your database.</p>
+<p>Contribute to OccamsRecord's development at <a href="https://github.com/jhollinger/occams-record/">github.com/jhollinger/occams-record</a>.</p>
+<p>Full documentation is available at <a href="http://www.rubydoc.info/gems/occams-record">rubydoc.info/gems/occams-record</a>.</p>
+<h2 id="occams-razor--simplicity"><a class="header" href="#occams-razor--simplicity">Occam's Razor &amp; Simplicity</a></h2>
+<blockquote>
+<p>Do not multiply entities beyond necessity. -- William of Ockham</p>
+</blockquote>
+<p>This definition of simplicity is a core tenant of OccamsRecord. Good libraries are simple, fast, and stay out of your way.</p>
+<h3 id="fast--read-only"><a class="header" href="#fast--read-only">Fast &amp; read-only</a></h3>
+<p>OccamsRecord embraces simplicity by doing <em>less</em>. The vast majority of ActiveRecord objects are used <em>read-only</em>, yet each prepares and holds internal state <em>just in case</em> it's used for writing. By returning results as structs, OccamsRecord offers a baseline <strong>3x-5x speed boost and 2/3 memory reduction</strong>.</p>
+<h3 id="no-n1-problem"><a class="header" href="#no-n1-problem">No N+1 problem</a></h3>
+<p>OccamsRecord simply refuses to do lazy loading, aka the &quot;N+1 query problem&quot;. If you want to use an association, eager load it up-front. While ActiveRecord now supports similar <em>opt-in</em> behavior, it still can't beat Occams in speed and the power of defaults.</p>
+<h3 id="no-arbitrary-limitations"><a class="header" href="#no-arbitrary-limitations">No arbitrary limitations</a></h3>
+<p>OccamsRecord also embraces simplicity by making things easier for you, the person writing code. ActiveRecord has poor support for hand-written SQL, advanced eager loading scenarios, and advanced database features like cursors. OccamsRecord makes everything simpler by providing all of this in a way that's familiar and easy to use.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
+<p>Simply add the <code>occams-record</code> gem to your <code>Gemfile</code>:</p>
+<pre><code class="language-ruby">gem 'occams-record'
+</code></pre>
+<p>OccamsRecord has no configuration. As a companion library to ActiveRecord, all database configuration comes from ActiveRecord.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="your-first-query"><a class="header" href="#your-first-query">Your First Query</a></h1>
+<p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2Equery">query</a></p>
+<p>One thing OccamsRecord <em>doesn't</em> touch is ActiveRecord's query builder. Write your queries like normal:</p>
+<pre><code class="language-ruby">q = Order.
+  completed.
+  where(&quot;order_date &gt; ?&quot;, 30.days.ago).
+  order(&quot;order_date DESC&quot;)
+</code></pre>
+<p>But hand them off to OccamsRecord to be run:</p>
+<pre><code class="language-ruby">orders = OccamsRecord.
+  query(q).
+  to_a
+</code></pre>
+<p>Now instead of bloated ActiveRecord objects, <code>orders</code> is an array of fast, small structs.</p>
+<h2 id="batching"><a class="header" href="#batching">Batching</a></h2>
+<p>OccamsRecord provides <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_each">find_each</a> and <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:find_in_batches">find_in_batches</a> methods that work similarly to their counterparts in ActiveRecord.</p>
+<pre><code class="language-ruby">OccamsRecord.query(q).find_each { |order|
+  ...
+}
+
+OccamsRecord.query(q).find_in_batches { |orders|
+  orders.each { |order|
+    ...
+  }
+}
+</code></pre>
+<h2 id="enumeration"><a class="header" href="#enumeration">Enumeration</a></h2>
+<p>You may also run your query and iterate using any <a href="https://ruby-doc.org/core-3.0.2/Enumerable.html">Enumerable</a> method:</p>
+<pre><code class="language-ruby">OccamsRecord.query(q).each { |order| ... }
+OccamsRecord.query(q).map { |order| ... }
+OccamsRecord.query(q).reduce([]) { |acc, order| ... }
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="eager-loading"><a class="header" href="#eager-loading">Eager Loading</a></h1>
+<p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FEagerLoaders%2FBuilder:eager_load">eager_load</a></p>
+<p>OccamsRecord <code>eager_load</code> method is most similar to ActiveRecord's <code>preload</code> method (i.e. it doesn't join). Probably should have just called it <code>preload</code>...</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:customer).
+  eager_load(:line_items).
+  find_each { |order|
+    puts order.customer.first_name
+    puts order.line_items[0].cost
+  }
+</code></pre>
+<p>Nested eager loading is done with blocks. Isn't it so much more readable?</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:customer).
+  eager_load(:line_items) {
+    eager_load(:product)
+    eager_load(:something_else) {
+      eager_load(:yet_another_thing)
+    }
+  }.
+  find_each { |order|
+    puts order.customer.first_name
+    order.line_items.each { |i|
+      puts i.product.name
+      puts i.something_else.yet_another_thing.description
+    }
+  }
+</code></pre>
+<p>There's lots more that <code>eager_load</code> can do. We'll cover it in <a href="getting-started/../advanced/eager-loading.html">Advanced Eager Loading</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="advanced-eager-loading"><a class="header" href="#advanced-eager-loading">Advanced Eager Loading</a></h1>
+<p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FEagerLoaders%2FBuilder:eager_load">eager_load</a></p>
+<h3 id="select-just-the-columns-you-need"><a class="header" href="#select-just-the-columns-you-need">Select just the columns you need</a></h3>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:customer, select: &quot;id, name&quot;)
+</code></pre>
+<h3 id="fully-customize-the-query"><a class="header" href="#fully-customize-the-query">Fully customize the query</a></h3>
+<p>You can snag the eager load's pending query and use the model's scopes or add any other conditions (<code>select</code>, <code>where</code>, <code>joins</code>, <code>order</code>, etc).</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:customer, -&gt;(q) { q.active.order(:name) })
+</code></pre>
+<p>If you have a long one, there's a block-based syntax:</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:customer) {
+    scope { |q|
+      q.active.
+        joins(:account).
+        where(&quot;accounts.something = ?&quot;, true).
+        select(&quot;id, name&quot;)
+    }
+  }
+</code></pre>
+<h3 id="block-argument-syntax"><a class="header" href="#block-argument-syntax">Block-argument syntax</a></h3>
+<p>If you need to call methods from the surrounding environment in your eager loads (like the <code>params</code> method in a Rails controller), use the block-argument syntax.</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:customer) { |c|
+    c.scope { |q| q.where(some_column: params[:some_value]) }
+
+    c.eager_load(:account) { |a|
+      a.eager_load(:something_else)
+    }
+  }
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="ad-hoc-associations"><a class="header" href="#ad-hoc-associations">Ad Hoc Associations</a></h1>
+<p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FEagerLoaders%2FBuilder:eager_load_many">eager_load_many</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FEagerLoaders%2FBuilder:eager_load_one">eager_load_one</a></p>
+<p>On rare occasions you may need to eager load an association <em>that doesn't actually exist in your models</em>. Maybe it's too convoluted to represent with ActiveRecord. Or maybe it's just deeply nested and you don't want to waste time/memory loading all the intermediate records.</p>
+<h3 id="eager_load_many"><a class="header" href="#eager_load_many">eager_load_many</a></h3>
+<p>The following example uses <code>eager_load_many</code> to load a non-existent, has-many association on <code>Product</code> called <code>customers</code>.</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(Product.all).
+  eager_load_many(:customers, {:id =&gt; :product_id}, &quot;
+    SELECT DISTINCT product_id, customers.*
+    FROM line_items
+      INNER JOIN orders ON line_items.order_id = orders.id
+      INNER JOIN customers on orders.customer_id = customers.id
+    WHERE
+      line_items.product_id IN (:ids)
+      AND customers.created_at &gt;= :date
+  &quot;, binds: {
+    date: params[:date]
+  })
+</code></pre>
+<p>That's a lot, so we'll break it down. The method call really just looks like this:</p>
+<pre><code class="language-ruby">eager_load_many(:customers, {:id =&gt; :product_id}, &quot;SOME SQL&quot;, binds: {date: some_date})
+</code></pre>
+<p>The first argument, <code>:customers</code>, simply gives this made-up association a name. Your code will call <code>product.customers</code>.</p>
+<p>The second argument, <code>{:id =&gt; :product_id}</code> defines the parent-child mapping. In this case it says, &quot;The parent records have an <code>id</code> field, and it will match the <code>product_id</code> field in the children.&quot;</p>
+<p>The third argument is the SQL that loads customers. Notice the <code>line_items.product_id IN (:ids)</code> section. That's ensuring we're only loading customers that are related to the products we've loaded. OccamsRecord <em>will provide those ids for us</em> - don't worry. (And it's only called <code>:ids</code> because we defined the parent mapping as <code>:id</code>. If the parent mapping was instead <code>:code</code>, we'd put <code>:codes</code> in the SQL.)</p>
+<p>The forth argument is optional. It can be a Hash or Array of any other query parameters you need.</p>
+<h3 id="eager_load_one"><a class="header" href="#eager_load_one">eager_load_one</a></h3>
+<p><code>eager_load_one</code> works exactly the same but for one-to-one relationships.</p>
+<h3 id="nesting-ad-hoc-associations"><a class="header" href="#nesting-ad-hoc-associations">Nesting ad hoc associations</a></h3>
+<p>You can nest ad hoc eager loads. Here's an <code>eager_load_many</code> with an <code>eager_load_one</code> nested inside:</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(Product.all).
+  eager_load_many(:customers, {:id =&gt; :product_id}, &quot;SELECT...&quot;) {
+    eager_load_one(:something, {:id =&gt; :customer_id}, &quot;SELECT...&quot;)
+  }
+</code></pre>
+<p>Here's an <code>eager_load_many</code> with a <strong>regular</strong> <code>eager_load</code> nested!</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(Product.all).
+  eager_load_many(:customers, {:id =&gt; :product_id}, &quot;SELECT...&quot;, model: Customer) {
+    eager_load(:profile)
+  }
+</code></pre>
+<p>Notice that we added <code>model: Customer</code> to <code>eager_load_many</code>'s arguments. That annotates the ad hoc association with the model, allowing us to use the regular <code>eager_load</code> on <code>Customer</code> associations like <code>:profile</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cursors"><a class="header" href="#cursors">Cursors</a></h1>
+<p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_each_with_cursor">find_each_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FBatches%2FCursorHelpers:find_in_batches_with_cursor">find_in_batches_with_cursor</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:cursor">cursor</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hand-written-sql"><a class="header" href="#hand-written-sql">Hand-written SQL</a></h1>
+<p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2Esql">sql</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="exceptions"><a class="header" href="#exceptions">Exceptions</a></h1>
+<h2 id="no-lazy-loading"><a class="header" href="#no-lazy-loading">No lazy loading</a></h2>
+<p>As mentioned in the <a href="advanced/../intro.html">introduction</a>, OccamsRecord won't lazy load any associations for you. If you forget to eager load one and try to use it, it will throw an <code>OccamsRecord::MissingEagerLoadError</code> exception.</p>
+<pre><code class="language-ruby">OccamsRecord.
+  query(q).
+  eager_load(:line_items) {
+    eager_load(:product)
+  }.
+  find_each { |order|
+    # this throws the following exception
+    puts order.line_items[0].product.category.name
+  }
+</code></pre>
+<pre><code class="language-ruby">OccamsRecord::MissingEagerLoadError: Association 'category' is unavailable on Product because it was not eager loaded! Found at root.line_items.product
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="instance-methods"><a class="header" href="#instance-methods">Instance Methods</a></h1>
 
                     </main>
 
@@ -185,6 +367,22 @@
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 
