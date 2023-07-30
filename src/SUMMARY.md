@@ -17,6 +17,8 @@
 - [Advanced Eager Loading](./advanced/eager-loading.md)
   - [Ad Hoc Associations](./advanced/ad-hoc-associations.md)
 - [Hand-written SQL](./advanced/sql.md)
+  - [Eager Loading](./advanced/sql-eager-loading.md)
+  - [Batched Loading](./advanced/sql-batched-loading.md)
 - [Cursors](./advanced/cursors.md)
 - [Instance Methods](./advanced/methods.md)
 - [Exceptions](./advanced/exceptions.md)

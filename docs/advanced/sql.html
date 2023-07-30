@@ -82,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../intro.html">Introduction</a></li><li class="chapter-item expanded affix "><a href="../install.html">Installation</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Getting Started</li><li class="chapter-item expanded "><a href="../getting-started/query.html"><strong aria-hidden="true">1.</strong> Your First Query</a></li><li class="chapter-item expanded "><a href="../getting-started/eager-loading.html"><strong aria-hidden="true">2.</strong> Eager Loading</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Advanced Use</li><li class="chapter-item expanded "><a href="../advanced/eager-loading.html"><strong aria-hidden="true">3.</strong> Advanced Eager Loading</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../advanced/ad-hoc-associations.html"><strong aria-hidden="true">3.1.</strong> Ad Hoc Associations</a></li></ol></li><li class="chapter-item expanded "><a href="../advanced/sql.html" class="active"><strong aria-hidden="true">4.</strong> Hand-written SQL</a></li><li class="chapter-item expanded "><a href="../advanced/cursors.html"><strong aria-hidden="true">5.</strong> Cursors</a></li><li class="chapter-item expanded "><a href="../advanced/methods.html"><strong aria-hidden="true">6.</strong> Instance Methods</a></li><li class="chapter-item expanded "><a href="../advanced/exceptions.html"><strong aria-hidden="true">7.</strong> Exceptions</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../intro.html">Introduction</a></li><li class="chapter-item expanded affix "><a href="../install.html">Installation</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Getting Started</li><li class="chapter-item expanded "><a href="../getting-started/query.html"><strong aria-hidden="true">1.</strong> Your First Query</a></li><li class="chapter-item expanded "><a href="../getting-started/eager-loading.html"><strong aria-hidden="true">2.</strong> Eager Loading</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><li class="part-title">Advanced Use</li><li class="chapter-item expanded "><a href="../advanced/eager-loading.html"><strong aria-hidden="true">3.</strong> Advanced Eager Loading</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../advanced/ad-hoc-associations.html"><strong aria-hidden="true">3.1.</strong> Ad Hoc Associations</a></li></ol></li><li class="chapter-item expanded "><a href="../advanced/sql.html" class="active"><strong aria-hidden="true">4.</strong> Hand-written SQL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../advanced/sql-eager-loading.html"><strong aria-hidden="true">4.1.</strong> Eager Loading</a></li><li class="chapter-item expanded "><a href="../advanced/sql-batched-loading.html"><strong aria-hidden="true">4.2.</strong> Batched Loading</a></li></ol></li><li class="chapter-item expanded "><a href="../advanced/cursors.html"><strong aria-hidden="true">5.</strong> Cursors</a></li><li class="chapter-item expanded "><a href="../advanced/methods.html"><strong aria-hidden="true">6.</strong> Instance Methods</a></li><li class="chapter-item expanded "><a href="../advanced/exceptions.html"><strong aria-hidden="true">7.</strong> Exceptions</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -189,73 +189,6 @@ OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; ?&quot;, [date])
 OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; %{date}&quot;, {date: date})
 OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; %s&quot;, [date])
 </code></pre>
-<h2 id="eager-loading"><a class="header" href="#eager-loading">Eager loading</a></h2>
-<p>Unlike ActiveRecord, OccamsRecord lets you eager load associations when using hand-written SQL. There are two ways to do it.</p>
-<h3 id="using-a-model"><a class="header" href="#using-a-model">Using a model</a></h3>
-<p>If your results are close enough to a model, you can annotate the query with the model and <code>eager_load</code> its associations.</p>
-<pre><code class="language-ruby">OccamsRecord.
-  sql(&quot;
-    SELECT * FROM orders
-    WHERE order_date &gt; :date
-    ORDER BY order_date DESC, id
-  &quot;, {
-    date: 30.days.ago
-  }).
-  model(Order).
-  eager_load(:customer) {
-    eager_load(:profile)
-  }
-</code></pre>
-<p>This works because the query is returning <code>orders.customer_id</code>, and that's the foreign key for the <code>Order#customer</code> relationship.</p>
-<h3 id="using-ad-hoc-associations"><a class="header" href="#using-ad-hoc-associations">Using ad hoc associations</a></h3>
-<p>If your results don't resemble a model, or you need to load associations from various models, you can write the SQL yourself in an &quot;ad hoc association&quot;. See <a href="./ad-hoc-associations.html">Ad Hoc Associations</a> for more details.</p>
-<pre><code class="language-ruby">OccamsRecord.
-  sql(&quot;
-    SELECT * FROM orders
-    WHERE order_date &gt; :date
-    ORDER BY order_date DESC, id
-  &quot;, {
-    date: 30.days.ago
-  }).
-  eager_load_one(:customer, {:customer_id =&gt; :id}, &quot;
-    SELECT * FROM customers
-    WHERE id IN (:customer_ids)
-  &quot;)
-</code></pre>
-<h2 id="batched-loading"><a class="header" href="#batched-loading">Batched loading</a></h2>
-<p>Unlike ActiveRecord, OccamsRecord lets you use batched loading with hand-written SQL. There are two ways to do it.</p>
-<h3 id="cursor-based"><a class="header" href="#cursor-based">Cursor based</a></h3>
-<p>If you're using PostgreSQL, using cursors for batched loading is faster and easy:</p>
-<pre><code class="language-ruby">OccamsRecord.
-  sql(&quot;
-    SELECT * FROM orders
-    WHERE order_date &gt; :date
-    ORDER BY order_date DESC, id
-  &quot;, {
-    date: 10.years.ago
-  }).
-  find_each_with_cursor(batch_size: 1000) do |order|
-    ...
-  end
-</code></pre>
-<p>Read more about using <a href="./cursors.html">Cursors</a> in OccamsRecord.</p>
-<h3 id="offset--limit-based"><a class="header" href="#offset--limit-based">OFFSET &amp; LIMIT based</a></h3>
-<p>With other database, you'll need to fall back to the traditional (and potentially slower) <code>OFFSET &amp; LIMIT</code> approach.</p>
-<pre><code class="language-ruby">OccamsRecord.
-  sql(&quot;
-    SELECT * FROM orders
-    WHERE order_date &gt; :date
-    ORDER BY order_date DESC, id
-    LIMIT :batch_limit
-    OFFSET :batch_offset
-  &quot;, {
-    date: 10.years.ago
-  }).
-  find_each(batch_size: 1000) do |order|
-    ...
-  end
-</code></pre>
-<p>OccamsRecord will provide the values for <code>:batch_limit</code> and <code>:batch_offset</code>. Just put the references in the right place.</p>
 
                     </main>
 
@@ -265,7 +198,7 @@ OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; %s&quot;, [date])
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="../advanced/cursors.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../advanced/sql-eager-loading.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -279,7 +212,7 @@ OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; %s&quot;, [date])
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="../advanced/cursors.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../advanced/sql-eager-loading.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
