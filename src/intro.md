@@ -21,4 +21,4 @@ OccamsRecord simply refuses to do lazy loading, aka the "N+1 query problem". If 
 
 ### No arbitrary limitations
 
-OccamsRecord also embraces simplicity by making things easier for you, the person writing code. ActiveRecord has poor support for hand-written SQL, advanced eager loading scenarios, and advanced database features like cursors. OccamsRecord makes everything simpler by providing all of this in a way that's familiar and easy to use.
+OccamsRecord also embraces simplicity by making things easier for *you*, the person writing code. ActiveRecord has poor support for hand-written SQL, advanced eager loading scenarios, and advanced database features like cursors. OccamsRecord makes everything simpler by providing all of this in a way that's familiar and easy to use.
