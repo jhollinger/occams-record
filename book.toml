@@ -10,4 +10,5 @@ build-dir = "docs"
 
 # https://rust-lang.github.io/mdBook/format/configuration/renderers.html?highlight=top%20bar#html-renderer-options
 [output.html]
+cname = "occams.jordanhollinger.com"
 git-repository-url = "https://github.com/jhollinger/occams-record"
