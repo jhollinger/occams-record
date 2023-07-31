@@ -2,16 +2,31 @@
 
 *Docs:* [sql](https://www.rubydoc.info/gems/occams-record/OccamsRecord%2Esql)
 
-Sometimes you have to write a big, gnarly SQL query by hand. Here's a basic example (using simple SQL for brevity):
+Sometimes you have to write a big, gnarly SQL query by hand. Here's an example using Common Table Expressions (CTE).
 
 ```ruby
 OccamsRecord.
   sql("
-    SELECT * FROM orders
-    WHERE order_date > :date
-    ORDER BY order_date DESC, id
+    WITH regional_sales AS (
+      SELECT region, SUM(amount) AS total_sales
+      FROM orders
+      GROUP BY region
+    ), top_regions AS (
+      SELECT region
+      FROM regional_sales
+      WHERE total_sales > :min_sales
+    )
+    SELECT
+      region,
+      product,
+      SUM(quantity) AS product_units,
+      SUM(amount) AS product_sales
+    FROM orders
+    WHERE region IN (:regions)
+    GROUP BY region, product;
   ", {
-    date: 30.days.ago
+    min_sales: 10_000,
+    regions: ["A", "B", "C"],
   }).
   each { |order|
      ...

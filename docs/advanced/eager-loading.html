@@ -171,17 +171,18 @@
                         <h1 id="advanced-eager-loading"><a class="header" href="#advanced-eager-loading">Advanced Eager Loading</a></h1>
 <p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FEagerLoaders%2FBuilder:eager_load">eager_load</a></p>
 <h3 id="select-just-the-columns-you-need"><a class="header" href="#select-just-the-columns-you-need">Select just the columns you need</a></h3>
+<p>Pulling back only the columns you need can be noticeably faster and use less memory, especially for wide tables.</p>
 <pre><code class="language-ruby">OccamsRecord.
   query(q).
   eager_load(:customer, select: &quot;id, name&quot;)
 </code></pre>
 <h3 id="fully-customize-the-query"><a class="header" href="#fully-customize-the-query">Fully customize the query</a></h3>
-<p>You can snag the eager load's pending query and use the model's scopes or add any other conditions (<code>select</code>, <code>where</code>, <code>joins</code>, <code>order</code>, etc).</p>
+<p>You can snag the eager load's query and customize it using your model's scopes or query builder methods (<code>select</code>, <code>where</code>, <code>joins</code>, <code>order</code>, etc).</p>
 <pre><code class="language-ruby">OccamsRecord.
   query(q).
   eager_load(:customer, -&gt;(q) { q.active.order(:name) })
 </code></pre>
-<p>If you have a long one, there's a block-based syntax:</p>
+<p>There's a block-based syntax that's easier to read for long queries:</p>
 <pre><code class="language-ruby">OccamsRecord.
   query(q).
   eager_load(:customer) {
@@ -189,12 +190,12 @@
       q.active.
         joins(:account).
         where(&quot;accounts.something = ?&quot;, true).
-        select(&quot;id, name&quot;)
+        select(&quot;customers.id, customers.name&quot;)
     }
   }
 </code></pre>
 <h3 id="block-argument-syntax"><a class="header" href="#block-argument-syntax">Block-argument syntax</a></h3>
-<p>If you need to call methods from the surrounding environment in your eager loads (like the <code>params</code> method in a Rails controller), use the block-argument syntax.</p>
+<p>If you need to call methods from the surrounding environment, like <code>params</code> in a Rails controller, use the block-argument syntax.</p>
 <pre><code class="language-ruby">OccamsRecord.
   query(q).
   eager_load(:customer) { |c|
@@ -235,22 +236,6 @@
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

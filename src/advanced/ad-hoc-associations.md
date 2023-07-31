@@ -6,7 +6,7 @@ On rare occasions you may need to eager load an association *that doesn't actual
 
 ### eager_load_many
 
-The following example uses `eager_load_many` to load a non-existent, has-many association on `Product` called `customers`.
+The following example uses `eager_load_many` to load a non-existent, has-many association on `Product` called `customers`. Each product will have a `customers` attribute that contains the customers who bought the product.
 
 ```ruby
 OccamsRecord.
@@ -30,9 +30,9 @@ That's a lot, so we'll break it down. The method call really just looks like thi
 eager_load_many(:customers, {:id => :product_id}, "SOME SQL", binds: {date: some_date})
 ```
 
-The first argument, `:customers`, simply gives this made-up association a name. Your code will call `product.customers`.
+The first argument, `:customers`, simply gives this made-up association a name. We'll call `product.customers` to get a product's customers.
 
-The second argument, `{:id => :product_id}` defines the parent-child mapping. In this case it says, "The parent records have an `id` field, and it will match the `product_id` field in the children."
+The second argument, `{:id => :product_id}` defines the parent-child mapping. In this case it says, "The parent product records have an `id` field, and it will match the `product_id` field in the child customers."
 
 The third argument is the SQL that loads customers. Notice the `line_items.product_id IN (:ids)` section. That's ensuring we're only loading customers that are related to the products we've loaded. OccamsRecord *will provide those ids for us* - don't worry. (And it's only called `:ids` because we defined the parent mapping as `:id`. If the parent mapping was instead `:code`, we'd put `:codes` in the SQL.)
 

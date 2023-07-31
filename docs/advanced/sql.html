@@ -170,14 +170,29 @@
                     <main>
                         <h1 id="hand-written-sql"><a class="header" href="#hand-written-sql">Hand-written SQL</a></h1>
 <p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2Esql">sql</a></p>
-<p>Sometimes you have to write a big, gnarly SQL query by hand. Here's a basic example (using simple SQL for brevity):</p>
+<p>Sometimes you have to write a big, gnarly SQL query by hand. Here's an example using Common Table Expressions (CTE).</p>
 <pre><code class="language-ruby">OccamsRecord.
   sql(&quot;
-    SELECT * FROM orders
-    WHERE order_date &gt; :date
-    ORDER BY order_date DESC, id
+    WITH regional_sales AS (
+      SELECT region, SUM(amount) AS total_sales
+      FROM orders
+      GROUP BY region
+    ), top_regions AS (
+      SELECT region
+      FROM regional_sales
+      WHERE total_sales &gt; :min_sales
+    )
+    SELECT
+      region,
+      product,
+      SUM(quantity) AS product_units,
+      SUM(amount) AS product_sales
+    FROM orders
+    WHERE region IN (:regions)
+    GROUP BY region, product;
   &quot;, {
-    date: 30.days.ago
+    min_sales: 10_000,
+    regions: [&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
   }).
   each { |order|
      ...
@@ -222,22 +237,6 @@ OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; %s&quot;, [date])
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

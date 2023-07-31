@@ -172,7 +172,7 @@
 <p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FEagerLoaders%2FBuilder:eager_load_many">eager_load_many</a>, <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FEagerLoaders%2FBuilder:eager_load_one">eager_load_one</a></p>
 <p>On rare occasions you may need to eager load an association <em>that doesn't actually exist in your models</em>. Maybe it's too convoluted to represent with ActiveRecord. Or maybe it's just deeply nested and you don't want to waste time/memory loading all the intermediate records.</p>
 <h3 id="eager_load_many"><a class="header" href="#eager_load_many">eager_load_many</a></h3>
-<p>The following example uses <code>eager_load_many</code> to load a non-existent, has-many association on <code>Product</code> called <code>customers</code>.</p>
+<p>The following example uses <code>eager_load_many</code> to load a non-existent, has-many association on <code>Product</code> called <code>customers</code>. Each product will have a <code>customers</code> attribute that contains the customers who bought the product.</p>
 <pre><code class="language-ruby">OccamsRecord.
   query(Product.all).
   eager_load_many(:customers, {:id =&gt; :product_id}, &quot;
@@ -190,8 +190,8 @@
 <p>That's a lot, so we'll break it down. The method call really just looks like this:</p>
 <pre><code class="language-ruby">eager_load_many(:customers, {:id =&gt; :product_id}, &quot;SOME SQL&quot;, binds: {date: some_date})
 </code></pre>
-<p>The first argument, <code>:customers</code>, simply gives this made-up association a name. Your code will call <code>product.customers</code>.</p>
-<p>The second argument, <code>{:id =&gt; :product_id}</code> defines the parent-child mapping. In this case it says, &quot;The parent records have an <code>id</code> field, and it will match the <code>product_id</code> field in the children.&quot;</p>
+<p>The first argument, <code>:customers</code>, simply gives this made-up association a name. We'll call <code>product.customers</code> to get a product's customers.</p>
+<p>The second argument, <code>{:id =&gt; :product_id}</code> defines the parent-child mapping. In this case it says, &quot;The parent product records have an <code>id</code> field, and it will match the <code>product_id</code> field in the child customers.&quot;</p>
 <p>The third argument is the SQL that loads customers. Notice the <code>line_items.product_id IN (:ids)</code> section. That's ensuring we're only loading customers that are related to the products we've loaded. OccamsRecord <em>will provide those ids for us</em> - don't worry. (And it's only called <code>:ids</code> because we defined the parent mapping as <code>:id</code>. If the parent mapping was instead <code>:code</code>, we'd put <code>:codes</code> in the SQL.)</p>
 <p>The forth argument is optional. It can be a Hash or Array of any other query parameters you need.</p>
 <h3 id="eager_load_one"><a class="header" href="#eager_load_one">eager_load_one</a></h3>
@@ -242,22 +242,6 @@
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

@@ -187,7 +187,7 @@
 </code></pre>
 <p>Read more about using <a href="./cursors.html#cursors-with-hand-written-sql">Cursors</a> in OccamsRecord.</p>
 <h2 id="offset--limit-based"><a class="header" href="#offset--limit-based">OFFSET &amp; LIMIT based</a></h2>
-<p>With other database, you'll need to fall back to the traditional (and potentially slower) <code>OFFSET &amp; LIMIT</code> approach.</p>
+<p>With other databases you'll need to fall back to the traditional (and potentially slower) <code>OFFSET &amp; LIMIT</code> approach.</p>
 <pre><code class="language-ruby">OccamsRecord.
   sql(&quot;
     SELECT * FROM orders
@@ -233,22 +233,6 @@
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

@@ -26,7 +26,7 @@ Read more about using [Cursors](./cursors.md#cursors-with-hand-written-sql) in O
 
 ## OFFSET & LIMIT based
 
-With other database, you'll need to fall back to the traditional (and potentially slower) `OFFSET & LIMIT` approach.
+With other databases you'll need to fall back to the traditional (and potentially slower) `OFFSET & LIMIT` approach.
 
 ```ruby
 OccamsRecord.
