@@ -2,7 +2,7 @@
 
 *Docs:* [query](https://www.rubydoc.info/gems/occams-record/OccamsRecord%2Equery)
 
-One thing OccamsRecord *doesn't* touch is ActiveRecord's query builder. Write your queries like normal:
+Write your queries like normal:
 
 ```ruby
 q = Order.
@@ -11,7 +11,7 @@ q = Order.
   order("order_date DESC")
 ```
 
-But hand them off to OccamsRecord to be run:
+But run them with OccamsRecord:
 
 ```ruby
 orders = OccamsRecord.
