@@ -182,8 +182,10 @@
 <pre><code class="language-ruby">OccamsRecord.
   query(q).
   eager_load(:customer).
-  find_in_batches_with_cursor { |order|
-    ...
+  find_in_batches_with_cursor { |orders|
+    orders.each { |order|
+      ...
+    }
   }
 </code></pre>
 <p>If you need custom logic when using your cursor, use the lower-level <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:cursor">cursor</a> method:</p>
@@ -258,22 +260,6 @@
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

@@ -190,13 +190,13 @@
 <p>OccamsRecord has no configuration. As a companion library to ActiveRecord, all database configuration comes from ActiveRecord.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="your-first-query"><a class="header" href="#your-first-query">Your First Query</a></h1>
 <p><em>Docs:</em> <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2Equery">query</a></p>
-<p>One thing OccamsRecord <em>doesn't</em> touch is ActiveRecord's query builder. Write your queries like normal:</p>
+<p>Write your queries like normal:</p>
 <pre><code class="language-ruby">q = Order.
   completed.
   where(&quot;order_date &gt; ?&quot;, 30.days.ago).
   order(&quot;order_date DESC&quot;)
 </code></pre>
-<p>But hand them off to OccamsRecord to be run:</p>
+<p>But run them with OccamsRecord:</p>
 <pre><code class="language-ruby">orders = OccamsRecord.
   query(q).
   to_a
@@ -462,8 +462,10 @@ OccamsRecord.sql(&quot;SELECT ... WHERE orders.date &gt; %s&quot;, [date])
 <pre><code class="language-ruby">OccamsRecord.
   query(q).
   eager_load(:customer).
-  find_in_batches_with_cursor { |order|
-    ...
+  find_in_batches_with_cursor { |orders|
+    orders.each { |order|
+      ...
+    }
   }
 </code></pre>
 <p>If you need custom logic when using your cursor, use the lower-level <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:cursor">cursor</a> method:</p>
@@ -597,22 +599,6 @@ orders = OccamsRecord.
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 
