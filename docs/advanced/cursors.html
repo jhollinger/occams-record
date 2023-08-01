@@ -183,9 +183,7 @@
   query(q).
   eager_load(:customer).
   find_in_batches_with_cursor { |orders|
-    orders.each { |order|
-      ...
-    }
+    orders.each { |order| ... }
   }
 </code></pre>
 <p>If you need custom logic when using your cursor, use the lower-level <a href="https://www.rubydoc.info/gems/occams-record/OccamsRecord%2FQuery:cursor">cursor</a> method:</p>

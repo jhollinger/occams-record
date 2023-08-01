@@ -20,9 +20,7 @@ OccamsRecord.
   query(q).
   eager_load(:customer).
   find_in_batches_with_cursor { |orders|
-    orders.each { |order|
-      ...
-    }
+    orders.each { |order| ... }
   }
 ```
 
