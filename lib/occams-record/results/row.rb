@@ -87,6 +87,7 @@ module OccamsRecord
       end
 
       alias_method :to_hash, :to_h
+      alias_method :attributes, :to_h
 
       #
       # Returns the name of the model and the attributes.
