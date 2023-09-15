@@ -6,8 +6,7 @@ class CursorTest < Minitest::Test
   def setup
     DatabaseCleaner.start
     Time.zone = "Eastern Time (US & Canada)"
-    @skip = Widget.connection.class.name =~ /(sqlite|mysql)/i
-    $stderr.puts "Skipping CursorTest" if @skip
+    skip "No cursor support in current database" unless pg?
   end
 
   def teardown
@@ -16,7 +15,6 @@ class CursorTest < Minitest::Test
   end
 
   def test_cursor_with_scope
-    return if @skip
     widgets = OccamsRecord
       .query(Widget.all)
       .find_each_with_cursor
@@ -25,7 +23,6 @@ class CursorTest < Minitest::Test
   end
 
   def test_cursor_batches_with_scope
-    return if @skip
     batches = OccamsRecord
       .query(Widget.order("name"))
       .find_in_batches_with_cursor(batch_size: 3)
@@ -40,7 +37,6 @@ class CursorTest < Minitest::Test
   end
 
   def test_eager_loading_with_scope
-    return if @skip
     widgets = OccamsRecord
       .query(Widget.order("name"))
       .eager_load(:category)
@@ -58,7 +54,6 @@ class CursorTest < Minitest::Test
   end
 
   def test_cursor_with_sql
-    return if @skip
     widgets = OccamsRecord
       .sql("SELECT * FROM widgets", {})
       .find_each_with_cursor
@@ -67,7 +62,6 @@ class CursorTest < Minitest::Test
   end
 
   def test_cursor_batches_with_sql
-    return if @skip
     batches = OccamsRecord
       .sql("SELECT * FROM widgets ORDER BY name", {})
       .find_in_batches_with_cursor(batch_size: 3)
@@ -82,7 +76,6 @@ class CursorTest < Minitest::Test
   end
 
   def test_eager_loading_with_sql
-    return if @skip
     widgets = OccamsRecord
       .sql("SELECT * FROM widgets ORDER BY name", {})
       .model(Widget)
@@ -101,7 +94,6 @@ class CursorTest < Minitest::Test
   end
 
   def test_cursor_each
-    return if @skip
     widgets = OccamsRecord
       .query(Widget.order("name"))
       .cursor
@@ -112,7 +104,6 @@ class CursorTest < Minitest::Test
   end
 
   def test_cursor_move
-    return if @skip
     widgets = OccamsRecord
       .query(Widget.order("name"))
       .cursor
