@@ -1,5 +1,5 @@
 #
-# Read by bin/testall to test various combinations Ruby, ActiveRecord, and datbase versions
+# Read by bin/testall to test various combinations of Ruby, ActiveRecord, and datbases
 #
 
 ruby-3.2  ar-7.0  sqlite3  postgres-14  mysql-8
