@@ -4,7 +4,7 @@ source "https://rubygems.org"
 
 gem "rake"
 gem "memory_profiler"
-gem "appraisal", git: "https://github.com/thoughtbot/appraisal.git", ref: "b200e636903700098bef25f4f51dbc4c46e4c04c"
+gem "appraisal", "~> 2.5"
 gem "activerecord", "~> 5.2.6"
 gem "pg", "~> 1.0"
 gem "mysql2"
