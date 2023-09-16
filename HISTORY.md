@@ -1,3 +1,6 @@
+### 1.9.1 (2023-09-16)
+* Alias results `to_h` as `attributes` to better match Rails
+
 ### 1.9.0 (2023-07-11)
 * Match ActiveRecord's behavior for ? methods (e.g. `record.name?`)
 * Additional, Rails-like formats for query params in `OccamsRecord.sql`:
