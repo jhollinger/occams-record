@@ -3,8 +3,9 @@ require 'active_record/fixtures'
 module Fixtures
   def self.load!
     fixture_names = Dir.glob('./test/fixtures/*.yml').map { |file| Pathname.new(file).sub(/\.yml$/, '').basename }.sort
-    fixture_sets = ActiveRecord::Base.connection.disable_referential_integrity do
-      ActiveRecord::FixtureSet.create_fixtures('test/fixtures', fixture_names)
+    fixture_sets = nil
+    ActiveRecord::Base.connection.disable_referential_integrity do
+      fixture_sets = ActiveRecord::FixtureSet.create_fixtures('test/fixtures', fixture_names)
     end
 
     fixture_sets.each do |set|
