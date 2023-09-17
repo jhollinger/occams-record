@@ -12,6 +12,7 @@ source bin/lib.sh
 service=$1
 shift
 
+
 podpose build $service
 podpose up --no-start $service
 podpose run --rm $service "$@"
