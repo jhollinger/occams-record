@@ -13,6 +13,7 @@ ruby_version=$1
 ar_version=$2
 shift 2
 
+args="$@"
 exec env bin/run ${ruby_version} bash -c '
   BVER=$(tail -n 1 Gemfile.lock | sed "s/ //g")
   if ! gem list bundler --exact | grep $BVER > /dev/null; then
@@ -20,4 +21,4 @@ exec env bin/run ${ruby_version} bash -c '
   fi
   bundle install && \
     bundle exec appraisal '${ar_version}' bundle install && \
-    TEST_DATABASE_URL="'${TEST_DATABASE_URL-}'" bundle exec appraisal '${ar_version}' rake '"${@}"
+    TEST_DATABASE_URL="'${TEST_DATABASE_URL-}'" bundle exec appraisal '${ar_version}" rake ${args[@]}"
