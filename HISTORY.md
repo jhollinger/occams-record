@@ -1,3 +1,6 @@
+### 1.10.0 (2023-10-19)
+* Support for ActiveRecord 7.1
+
 ### 1.9.1 (2023-09-16)
 * Alias results `to_h` as `attributes` to better match Rails
 
