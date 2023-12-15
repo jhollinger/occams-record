@@ -17,6 +17,9 @@ module OccamsRecord
       # @return [OccamsRecord::EagerLoaders::Tracer]
       attr_reader :tracer
 
+      # @return [Boolean]
+      attr_accessor :use_cursor
+
       #
       # Initialize a new eager loading context.
       #
@@ -112,7 +115,7 @@ module OccamsRecord
       def run!(rows, query_logger: nil, measurements: nil)
         raise "Cannot run eager loaders when @model has not been set!" if @dynamic_loaders.any? and @model.nil?
         @loaders.each { |loader|
-          loader.run(rows, query_logger: query_logger, measurements: measurements)
+          loader.run(rows, use_cursor: use_cursor, query_logger: query_logger, measurements: measurements)
         }
         nil
       end

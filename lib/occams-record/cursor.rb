@@ -191,7 +191,10 @@ module OccamsRecord
     #   end
     #
     def query(sql, binds = {})
-      ::OccamsRecord::RawQuery.new(sql, binds, use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders, connection: conn).run
+      @eager_loaders.use_cursor = true
+      res = ::OccamsRecord::RawQuery.new(sql, binds, use: @use, query_logger: @query_logger, eager_loaders: @eager_loaders, connection: conn).run
+      @eager_loaders.use_cursor = false
+      res
     end
 
     #
