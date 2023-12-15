@@ -65,14 +65,18 @@ module OccamsRecord
       #
       def run(rows, use_cursor: false, query_logger: nil, measurements: nil)
         query(rows) { |*args|
-          assoc_rows =
-            if args[0]
-              q = Query.new(args[0], use: @use, eager_loaders: @eager_loaders, query_logger: query_logger, measurements: measurements, active_record_fallback: @active_record_fallback)
-              use_cursor ? q.find_each_with_cursor.to_a : q.to_a
+          if args[0]
+            q = Query.new(args[0], use: @use, eager_loaders: @eager_loaders, query_logger: query_logger, measurements: measurements, active_record_fallback: @active_record_fallback)
+            if use_cursor
+              # TODO optimize merge
+              q.find_in_batches_with_cursor { |assoc_rows| merge! assoc_rows, rows, *args[1..-1] }
             else
-              []
+              assoc_rows = q.to_a
+              merge! assoc_rows, rows, *args[1..-1]
             end
-          merge! assoc_rows, rows, *args[1..-1]
+          else
+            merge! [], rows, *args[1..-1]
+          end
         }
         nil
       end
