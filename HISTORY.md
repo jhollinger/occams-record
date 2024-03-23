@@ -1,3 +1,8 @@
+### 1.11.0 (2024-03-23)
+* Add tests for Ruby 3.3
+* Drop support for Ruby 2.x
+* Drop support for ActiveRecord 4.2 and 5.x
+
 ### 1.10.0 (2023-10-19)
 * Support for ActiveRecord 7.1
 
