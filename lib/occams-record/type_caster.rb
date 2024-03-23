@@ -3,8 +3,7 @@ module OccamsRecord
     # @private
     CASTER =
       case ActiveRecord::VERSION::MAJOR
-      when 4 then :type_cast_from_database
-      when 5, 6, 7 then :deserialize
+      when 6, 7 then :deserialize
       else raise "OccamsRecord::TypeCaster::CASTER does yet support this version of ActiveRecord"
       end
 

@@ -1,6 +1,21 @@
 ---
 version: '3'
 services:
+  ruby-3.3:
+    build:
+      context: ./
+      dockerfile: ./compose/Dockerfile.ruby-3.3
+    volumes:
+      - ./:/srv
+      - ruby-3.3-gems:/usr/local/bundle
+    depends_on:
+      postgres-14:
+        condition: service_healthy
+      postgres-10:
+        condition: service_healthy
+      mysql-8:
+        condition: service_healthy
+
   ruby-3.2:
     build:
       context: ./
@@ -38,36 +53,6 @@ services:
     volumes:
       - ./:/srv
       - ruby-3.0-gems:/usr/local/bundle
-    depends_on:
-      postgres-14:
-        condition: service_healthy
-      postgres-10:
-        condition: service_healthy
-      mysql-8:
-        condition: service_healthy
-
-  ruby-2.7:
-    build:
-      context: ./
-      dockerfile: ./compose/Dockerfile.ruby-2.7
-    volumes:
-      - ./:/srv
-      - ruby-2.7-gems:/usr/local/bundle
-    depends_on:
-      postgres-14:
-        condition: service_healthy
-      postgres-10:
-        condition: service_healthy
-      mysql-8:
-        condition: service_healthy
-
-  ruby-2.6:
-    build:
-      context: ./
-      dockerfile: ./compose/Dockerfile.ruby-2.6
-    volumes:
-      - ./:/srv
-      - ruby-2.6-gems:/usr/local/bundle
     depends_on:
       postgres-14:
         condition: service_healthy
@@ -117,8 +102,7 @@ volumes:
   postgres-14:
   postgres-10:
   mysql-8:
+  ruby-3.3-gems:
   ruby-3.2-gems:
   ruby-3.1-gems:
   ruby-3.0-gems:
-  ruby-2.7-gems:
-  ruby-2.6-gems:
