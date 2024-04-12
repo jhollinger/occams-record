@@ -42,6 +42,11 @@ class BindsConverterNamedTest < Minitest::Test
     assert_equal "SELECT * FROM widgets WHERE user_id = %{user_id} AND name LIKE 'foo:-'", sql
   end
 
+  def test_ignores_postgresql_casts
+    sql = @converter.new("SELECT (data::json ->> 'percent')::float FROM widgets").to_s
+    assert_equal "SELECT (data::json ->> 'percent')::float FROM widgets", sql
+  end
+
   def test_ignores_colon_at_end
     sql = @converter.new("SELECT * FROM widgets WHERE user_id = :user_id AND name LIKE 'foo:").to_s
     assert_equal "SELECT * FROM widgets WHERE user_id = %{user_id} AND name LIKE 'foo:", sql
