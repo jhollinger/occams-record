@@ -1,3 +1,6 @@
+### 1.11.1 (2024-04-15)
+* Fix to running raw SQL queries that [contain type casts](https://github.com/jhollinger/occams-record/pull/12/files) (from [aglushkov](https://github.com/aglushkov))
+
 ### 1.11.0 (2024-03-23)
 * Add tests for Ruby 3.3
 * Drop support for Ruby 2.x
