@@ -1,33 +1,22 @@
 module OccamsRecord
   module BindsConverter
-    # @private
-    WORD = /\w/
-
     #
     # Converts Rails-style named binds (:foo) into native Ruby format (%{foo}).
     #
-    class Named < Abstract
+    class Named
       def initialize(sql)
-        super(sql, ":".freeze)
+        @sql = sql
       end
 
-      protected
-
-      def get_bind
-        old_i = @i
-        @i += 1
-        @start_i = @i
-
-        until @i > @end or @sql[@i] !~ WORD
-          @i += 1
-        end
-
-        if @i > @start_i
-          name = @sql[@start_i..@i - 1]
-          @start_i = @i
-          "%{#{name}}"
-        else
-          @sql[old_i]
+      def to_s
+        @sql.gsub(/([:\\]?):([a-zA-Z]\w*)/) do |match|
+          if $1 == ":".freeze # skip PostgreSQL casts
+            match # return the whole match
+          elsif $1 == "\\".freeze # escaped literal colon
+            match[1..-1] # return match with escaping backslash char removed
+          else
+            "%{#{$2}}"
+          end
         end
       end
     end
