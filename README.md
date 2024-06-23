@@ -8,6 +8,8 @@ Learn OccamsRecord by reading [The Book at occams.jordanhollinger.com](https://o
 
 API documentation is available at [rubydoc.info/gems/occams-record](http://www.rubydoc.info/gems/occams-record).
 
+*Want OccamsRecord's flexible preloading in ActiveRecord itself? Check out [Uberloader](https://github.com/jhollinger/uberloader/)!*
+
 OccamsRecord is a high-efficiency, advanced query library for use alongside ActiveRecord. It is **not** an ORM or an ActiveRecord replacement. OccamsRecord can breathe fresh life into your ActiveRecord app by giving it two things:
 
 ### 1) Huge performance gains
