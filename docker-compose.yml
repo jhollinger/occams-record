@@ -1,5 +1,4 @@
 ---
-version: '3'
 services:
   ruby-3.3:
     build:
