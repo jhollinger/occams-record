@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ $# -lt 3 ]]; then
-  echo "Use: bin/rake ruby-X ar-X [args]"
+  echo "Use: bin/appraise ruby-X ar-X [args]"
   exit 1
 fi
 
@@ -21,4 +21,4 @@ exec env bin/run ${ruby_version} bash -c '
   fi
   bundle install && \
     bundle exec appraisal '${ar_version}' bundle install && \
-    TEST_DATABASE_URL="'${TEST_DATABASE_URL-}'" bundle exec appraisal '${ar_version}" rake ${args[@]}"
+    TEST_DATABASE_URL="'${TEST_DATABASE_URL-}'" bundle exec appraisal '${ar_version}" ${args[@]}"

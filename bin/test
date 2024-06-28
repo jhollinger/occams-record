@@ -26,4 +26,4 @@ else
 fi
 
 export TEST_DATABASE_URL="$db_url"
-exec bin/rake ${ruby_version} ${ar_version} test "$@"
+exec bin/appraise ${ruby_version} ${ar_version} rake test "$@"
