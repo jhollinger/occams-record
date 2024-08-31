@@ -1,3 +1,6 @@
+### 1.12.0 (2024-08-31)
+* Support for ActiveRecord 7.2
+
 ### 1.11.1 (2024-04-15)
 * Fix for running raw SQL queries that [contain type casts](https://github.com/jhollinger/occams-record/pull/12/files) (from [aglushkov](https://github.com/aglushkov))
 
