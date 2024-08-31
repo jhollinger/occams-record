@@ -2,16 +2,19 @@
 # Read by bin/testall to test various combinations of Ruby, ActiveRecord, and datbases
 #
 
+ruby-3.3  ar-7.2  sqlite3  postgres-14  mysql-8
 ruby-3.3  ar-7.1  sqlite3  postgres-14  mysql-8
 ruby-3.3  ar-7.0  sqlite3  postgres-14  mysql-8
 ruby-3.3  ar-6.1  sqlite3  postgres-14  mysql-8
 ruby-3.3  ar-6.0  sqlite3  postgres-14  mysql-8
 
+ruby-3.2  ar-7.2  sqlite3  postgres-14  mysql-8
 ruby-3.2  ar-7.1  sqlite3  postgres-14  mysql-8
 ruby-3.2  ar-7.0  sqlite3  postgres-14  mysql-8
 ruby-3.2  ar-6.1  sqlite3  postgres-14  mysql-8
 ruby-3.2  ar-6.0  sqlite3  postgres-14  mysql-8
 
+ruby-3.1  ar-7.2  sqlite3  postgres-14  mysql-8
 ruby-3.1  ar-7.1  sqlite3  postgres-14  mysql-8
 ruby-3.1  ar-7.0  sqlite3  postgres-14  mysql-8
 ruby-3.1  ar-6.1  sqlite3  postgres-14  mysql-8
