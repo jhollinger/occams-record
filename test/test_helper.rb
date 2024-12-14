@@ -1,4 +1,5 @@
 require 'json'
+require 'ostruct'
 require 'occams-record'
 require 'active_record'
 require 'minitest/autorun'

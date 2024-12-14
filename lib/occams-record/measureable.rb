@@ -1,3 +1,5 @@
+require 'benchmark'
+
 module OccamsRecord
   Measurements = Struct.new(:total_time, :queries)
   Measurement = Struct.new(:table_name, :sql, :time)

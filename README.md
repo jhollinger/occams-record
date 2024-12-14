@@ -361,8 +361,8 @@ It's possible to run tests without Docker Compose, but you'll be limited by the 
 
 ```bash
 bundle install
-bundle exec appraisal ar-7.0 bundle install
-bundle exec appraisal ar-7.0 rake test
+bundle exec appraisal ar-8.0 bundle install
+bundle exec appraisal ar-8.0 rake test
 ```
 
 # License
