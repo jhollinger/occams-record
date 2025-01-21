@@ -27,6 +27,7 @@ appraise "ar-7.0" do
   gem "pg", "~> 1.0"
   gem "mysql2"
   gem "sqlite3", "~> 1.4.2"
+  gem "concurrent-ruby", "1.3.4"
   gem "otr-activerecord", "~> 2.1.1"
 end
 
@@ -35,6 +36,7 @@ appraise "ar-6.1" do
   gem "pg", "~> 1.0"
   gem "mysql2"
   gem "sqlite3", "~> 1.4.2"
+  gem "concurrent-ruby", "1.3.4"
   gem "otr-activerecord", "~> 2.1.1"
 end
 
@@ -43,5 +45,6 @@ appraise "ar-6.0" do
   gem "pg", "~> 1.0"
   gem "mysql2"
   gem "sqlite3", "~> 1.4.2"
+  gem "concurrent-ruby", "1.3.4"
   gem "otr-activerecord", "~> 2.1.1"
 end
