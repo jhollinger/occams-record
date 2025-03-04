@@ -1,4 +1,16 @@
 module OccamsRecord
+  # Exception raised when not enough bind values were given
+  class MissingBindValuesError < StandardError
+    def initialize(sql, message)
+      @sql = sql
+      @message = message
+    end
+
+    def to_s = message
+
+    def message = "Missing binds (#{@message}) in #{@sql}"
+  end
+
   # Exception raised when a record wasn't loaded with all requested data
   class MissingDataError < StandardError
     # @return [String]

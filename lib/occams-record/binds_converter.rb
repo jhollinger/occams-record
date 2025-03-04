@@ -13,8 +13,8 @@ module OccamsRecord
     def self.convert(sql, binds)
       converter =
         case binds
-        when Hash then Named.new(sql)
-        when Array then Positional.new(sql)
+        when Hash then Named.new(sql, binds)
+        when Array then Positional.new(sql, binds)
         else raise ArgumentError, "OccamsRecord: Unsupported SQL bind params '#{binds.inspect}'. Only Hash and Array are supported"
         end
       converter.to_s
