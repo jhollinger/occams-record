@@ -1,3 +1,6 @@
+### 1.14.0 (?)
+* Drop support for Ruby 3.0
+
 ### 1.13.0 (2024-12-14)
 * Support for ActiveRecord 8.0
 

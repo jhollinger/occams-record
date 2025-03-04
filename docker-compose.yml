@@ -45,21 +45,6 @@ services:
       mysql-8:
         condition: service_healthy
 
-  ruby-3.0:
-    build:
-      context: ./
-      dockerfile: ./compose/Dockerfile.ruby-3.0
-    volumes:
-      - ./:/srv
-      - ruby-3.0-gems:/usr/local/bundle
-    depends_on:
-      postgres-14:
-        condition: service_healthy
-      postgres-10:
-        condition: service_healthy
-      mysql-8:
-        condition: service_healthy
-
   postgres-14:
     image: postgres:14.8
     environment:
@@ -93,7 +78,7 @@ services:
     volumes:
       - mysql-8:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
 
@@ -104,4 +89,3 @@ volumes:
   ruby-3.3-gems:
   ruby-3.2-gems:
   ruby-3.1-gems:
-  ruby-3.0-gems:
