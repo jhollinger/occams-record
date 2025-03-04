@@ -11,6 +11,6 @@ Gem::Specification.new do |s|
   s.homepage = 'https://jhollinger.github.io/occams-record/'
   s.require_paths = ['lib']
   s.files = [Dir.glob('lib/**/*'), 'README.md'].flatten
-  s.required_ruby_version = '>= 3.0.0'
+  s.required_ruby_version = '>= 3.1.0'
   s.add_runtime_dependency 'activerecord', ['>= 6.0', '< 8.1']
 end

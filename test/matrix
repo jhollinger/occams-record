@@ -21,8 +21,3 @@ ruby-3.1  ar-7.1  sqlite3  postgres-14  mysql-8
 ruby-3.1  ar-7.0  sqlite3  postgres-14  mysql-8
 ruby-3.1  ar-6.1  sqlite3  postgres-14  mysql-8
 ruby-3.1  ar-6.0  sqlite3  postgres-14  mysql-8
-
-ruby-3.0  ar-7.1  sqlite3  postgres-14  mysql-8
-ruby-3.0  ar-7.0  sqlite3  postgres-14  mysql-8
-ruby-3.0  ar-6.1  sqlite3  postgres-14  mysql-8
-ruby-3.0  ar-6.0  sqlite3  postgres-14  mysql-8
