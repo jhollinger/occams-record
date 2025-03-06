@@ -194,7 +194,7 @@ module OccamsRecord
     end
 
     #
-    # Returns a cursor you can open and perform operations on. A lower-level alternative to 
+    # Returns a cursor you can open and perform operations on. A lower-level alternative to
     # find_each_with_cursor and find_in_batches_with_cursor.
     #
     # NOTE Postgres only. See the docs for OccamsRecord::Cursor for more details.

@@ -10,21 +10,24 @@ module OccamsRecord
       # @private
       ESCAPE = "\\".freeze
 
-      def initialize(sql, bind_sigil)
+      def initialize(sql, binds, bind_sigil)
         @sql = sql
+        @binds = binds
         @end = sql.size - 1
         @start_i, @i = 0, 0
         @bind_sigil = bind_sigil
+        @found = []
       end
 
       # @return [String] The converted SQL string
       def to_s
         sql = ""
         each { |frag| sql << frag }
+        raise MissingBindValuesError.new(sql, missing_bind_values_msg) if @binds.size < @found.uniq.size
         sql
       end
 
-      protected
+      private
 
       # Yields each SQL fragment and converted bind to the given block
       def each

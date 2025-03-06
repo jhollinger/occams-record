@@ -1,4 +1,5 @@
 ### 1.14.0 (?)
+* Raise `OccamsRecord::MissingBindValuesError` if not enough bind values are passed to `OccamsRecord.sql` (thanks [zverok](https://github.com/jhollinger/occams-record/issues/14)!)
 * Drop support for Ruby 3.0
 
 ### 1.13.0 (2024-12-14)
