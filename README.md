@@ -371,4 +371,4 @@ MIT License. See LICENSE for details.
 
 # Copyright
 
-Copywrite (c) 2019 Jordan Hollinger.
+Copyright (c) 2019 Jordan Hollinger.
