@@ -8,7 +8,7 @@ gem "appraisal", "~> 2.5"
 gem "activerecord", "8.0.1"
 gem "pg", "~> 1.0"
 gem "mysql2"
-gem "sqlite3", "~> 2.4.1"
+gem "sqlite3", "~> 2.7.2"
 gem "otr-activerecord", "~> 2.5.0"
 
 group :test do

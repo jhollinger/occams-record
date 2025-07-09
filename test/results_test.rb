@@ -156,7 +156,8 @@ class ResultsTest < Minitest::Test
 
   def test_to_s
     widget1 = OccamsRecord.query(Widget.order(:name)).first
-    assert_equal %q(Widget{:id=>683130438, :name=>"Widget A", :category_id=>208889123}), widget1.to_s
+    attrs = {id: 683130438, name: "Widget A", category_id: 208889123}
+    assert_equal "Widget#{attrs.inspect}", widget1.to_s
   end
 
   def test_object_equality
