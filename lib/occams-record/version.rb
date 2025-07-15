@@ -3,5 +3,5 @@
 #
 module OccamsRecord
   # @private
-  VERSION = "1.14.0".freeze
+  VERSION = "1.15.0".freeze
 end
