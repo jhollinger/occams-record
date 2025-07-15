@@ -11,5 +11,6 @@ group :test do
   gem 'mutex_m'
   gem 'bigdecimal'
   gem 'base64'
+  gem 'ostruct'
   gem 'database_cleaner'
 end
