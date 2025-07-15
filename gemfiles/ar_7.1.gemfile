@@ -13,6 +13,7 @@ gem "otr-activerecord", "~> 2.2.0"
 
 group :test do
   gem "minitest"
+  gem "mutex_m"
   gem "database_cleaner"
 end
 
