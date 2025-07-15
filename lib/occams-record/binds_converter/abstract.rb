@@ -21,7 +21,7 @@ module OccamsRecord
 
       # @return [String] The converted SQL string
       def to_s
-        sql = ""
+        sql = +""
         each { |frag| sql << frag }
         raise MissingBindValuesError.new(sql, missing_bind_values_msg) if @binds.size < @found.uniq.size
         sql

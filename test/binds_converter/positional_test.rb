@@ -41,7 +41,7 @@ class BindsConverterPositionalTest < Minitest::Test
     e = assert_raises OccamsRecord::MissingBindValuesError do
       @converter.new("SELECT * FROM widgets WHERE user_id = ? AND name = ?", [5]).to_s
     end
-    assert_match /Missing binds \(1\) in SELECT /, e.message
+    assert_match(/Missing binds \(1\) in SELECT /, e.message)
   end
 
   def test_too_many_binds_passes

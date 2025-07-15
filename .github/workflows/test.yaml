@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        ruby: ["3.2", "3.3"]
+        ruby: ["3.2", "3.3", "3.4"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
