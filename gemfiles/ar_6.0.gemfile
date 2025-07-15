@@ -15,6 +15,7 @@ gem "otr-activerecord", "~> 2.1.1"
 group :test do
   gem "minitest"
   gem "mutex_m"
+  gem "bigdecimal"
   gem "database_cleaner"
 end
 
