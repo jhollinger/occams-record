@@ -10,5 +10,6 @@ group :test do
   gem 'minitest'
   gem 'mutex_m'
   gem 'bigdecimal'
+  gem 'base64'
   gem 'database_cleaner'
 end
