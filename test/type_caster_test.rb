@@ -30,11 +30,11 @@ class TypeCasterTest < Minitest::Test
         .sql("SELECT * FROM commons ORDER BY name", {})
         .first
 
-    assert x.id.is_a? Integer
-    assert x.name.is_a? String
-    assert x.desc.is_a? String
-    assert x.int.is_a? Integer
-    assert x.flt.is_a? Float
+    assert_instance_of Integer, x.id
+    assert_instance_of String, x.name
+    assert_instance_of String, x.desc
+    assert_instance_of Integer, x.int
+    assert_instance_of Float, x.flt
   end
 
   def test_advanced_types
@@ -54,11 +54,11 @@ class TypeCasterTest < Minitest::Test
         .sql("SELECT * FROM commons ORDER BY name", {})
         .first
 
-    assert x.dec.is_a?(sqlite? ? Float : BigDecimal)
-    assert x.day.is_a?(sqlite? ? String : Date)
-    assert x.daytime.is_a?(sqlite? ? String : Time)
+    assert_instance_of(sqlite? && ar_full_version < "8.1.0" ? Float : BigDecimal, x.dec)
+    assert_instance_of(sqlite? && ar_full_version < "8.1.0"  ? String : Date, x.day)
+    assert x.daytime.is_a?(sqlite? && ar_full_version < "8.1.0"  ? String : Time)
     assert_equal((
-      if pg?
+      if pg? || (sqlite? && ar_full_version >= "8.1.0")
         true
       elsif (ar_version >= 6) || mysql?
         1
@@ -81,7 +81,7 @@ class TypeCasterTest < Minitest::Test
         .sql("SELECT * FROM exotics", {})
         .first
 
-      assert x.id.is_a?(String)
+      assert_instance_of String, x.id
       assert_equal({"foo" => "foo", "num" => 5, "q" => false}, x.data1)
       assert_equal({"foo" => "foo", "num" => 5, "q" => false}, x.data2)
       assert_equal({"foo" => "foo", "num" => "5", "q" => "false"}, x.data3)

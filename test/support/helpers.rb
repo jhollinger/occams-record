@@ -15,6 +15,13 @@ module TestHelpers
     ActiveRecord::VERSION::MAJOR
   end
 
+  def ar_full_version
+    maj = ActiveRecord::VERSION::MAJOR
+    min = ActiveRecord::VERSION::MINOR
+    tin = ActiveRecord::VERSION::TINY
+    "#{maj}.#{min}.#{tin}"
+  end
+
   def normalize_sql(sql)
     sql
       .gsub(/\s+/, " ")

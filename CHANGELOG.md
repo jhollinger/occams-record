@@ -1,3 +1,6 @@
+### 1.16.0 (2025-11-10)
+* Support for ActiveRecord 8.1
+
 ### 1.15.0 (2025-07-15)
 * Support for Ruby 3.4
 
