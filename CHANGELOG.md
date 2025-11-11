@@ -1,3 +1,6 @@
+### 1.16.1 (2025-11-11)
+* Remove `benchmark` dependency
+
 ### 1.16.0 (2025-11-10)
 * Support for ActiveRecord 8.1
 
