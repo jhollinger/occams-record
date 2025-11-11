@@ -1,5 +1,3 @@
-require 'benchmark'
-
 module OccamsRecord
   Measurements = Struct.new(:total_time, :queries)
   Measurement = Struct.new(:table_name, :sql, :time)
@@ -41,7 +39,9 @@ module OccamsRecord
 
     def measure!(table_name, sql)
       result = nil
-      time = Benchmark.realtime { result = yield }
+      t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      result = yield
+      time = Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0
       @measurements << Measurement.new(table_name, sql, time)
       result
     end
