@@ -176,7 +176,7 @@ module OccamsRecord
     #
     def find_each(batch_size: 1000, use_transaction: true, append_order_by: nil)
       enum = Enumerator.new { |y|
-        find_in_batches(batch_size: 1000, use_transaction: use_transaction, append_order_by: append_order_by).each { |batch|
+        find_in_batches(batch_size: batch_size, use_transaction: use_transaction, append_order_by: append_order_by).each { |batch|
           batch.each { |record| y.yield record }
         }
       }
