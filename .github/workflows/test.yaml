@@ -28,7 +28,8 @@ jobs:
       - name: Installing dependencies
         run: |
           cp Appraisals.ruby-${{ matrix.ruby }} Appraisals
-          bundle check --path=vendor/bundle || bundle install --path=vendor/bundle
-          bundle exec appraisal install --path=vendor/bundle
+          bundle config set path vendor/bundle
+          bundle check || bundle install
+          bundle exec appraisal install
       - name: Run tests
         run: bundle exec appraisal rake test
