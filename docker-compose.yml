@@ -1,11 +1,30 @@
 ---
 services:
+  ruby-4.0:
+    build:
+      context: ./
+      dockerfile: ./compose/Dockerfile.ruby-4.0
+    volumes:
+      - ./:/srv
+      - ./Appraisals.ruby-4.0:/srv/Appraisals
+      - ruby-4.0-gemfiles:/srv/gemfiles
+      - ruby-4.0-gems:/usr/local/bundle
+    depends_on:
+      postgres-14:
+        condition: service_healthy
+      postgres-10:
+        condition: service_healthy
+      mysql-8:
+        condition: service_healthy
+
   ruby-3.4:
     build:
       context: ./
       dockerfile: ./compose/Dockerfile.ruby-3.4
     volumes:
       - ./:/srv
+      - ./Appraisals.ruby-3.4:/srv/Appraisals
+      - ruby-3.4-gemfiles:/srv/gemfiles
       - ruby-3.4-gems:/usr/local/bundle
     depends_on:
       postgres-14:
@@ -21,6 +40,8 @@ services:
       dockerfile: ./compose/Dockerfile.ruby-3.3
     volumes:
       - ./:/srv
+      - ./Appraisals.ruby-3.3:/srv/Appraisals
+      - ruby-3.3-gemfiles:/srv/gemfiles
       - ruby-3.3-gems:/usr/local/bundle
     depends_on:
       postgres-14:
@@ -36,6 +57,8 @@ services:
       dockerfile: ./compose/Dockerfile.ruby-3.2
     volumes:
       - ./:/srv
+      - ./Appraisals.ruby-3.2:/srv/Appraisals
+      - ruby-3.2-gemfiles:/srv/gemfiles
       - ruby-3.2-gems:/usr/local/bundle
     depends_on:
       postgres-14:
@@ -51,6 +74,8 @@ services:
       dockerfile: ./compose/Dockerfile.ruby-3.1
     volumes:
       - ./:/srv
+      - ./Appraisals.ruby-3.1:/srv/Appraisals
+      - ruby-3.1-gemfiles:/srv/gemfiles
       - ruby-3.1-gems:/usr/local/bundle
     depends_on:
       postgres-14:
@@ -101,7 +126,17 @@ volumes:
   postgres-14:
   postgres-10:
   mysql-8:
+  ruby-4.0-gems:
+  ruby-4.0-gemfiles:
+
   ruby-3.4-gems:
+  ruby-3.4-gemfiles:
+
   ruby-3.3-gems:
+  ruby-3.3-gemfiles:
+
   ruby-3.2-gems:
+  ruby-3.2-gemfiles:
+
   ruby-3.1-gems:
+  ruby-3.1-gemfiles:
