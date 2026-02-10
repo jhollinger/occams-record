@@ -1,3 +1,6 @@
+### 1.16.2 (2026-02-09)
+* Fix hardcoded `batch_size` in `find_each` ([thanks adamzapasnik](https://github.com/jhollinger/occams-record/pull/20))
+
 ### 1.16.1 (2025-11-11)
 * Remove `benchmark` dependency
 
